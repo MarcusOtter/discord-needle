@@ -3,5 +3,14 @@
     "threadChannels": [
         "123456789123456789",
         "987654321987654321"
-    ]
+    ],
+    "threadArchiveDurationInMinutes": "MAX",
+    "threadMessage": {
+        "shouldSend": true,
+        "shouldPin": true,
+        "content": "Thread created from $$channelMention by $$authorMention $$relativeTimeSince with the following message:",
+        "embeds": [
+            "$$messageEmbed"
+        ]
+    }
 }
