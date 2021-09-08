@@ -1,17 +1,6 @@
-import * as config from "../config.json";
+import * as defaultConfig from "../defaultConfig.json";
+import * as overrideConfig from "../overrideConfig.json";
 
-export function getConfig(): Config {
-	return config as Config;
-}
-
-interface Config {
-	discordApiToken: string;
-	threadArchiveDurationInMinutes: 60 | 1440 | 4320 | 10080 | "MAX";
-	threadMessage: {
-		shouldSend: boolean,
-		shouldPin: boolean,
-		content: string,
-		embeds: string[]
-	},
-	threadChannels: string[];
+export function getConfig(): typeof defaultConfig & typeof overrideConfig {
+	return Object.assign(defaultConfig, overrideConfig);
 }

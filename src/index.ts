@@ -47,7 +47,7 @@ CLIENT.on("messageCreate", async message => {
 
 	const thread = await message.startThread({
 		name: `${authorName} (${creationDate})`,
-		autoArchiveDuration: CONFIG.threadArchiveDurationInMinutes,
+		autoArchiveDuration: <60 | 1440 | 4320 | 10080 | "MAX"> CONFIG.threadArchiveDuration,
 	});
 
 	const embed = new MessageEmbed()

@@ -1,10 +1,7 @@
 {
-    "discordApiToken": "INSERT TOKEN HERE",
-    "threadChannels": [
-        "123456789123456789",
-        "987654321987654321"
-    ],
-    "threadArchiveDurationInMinutes": "MAX",
+    "discordApiToken": "",
+    "threadChannels": [],
+    "threadArchiveDuration": "MAX",
     "threadMessage": {
         "shouldSend": true,
         "shouldPin": true,
