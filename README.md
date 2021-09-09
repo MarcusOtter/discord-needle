@@ -13,7 +13,6 @@ A discord bot that makes a new thread for every message in certain channels.
             "CHANNEL ID 1",
             "CHANNEL ID 2",
         ]
-        ...
     }
     ```
 2. Run `npm install`
