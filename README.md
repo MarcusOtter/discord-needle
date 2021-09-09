@@ -4,16 +4,16 @@ A discord bot that makes a new thread for every message in certain channels.
 | ------------- | - |
 | ![image](https://user-images.githubusercontent.com/35617441/130550016-02ef9479-342f-4cc0-b1d1-3de4f42a4c98.png) | ![image](https://user-images.githubusercontent.com/35617441/130549842-f046ba5a-311b-43c3-b3cd-aa2fd5642b35.png) |
 
-## How to run the bot
-1. Edit the `src/config/config.json` with API token and the IDs of the channels you want to thread every message in:
+## Running the bot
+1. Edit the `src/config/defaultConfig.json` with API token and the IDs of the channels you want to thread every message in:
     ```json
     {
-        "discordApiToken": "INSERT TOKEN HERE",
+        "discordApiToken": "INSERT TOKEN",
         "threadChannels": [
-            "CHANNEL ID 1 HERE",
-            "CHANNEL ID 2 HERE",
-            "ETC"
+            "CHANNEL ID 1",
+            "CHANNEL ID 2",
         ]
+        ...
     }
     ```
 2. Run `npm install`
@@ -27,18 +27,7 @@ A discord bot that makes a new thread for every message in certain channels.
 5. Done! :tada:
 
 ## Configuration :construction: UNDER CONSTRUCTION, NOT WORKING YET :construction:
-If you want to, you can configure how the bot reacts by editing the `src/config/config.json` file. Here are the default settings:
-```json
-"threadArchiveDurationInMinutes": "MAX",
-"threadMessage": {
-    "shouldSend": true,
-    "shouldPin": true,
-    "content": "Thread created from $$channelMention by $$authorMention $$relativeTimeSince with the following message:",
-    "embeds": [
-        "$$messageEmbed"
-    ]
-}
-```
+If you want to, you can (**IN THE FUTURE**) configure how the bot reacts by editing the `src/config/defaultConfig.json`.
 An explanation follows.
 
 ### threadArchiveDurationInMinutes
