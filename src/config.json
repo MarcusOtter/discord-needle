@@ -1,6 +1,6 @@
 {
     "discordApiToken": "",
-    "threadChannels": [],
+    "threadChannels": [""],
     "threadArchiveDuration": "MAX",
     "threadMessage": {
         "shouldSend": true,
