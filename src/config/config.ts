@@ -1,4 +1,4 @@
-import * as defaultConfig from "../defaultConfig.json";
+import * as defaultConfig from "../config.json";
 import * as overrideConfig from "../overrideConfig.json";
 
 export function getConfig(): typeof defaultConfig & typeof overrideConfig {

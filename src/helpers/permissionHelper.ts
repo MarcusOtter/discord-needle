@@ -5,6 +5,8 @@ export function getRequiredPermissions(): bigint[] {
 	const config = getConfig();
 	const output = [
 		Permissions.FLAGS.USE_PUBLIC_THREADS,
+
+		/* TODO: Replace with SEND_MESSAGES_IN_THREADS when it is released */
 		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.READ_MESSAGE_HISTORY,
 	];

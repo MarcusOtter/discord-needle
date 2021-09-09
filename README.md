@@ -5,7 +5,7 @@ A discord bot that makes a new thread for every message in certain channels.
 | ![image](https://user-images.githubusercontent.com/35617441/130550016-02ef9479-342f-4cc0-b1d1-3de4f42a4c98.png) | ![image](https://user-images.githubusercontent.com/35617441/130549842-f046ba5a-311b-43c3-b3cd-aa2fd5642b35.png) |
 
 ## Running the bot
-1. Edit the `src/config/defaultConfig.json` with API token and the IDs of the channels you want to thread every message in:
+1. Edit the `src/config.json` with API token and the IDs of the channels you want to thread every message in:
     ```json
     {
         "discordApiToken": "INSERT TOKEN",
@@ -19,14 +19,14 @@ A discord bot that makes a new thread for every message in certain channels.
 3. Run `npm start`
 4. Make sure the bot has the required permissions in Discord. Depending on your [configuration](#configuration), these can be:
     - `USE_PUBLIC_THREADS` (always required)
-    - `SEND_MESSAGES` (always required)
+    - `SEND_MESSAGES_IN_THREADS` (always required)
     - `READ_MESSAGE_HISTORY` (always required)
     - `EMBED_LINKS` (required if there are any [embeds](#embeds))
     - `MANAGE_MESSAGES` (required if [shouldPin](#shouldpin) is `true`)
 5. Done! :tada:
 
 ## Configuration :construction: UNDER CONSTRUCTION, NOT WORKING YET :construction:
-If you want to, you can (**IN THE FUTURE**) configure how the bot reacts by editing the `src/config/defaultConfig.json`.
+If you want to, you can (**IN THE FUTURE**) configure how the bot reacts by editing the `src/config.json`.
 An explanation follows.
 
 ### threadArchiveDurationInMinutes
