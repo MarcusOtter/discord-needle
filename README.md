@@ -1,11 +1,13 @@
-# discord-auto-threader
-A discord bot that makes a new thread for every message in certain channels.
-| Message | Thread |
-| ------------- | - |
-| ![image](https://user-images.githubusercontent.com/35617441/130550016-02ef9479-342f-4cc0-b1d1-3de4f42a4c98.png) | ![image](https://user-images.githubusercontent.com/35617441/130549842-f046ba5a-311b-43c3-b3cd-aa2fd5642b35.png) |
+# Needle
+Needle is a discord bot that helps you manage your discord threads.
+
+## Features
+- Automatically create new threads for every message in certain channels
+- More to come :wink: Check out open [issues](https://github.com/MarcusOtter/discord-needle/issues)!
 
 ## Running the bot
-1. Edit the `src/config.json` with API token and the IDs of the channels you want to thread every message in:
+1. Clone the repository
+2. Edit the `src/config.json` with API token and the IDs of the channels you want to thread every message in:
     ```json
     {
         "discordApiToken": "INSERT TOKEN",
@@ -15,14 +17,14 @@ A discord bot that makes a new thread for every message in certain channels.
         ]
     }
     ```
-2. Run `npm install`
-3. Run `npm start`
+3. Run `npm install`
 4. Make sure the bot has the required permissions in Discord. Depending on your [configuration](#configuration), these can be:
     - `USE_PUBLIC_THREADS` (always required)
     - `SEND_MESSAGES_IN_THREADS` (always required)
     - `READ_MESSAGE_HISTORY` (always required)
     - `EMBED_LINKS` (required if there are any [embeds](#embeds))
     - `MANAGE_MESSAGES` (required if [shouldPin](#shouldpin) is `true`)
+5. Run `npm start`
 5. Done! :tada:
 
 ## Configuration :construction: UNDER CONSTRUCTION, NOT WORKING YET :construction:
