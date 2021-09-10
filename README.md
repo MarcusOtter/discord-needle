@@ -1,5 +1,5 @@
 # Needle
-Needle is a [discord](https://discord.com/) bot that helps you manage your [discord threads](https://support.discord.com/hc/tr/articles/4403205878423-Threads).
+Needle is a [discord](https://discord.com/) bot that helps you manage your [discord threads](https://support.discord.com/hc/en-us/articles/4403205878423-Threads-FAQ).
 
 ## Features
 - Automatically create new threads for every message in certain channels
