@@ -1,7 +1,7 @@
 {
-  "name": "discord-auto-threader",
+  "name": "discord-needle",
   "version": "1.0.0",
-  "description": "A discord bot that makes a new thread for every message in certain channels.",
+  "description": "Needle is a discord bot that helps you manage your discord threads.",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MarcusOtter/discord-auto-threader.git"
+    "url": "git+https://github.com/MarcusOtter/discord-needle.git"
   },
   "author": "Marcus Otterström",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/MarcusOtter/discord-auto-threader/issues"
+    "url": "https://github.com/MarcusOtter/discord-needle/issues"
   },
-  "homepage": "https://github.com/MarcusOtter/discord-auto-threader#readme",
+  "homepage": "https://github.com/MarcusOtter/discord-needle",
   "dependencies": {
     "discord.js": "^13.1.0"
   },
