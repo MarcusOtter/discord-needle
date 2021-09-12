@@ -1,12 +1,29 @@
 import { Client, Intents, MessageEmbed } from "discord.js";
-import { getConfig } from "./config/config";
+import { getCommand, reloadCommands } from "./helpers/commandsHelper";
+import { getConfig } from "./helpers/configHelper";
 import { getRequiredPermissions } from "./helpers/permissionHelper";
 
 const CLIENT = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 const CONFIG = getConfig();
 
-CLIENT.once("ready", () => {
+CLIENT.once("ready", async () => {
 	console.log("Ready!");
+	await reloadCommands();
+});
+
+CLIENT.on("interactionCreate", async interaction => {
+	if (!interaction.isCommand()) return;
+
+	const command = getCommand(interaction.commandName);
+	if (!command) return;
+
+	try {
+		await command.execute(interaction);
+	}
+	catch (error) {
+		console.error(error);
+		await interaction.reply({ content: "There was an error while executing this command!", ephemeral: true });
+	}
 });
 
 CLIENT.on("messageCreate", async message => {

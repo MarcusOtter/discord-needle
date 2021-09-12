@@ -9,5 +9,9 @@
         "embeds": [
             "$$messageEmbed"
         ]
+    },
+    "dev": {
+        "clientId": "",
+        "guildId": ""
     }
 }

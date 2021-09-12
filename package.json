@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
+    "build": "tsc && node ./scripts/deploy-commands.js",
     "prestart": "npm run build",
     "start": "node ./dist/index.js"
   },
@@ -20,6 +20,9 @@
   },
   "homepage": "https://github.com/MarcusOtter/discord-needle",
   "dependencies": {
+    "@discordjs/builders": "^0.6.0",
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "discord-api-types": "^0.23.1",
     "discord.js": "^13.1.0"
   },
   "devDependencies": {

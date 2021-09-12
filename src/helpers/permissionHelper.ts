@@ -1,5 +1,5 @@
 import { Permissions } from "discord.js";
-import { getConfig } from "../config/config";
+import { getConfig } from "./configHelper";
 
 export function getRequiredPermissions(): bigint[] {
 	const config = getConfig();
