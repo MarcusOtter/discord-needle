@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { BaseCommandInteraction } from "discord.js";
-import { NeedleCommand } from "../helpers/commandsHelper";
+import { NeedleCommand } from "../types/needleCommand";
 
 export const command: NeedleCommand = {
 	info: new SlashCommandBuilder()

@@ -4,7 +4,7 @@
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 
-const { getAllCommands } = require("../dist/helpers/commandsHelper");
+const { getAllCommands } = require("../dist/handlers/commandHandler");
 const { getConfig } = require("../dist/helpers/configHelper");
 
 const CONFIG = getConfig();
@@ -14,12 +14,12 @@ const rest = new REST({ version: "9" }).setToken(CONFIG.discordApiToken);
 	const commands = (await getAllCommands()).map(command => command.info);
 
 	try {
-		console.log("Started refreshing application (/) commands.");
+		console.log(`Started refreshing ${commands.length} application commands.`);
 		await rest.put(
 			Routes.applicationGuildCommands(CONFIG.dev.clientId, CONFIG.dev.guildId),
 			{ body: commands },
 		);
-		console.log("Successfully reloaded application (/) commands.");
+		console.log("Successfully reloaded application commands.");
 	}
 	catch (error) {
 		console.error(error);

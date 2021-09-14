@@ -1,20 +1,28 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
 import { BaseCommandInteraction } from "discord.js";
 import { promises } from "fs";
 import { resolve } from "path";
+import { NeedleCommand } from "../types/needleCommand";
 
 const COMMANDS_PATH = resolve(__dirname, "../commands");
-
-export interface NeedleCommand {
-	info: SlashCommandBuilder;
-	execute(interaction: BaseCommandInteraction): Promise<void>;
-}
 
 let loadedCommands: NeedleCommand[] = [];
 export async function reloadCommands(): Promise<void> {
 	console.log("Started reloading commands.");
 	loadedCommands = await getAllCommands();
 	console.log("Successfully reloaded commands.");
+}
+
+export async function handleCommandInteraction(interaction: BaseCommandInteraction): Promise<void> {
+	const command = getCommand(interaction.commandName);
+	if (!command) return;
+
+	try {
+		await command.execute(interaction);
+	}
+	catch (error) {
+		console.error(error);
+		await interaction.reply({ content: "There was an error while executing this command!", ephemeral: true });
+	}
 }
 
 export async function getAllCommands(): Promise<NeedleCommand[]> {
