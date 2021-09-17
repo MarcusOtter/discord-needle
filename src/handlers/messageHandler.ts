@@ -1,6 +1,6 @@
 import { Message, MessageEmbed } from "discord.js";
-import { getConfig } from "../helpers/configHelper";
-import { getRequiredPermissions } from "../helpers/permissionHelper";
+import { getConfig } from "../helpers/configHelpers";
+import { getRequiredPermissions } from "../helpers/permissionHelpers";
 
 export async function handleMessageCreate(message: Message): Promise<void> {
 	const clientUser = message.client.user;
@@ -17,8 +17,10 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 	const guild = message.guild;
 	const channel = message.channel;
 
+	if (message.system) return;
 	if (authorUser.bot) return;
 	if (!channel.isText()) return;
+	if (message.hasThread) return;
 	if (!config?.threadChannels?.includes(channel.id)) return;
 
 	const botMember = await guild.members.fetch(clientUser);
