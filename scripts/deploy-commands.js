@@ -5,7 +5,7 @@ const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 
 const { getAllCommands } = require("../dist/handlers/commandHandler");
-const { getConfig } = require("../dist/helpers/configHelper");
+const { getConfig } = require("../dist/helpers/configHelpers");
 
 const CONFIG = getConfig();
 const rest = new REST({ version: "9" }).setToken(CONFIG.discordApiToken);
