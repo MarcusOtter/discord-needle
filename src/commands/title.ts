@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, GuildMember, Permissions } from "discord.js";
 import { ephemeralReply, getThreadStartMessage } from "../helpers/messageHelpers";
+import { memberHasPermissions } from "../helpers/permissionHelpers";
 import { NeedleCommand } from "../types/needleCommand";
 
 export const command: NeedleCommand = {
@@ -15,6 +16,11 @@ export const command: NeedleCommand = {
 		}),
 
 	async execute(interaction: CommandInteraction): Promise<void> {
+		const member = interaction.member;
+		if (!(member instanceof GuildMember)) {
+			return ephemeralReply(interaction, "An unexpected error occurred."); 
+		}
+
 		const channel = interaction.channel;
 		if (!channel?.isThread()) {
 			return ephemeralReply(interaction, "You can only use this command inside a thread.");
@@ -25,8 +31,8 @@ export const command: NeedleCommand = {
 			return ephemeralReply(interaction, "An unexpected error occurred.");
 		}
 
-		// TODO: Allow users with sufficient permissions to invoke this command as well
-		if (parentMessage.author !== interaction.user) {
+		const hasChangeTitlePermissions = member.permissionsIn(channel).has(Permissions.FLAGS.MANAGE_THREADS, true);
+		if (!hasChangeTitlePermissions || parentMessage.author !== interaction.user) {
 			return ephemeralReply(interaction, "You need to be the thread owner to change the title.");
 		}
 
