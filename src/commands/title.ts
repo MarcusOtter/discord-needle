@@ -1,7 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, GuildMember, Permissions } from "discord.js";
 import { ephemeralReply, getThreadStartMessage } from "../helpers/messageHelpers";
-import { memberHasPermissions } from "../helpers/permissionHelpers";
 import { NeedleCommand } from "../types/needleCommand";
 
 export const command: NeedleCommand = {
@@ -18,7 +17,7 @@ export const command: NeedleCommand = {
 	async execute(interaction: CommandInteraction): Promise<void> {
 		const member = interaction.member;
 		if (!(member instanceof GuildMember)) {
-			return ephemeralReply(interaction, "An unexpected error occurred."); 
+			return ephemeralReply(interaction, "An unexpected error occurred.");
 		}
 
 		const channel = interaction.channel;
@@ -32,7 +31,7 @@ export const command: NeedleCommand = {
 		}
 
 		const hasChangeTitlePermissions = member.permissionsIn(channel).has(Permissions.FLAGS.MANAGE_THREADS, true);
-		if (!hasChangeTitlePermissions || parentMessage.author !== interaction.user) {
+		if (!hasChangeTitlePermissions && parentMessage.author !== interaction.user) {
 			return ephemeralReply(interaction, "You need to be the thread owner to change the title.");
 		}
 
@@ -41,9 +40,11 @@ export const command: NeedleCommand = {
 			return ephemeralReply(interaction, "You need to provide a new thread name when writing the command");
 		}
 
+		const oldThreadName = channel.name;
+
 		// Current rate limit is 2 renames per thread per 10 minutes (2021-09-17).
 		// If that rate limit is hit, it will wait here until it is able to rename the thread.
-		await channel.setName(newThreadName);
-		await ephemeralReply(interaction, "Successfully changed title.");
+		await channel.setName(newThreadName, `Changed by ${member.user.tag} (${member.id})`);
+		await ephemeralReply(interaction, `Successfully changed title from \`${oldThreadName}\` to \`${newThreadName}\`.`);
 	},
 };
