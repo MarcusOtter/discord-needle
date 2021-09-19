@@ -4,15 +4,21 @@ import { ephemeralReply, getThreadStartMessage } from "../helpers/messageHelpers
 import { NeedleCommand } from "../types/needleCommand";
 
 export const command: NeedleCommand = {
-	info: new SlashCommandBuilder()
-		.setName("title")
-		.setDescription("Set the title of a thread")
-		.addStringOption(option => {
-			return option
-				.setName("value")
-				.setDescription("The new title of the thread")
-				.setRequired(true);
-		}),
+	name: "title",
+	shortHelpDescription: "Sets the title of a thread to `value`",
+
+	async getSlashCommandBuilder() {
+		return new SlashCommandBuilder()
+			.setName("title")
+			.setDescription("Sets the title of a thread")
+			.addStringOption(option => {
+				return option
+					.setName("value")
+					.setDescription("The new title of the thread")
+					.setRequired(true);
+			})
+			.toJSON();
+	},
 
 	async execute(interaction: CommandInteraction): Promise<void> {
 		const member = interaction.member;
