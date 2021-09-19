@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { BaseCommandInteraction } from "discord.js";
+import { CommandInteraction } from "discord.js";
 import { NeedleCommand } from "../types/needleCommand";
 
 export const command: NeedleCommand = {
@@ -7,7 +7,7 @@ export const command: NeedleCommand = {
 		.setName("ping")
 		.setDescription("Replies with pong"),
 
-	async execute(interaction: BaseCommandInteraction): Promise<void> {
+	async execute(interaction: CommandInteraction): Promise<void> {
 		await interaction.reply("Pong! :)");
 	},
 };

@@ -1,9 +1,10 @@
-import { BaseCommandInteraction } from "discord.js";
+import { CommandInteraction } from "discord.js";
 import { promises } from "fs";
-import { resolve } from "path";
+import { resolve as pathResolve } from "path";
+import { ephemeralReply } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
 
-const COMMANDS_PATH = resolve(__dirname, "../commands");
+const COMMANDS_PATH = pathResolve(__dirname, "../commands");
 
 let loadedCommands: NeedleCommand[] = [];
 export async function reloadCommands(): Promise<void> {
@@ -12,16 +13,16 @@ export async function reloadCommands(): Promise<void> {
 	console.log("Successfully reloaded commands.");
 }
 
-export async function handleCommandInteraction(interaction: BaseCommandInteraction): Promise<void> {
+export function handleCommandInteraction(interaction: CommandInteraction): Promise<void> {
 	const command = getCommand(interaction.commandName);
-	if (!command) return;
+	if (!command) return Promise.reject();
 
 	try {
-		await command.execute(interaction);
+		return command.execute(interaction);
 	}
 	catch (error) {
 		console.error(error);
-		await interaction.reply({ content: "There was an error while executing this command!", ephemeral: true });
+		return ephemeralReply(interaction, "There was an error while executing this command. Please try again later.");
 	}
 }
 
