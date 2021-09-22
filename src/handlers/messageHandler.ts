@@ -4,7 +4,6 @@ import { getRequiredPermissions } from "../helpers/permissionHelpers";
 
 export async function handleMessageCreate(message: Message): Promise<void> {
 	const clientUser = message.client.user;
-	const config = getConfig();
 
 	// Server outage
 	if (!message.guild?.available) return;
@@ -21,6 +20,8 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 	if (authorUser.bot) return;
 	if (!channel.isText()) return;
 	if (message.hasThread) return;
+
+	const config = getConfig();
 	if (!config?.threadChannels?.includes(channel.id)) return;
 
 	const botMember = await guild.members.fetch(clientUser);
