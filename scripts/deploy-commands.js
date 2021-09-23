@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 // IMPORTANT: You need to `tsc` before running this script.
 
-// TODO: Probably make this a separate script (don't try to run it on start)
+// TODO: Make this a separate script when commands are more stable (don't try to run it on npm start)
 
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 
-const { getAllCommands } = require("../dist/handlers/commandHandler");
+const { getOrLoadAllCommands } = require("../dist/handlers/commandHandler");
 const { getConfig } = require("../dist/helpers/configHelpers");
 
 const CONFIG = getConfig();
@@ -18,15 +18,20 @@ if (!CONFIG.dev.guildId || CONFIG.dev.guildId === "") { return; }
 const rest = new REST({ version: "9" }).setToken(CONFIG.discordApiToken);
 
 (async () => {
-	const commands = (await getAllCommands()).map(command => command.info);
+	const allNeedleCommands = await getOrLoadAllCommands();
+	const allSlashCommandBuilders = [];
+	for (const command of allNeedleCommands) {
+		const builder = await command.getSlashCommandBuilder();
+		allSlashCommandBuilders.push(builder);
+	}
 
 	try {
-		console.log(`Started refreshing ${commands.length} application commands.`);
+		console.log(`Started deploying ${allSlashCommandBuilders.length} application commands.`);
 		await rest.put(
 			Routes.applicationGuildCommands(CONFIG.dev.clientId, CONFIG.dev.guildId),
-			{ body: commands },
+			{ body: allSlashCommandBuilders },
 		);
-		console.log("Successfully reloaded application commands.");
+		console.log("Successfully deployed application commands.");
 	}
 	catch (error) {
 		console.error(error);
