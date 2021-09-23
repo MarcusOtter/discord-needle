@@ -8,7 +8,7 @@ import { NeedleCommand } from "../types/needleCommand";
 export const command: NeedleCommand = {
 	name: "help",
 	shortHelpDescription: "", // Help command has a special treatment of help description
-	longHelpDescription: "Well, this is meta.",
+	longHelpDescription: "The help command shows you a list of all available commands. If you provide a command after `/help`, it will show you more information about that specific command (exactly like you just did!).",
 
 	getSlashCommandBuilder() {
 		return getHelpSlashCommandBuilder();
@@ -22,7 +22,7 @@ export const command: NeedleCommand = {
 				getFeatureRequestButton());
 
 		const commandName = interaction.options.getString("command");
-		if (commandName) {
+		if (commandName) { // User wrote for example "/help title"
 			const commandsEmbed = await getCommandDetailsEmbed(commandName);
 			await interaction.reply({
 				embeds: commandsEmbed,
@@ -30,7 +30,7 @@ export const command: NeedleCommand = {
 				ephemeral: true,
 			});
 		}
-		else {
+		else { // User only wrote "/help"
 			const commandsEmbed = await getAllCommandsEmbed();
 			await interaction.reply({
 				embeds: [commandsEmbed],
@@ -46,7 +46,7 @@ async function getCommandDetailsEmbed(commandName: string): Promise<MessageEmbed
 	const cmd = getCommand(commandName);
 	if (!cmd) { return []; }
 
-	const cmdOptionString = await getCommandOptionStrings(cmd);
+	const cmdOptionString = await getCommandOptionString(cmd);
 	const cmdOptions = await getCommandOptions(cmd);
 	let cmdOptionExplanations = "";
 	for (const option of cmdOptions) {
@@ -66,7 +66,7 @@ async function getCommandDetailsEmbed(commandName: string): Promise<MessageEmbed
 }
 
 async function getAllCommandsEmbed(): Promise<MessageEmbed> {
-	const embed = new MessageEmbed().setTitle("🪡  Needle Commands"); // :sewing_needle:
+	const embed = new MessageEmbed().setTitle("Needle Commands  🪡"); // :sewing_needle:
 	const commands = await getOrLoadAllCommands();
 	for (const cmd of commands) {
 		// Help command gets special treatment
@@ -75,13 +75,13 @@ async function getAllCommandsEmbed(): Promise<MessageEmbed> {
 			embed.addField("/help  `command`", "Shows more information and example usage of a specific `command`", false);
 			continue;
 		}
-		const commandOptions = await getCommandOptionStrings(cmd);
+		const commandOptions = await getCommandOptionString(cmd);
 		embed.addField(`/${cmd.name}${commandOptions}`, cmd.shortHelpDescription, false);
 	}
 	return embed;
 }
 
-async function getCommandOptionStrings(cmd: NeedleCommand): Promise<string> {
+async function getCommandOptionString(cmd: NeedleCommand): Promise<string> {
 	const commandInfo = await cmd.getSlashCommandBuilder();
 	let output = "";
 	for (const option of commandInfo.options) {

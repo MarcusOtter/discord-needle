@@ -6,6 +6,7 @@ import { NeedleCommand } from "../types/needleCommand";
 export const command: NeedleCommand = {
 	name: "title",
 	shortHelpDescription: "Sets the title of a thread to `value`",
+	longHelpDescription: "The title command lets thread creators and users with the \"Manage Threads\" permissions to change the name of a thread.",
 
 	async getSlashCommandBuilder() {
 		return new SlashCommandBuilder()
