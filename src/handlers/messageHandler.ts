@@ -57,20 +57,13 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 
 	const buttonRow = new MessageActionRow().addComponents(closeButton);
 
-	const embed = new MessageEmbed()
-		.setAuthor(authorName, authorUser.displayAvatarURL())
-		.setDescription(message.content)
-		.setColor([255, 94, 0]);
-
 	const channelMention = `<#${channel.id}>`;
 	const relativeTimestamp = `<t:${Math.round(message.createdTimestamp / 1000)}:R>`;
 
-	const threadMsg = await thread.send({
-		embeds: [embed],
-		content: `Thread created from ${channelMention} by <@${authorUser.id}> ${relativeTimestamp} with the following message:`,
+	await thread.send({
+		content: `Hello <@${authorUser.id}>! This helpful thread has been automatically created from your message in ${channelMention} ${relativeTimestamp}.\n\nWant to unsubscribe from this thread? Right-click the thread (or use the \`...\` menu) and select **Leave Thread**.\n\nIf you are done using this thread, you can click the button below to close this thread.`,
 		components: [buttonRow],
 	});
 
-	await threadMsg.pin();
 	await thread.leave();
 }
