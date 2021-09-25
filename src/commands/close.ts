@@ -41,14 +41,14 @@ export const command: NeedleCommand = {
 		}
 
 		const previousAutoArchiveDuration = !channel.autoArchiveDuration || channel.autoArchiveDuration === "MAX"
-			? "Unknown"
-			: `${channel.autoArchiveDuration / 60} hours`;
+			? ""
+			: ` (${channel.autoArchiveDuration / 60} hours)`;
 
 		await channel.setAutoArchiveDuration(60);
 		await interaction.reply({ embeds: [
 			new MessageEmbed()
 				.setTitle("This thread will be archived soon  🗃️") // :card_box:
-				.setDescription(`As requested by <@${member.id}>, this thread will automatically be archived when one hour passes without any new messages.\n\nThe thread's content will still be searchable with Discord's search function, and anyone will be able to un-archive it at any point in the future by simply sending a message in the thread again.\n\nIf you believe this was an error, you can ask a server moderator to undo this by setting the auto-archive duration back to what it was previously (${previousAutoArchiveDuration}).`),
+				.setDescription(`As requested by <@${member.id}>, this thread will automatically be archived when one hour passes without any new messages.\n\nThe thread's content will still be searchable with Discord's search function, and anyone will be able to un-archive it at any point in the future by simply sending a message in the thread again.\n\nIf you believe this was an error, you can ask a server moderator to undo this by setting the auto-archive duration back to what it was previously${previousAutoArchiveDuration}.`),
 		] });
 	},
 };
