@@ -1,4 +1,4 @@
-import { BaseCommandInteraction, Message, MessageButton, TextBasedChannels } from "discord.js";
+import { BaseCommandInteraction, Message, MessageButton, MessageComponentInteraction, TextBasedChannels } from "discord.js";
 
 export async function getThreadStartMessage(threadChannel: TextBasedChannels | null): Promise<Message | null> {
 	if (!threadChannel?.isThread()) { return null; }
@@ -11,7 +11,7 @@ export async function getThreadStartMessage(threadChannel: TextBasedChannels | n
 	return parentChannel.messages.fetch(threadChannel.id);
 }
 
-export function ephemeralReply(interaction: BaseCommandInteraction, replyContent: string): Promise<void> {
+export function ephemeralReply(interaction: BaseCommandInteraction | MessageComponentInteraction, replyContent: string): Promise<void> {
 	return interaction.reply({ content: replyContent, ephemeral: true });
 }
 
