@@ -1,5 +1,5 @@
 import { Client, Intents } from "discord.js";
-import { reloadCommands } from "./handlers/commandHandler";
+import { getOrLoadAllCommands } from "./handlers/commandHandler";
 import { handleInteractionCreate } from "./handlers/interactionHandler";
 import { handleMessageCreate } from "./handlers/messageHandler";
 import { getConfig } from "./helpers/configHelpers";
@@ -8,7 +8,9 @@ const CLIENT = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_
 
 CLIENT.once("ready", async () => {
 	console.log("Ready!");
-	await reloadCommands();
+
+	// Initial load of all commands
+	await getOrLoadAllCommands();
 });
 
 CLIENT.on("interactionCreate", interaction => handleInteractionCreate(interaction));

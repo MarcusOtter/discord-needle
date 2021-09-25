@@ -1,7 +1,10 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { BaseCommandInteraction } from "discord.js";
+import { CommandInteraction } from "discord.js";
 
 export interface NeedleCommand {
-	info: Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
-	execute(interaction: BaseCommandInteraction): Promise<void>;
+	name: string;
+	shortHelpDescription: string;
+	longHelpDescription?: string;
+	getSlashCommandBuilder(): Promise<ReturnType<SlashCommandBuilder["toJSON"]>>;
+	execute(interaction: CommandInteraction): Promise<void>;
 }
