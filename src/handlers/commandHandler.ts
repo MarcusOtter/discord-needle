@@ -1,4 +1,4 @@
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, MessageComponentInteraction } from "discord.js";
 import { promises } from "fs";
 import { resolve as pathResolve } from "path";
 import { ephemeralReply } from "../helpers/messageHelpers";
@@ -10,6 +10,19 @@ let loadedCommands: NeedleCommand[] = [];
 
 export async function handleCommandInteraction(interaction: CommandInteraction): Promise<void> {
 	const command = getCommand(interaction.commandName);
+	if (!command) return Promise.reject();
+
+	try {
+		return command.execute(interaction);
+	}
+	catch (error) {
+		console.error(error);
+		return ephemeralReply(interaction, "There was an error while executing this command. Please try again later.");
+	}
+}
+
+export async function handleButtonClickedInteraction(interaction: MessageComponentInteraction): Promise<void> {
+	const command = getCommand(interaction.customId);
 	if (!command) return Promise.reject();
 
 	try {

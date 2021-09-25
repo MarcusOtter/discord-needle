@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, GuildMember, MessageEmbed, Permissions } from "discord.js";
+import { CommandInteraction, GuildMember, MessageComponentInteraction, MessageEmbed, Permissions } from "discord.js";
 import { ephemeralReply, getThreadStartMessage } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
 
@@ -15,7 +15,7 @@ export const command: NeedleCommand = {
 			.toJSON();
 	},
 
-	async execute(interaction: CommandInteraction): Promise<void> {
+	async execute(interaction: CommandInteraction | MessageComponentInteraction): Promise<void> {
 		const member = interaction.member;
 		if (!(member instanceof GuildMember)) {
 			return ephemeralReply(interaction, "An unexpected error occurred.");

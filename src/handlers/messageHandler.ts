@@ -1,4 +1,4 @@
-import { Message, MessageEmbed } from "discord.js";
+import { Message, MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
 import { getConfig } from "../helpers/configHelpers";
 import { getRequiredPermissions } from "../helpers/permissionHelpers";
 
@@ -49,6 +49,14 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 		autoArchiveDuration: <60 | 1440 | 4320 | 10080 | "MAX"> config.threadArchiveDuration,
 	});
 
+	const closeButton = new MessageButton()
+		.setCustomId("close")
+		.setLabel("Close thread")
+		.setStyle("DANGER")
+		.setEmoji("🗑️");
+
+	const buttonRow = new MessageActionRow().addComponents(closeButton);
+
 	const embed = new MessageEmbed()
 		.setAuthor(authorName, authorUser.displayAvatarURL())
 		.setDescription(message.content)
@@ -60,6 +68,7 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 	const threadMsg = await thread.send({
 		embeds: [embed],
 		content: `Thread created from ${channelMention} by <@${authorUser.id}> ${relativeTimestamp} with the following message:`,
+		components: [buttonRow],
 	});
 
 	await threadMsg.pin();
