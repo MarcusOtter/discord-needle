@@ -15,7 +15,7 @@ export function getRequiredPermissions(): bigint[] {
 		output.push(Permissions.FLAGS.MANAGE_MESSAGES);
 	}
 
-	if (config?.threadMessage?.embeds?.length > 0) {
+	if (config?.threadMessage?.embeds?.length ?? 0 > 0) {
 		output.push(Permissions.FLAGS.EMBED_LINKS);
 	}
 

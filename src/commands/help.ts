@@ -66,7 +66,7 @@ async function getCommandDetailsEmbed(commandName: string): Promise<MessageEmbed
 }
 
 async function getAllCommandsEmbed(): Promise<MessageEmbed> {
-	const embed = new MessageEmbed().setTitle("Needle Commands  🪡"); // :sewing_needle:
+	const embed = new MessageEmbed().setTitle("🪡  Needle Commands"); // :sewing_needle:
 	const commands = await getOrLoadAllCommands();
 	for (const cmd of commands) {
 		// Help command gets special treatment

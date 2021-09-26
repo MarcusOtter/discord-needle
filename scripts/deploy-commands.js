@@ -7,15 +7,15 @@ const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 
 const { getOrLoadAllCommands } = require("../dist/handlers/commandHandler");
-const { getConfig } = require("../dist/helpers/configHelpers");
+const { getConfig, getApiToken } = require("../dist/helpers/configHelpers");
+
+const API_TOKEN = getApiToken();
 
 const CONFIG = getConfig();
-if (!CONFIG) { return; }
-if (!CONFIG.dev) { return; }
-if (!CONFIG.dev.clientId || CONFIG.dev.clientId === "") { return; }
-if (!CONFIG.dev.guildId || CONFIG.dev.guildId === "") { return; }
+if (CONFIG?.dev?.clientId ?? "" === "") { return; }
+if (CONFIG?.dev?.guildId ?? "" === "") { return; }
 
-const rest = new REST({ version: "9" }).setToken(CONFIG.discordApiToken);
+const rest = new REST({ version: "9" }).setToken(API_TOKEN);
 
 (async () => {
 	const allNeedleCommands = await getOrLoadAllCommands();
