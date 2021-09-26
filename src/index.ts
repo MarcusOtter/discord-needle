@@ -6,7 +6,7 @@ import { getApiToken } from "./helpers/configHelpers";
 
 (async () => {
 	// Initial load of all commands
-	await getOrLoadAllCommands();
+	await getOrLoadAllCommands(false);
 
 	const CLIENT = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 	CLIENT.once("ready", async () => {

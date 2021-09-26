@@ -34,8 +34,8 @@ export async function handleButtonClickedInteraction(interaction: MessageCompone
 	}
 }
 
-export async function getOrLoadAllCommands(alwaysLoad = false): Promise<NeedleCommand[]> {
-	if (loadedCommands.length > 0 && !alwaysLoad) {
+export async function getOrLoadAllCommands(allowCache = true): Promise<NeedleCommand[]> {
+	if (loadedCommands.length > 0 && allowCache) {
 		return loadedCommands;
 	}
 
