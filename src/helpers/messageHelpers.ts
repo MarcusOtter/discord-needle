@@ -11,6 +11,19 @@ export async function getThreadStartMessage(threadChannel: TextBasedChannels | n
 	return parentChannel.messages.fetch(threadChannel.id);
 }
 
+export function getCodeFromCodeBlock(codeBlock: string): string {
+	const codeBlockStart = codeBlock.match(/^```(\w*)/ig);
+
+	// If it has no code block
+	if (codeBlockStart?.length === 0) {
+		return codeBlock;
+	}
+
+	// Replace start and end tags
+	const codeWithoutTags = codeBlock.replaceAll(/^```(\w*)/ig, "").replaceAll(/```$/ig, "");
+	return codeWithoutTags.trim();
+}
+
 export function ephemeralReply(interaction: BaseCommandInteraction | MessageComponentInteraction, replyContent: string): Promise<void> {
 	return interaction.reply({ content: replyContent, ephemeral: true });
 }

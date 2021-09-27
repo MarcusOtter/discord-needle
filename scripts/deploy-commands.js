@@ -7,13 +7,15 @@ const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 
 const { getOrLoadAllCommands } = require("../dist/handlers/commandHandler");
-const { getConfig, getApiToken } = require("../dist/helpers/configHelpers");
+const { getDevConfig, getApiToken } = require("../dist/helpers/configHelpers");
 
 const API_TOKEN = getApiToken();
+if (!API_TOKEN) return;
 
-const CONFIG = getConfig();
-if (CONFIG?.dev?.clientId ?? "" === "") { return; }
-if (CONFIG?.dev?.guildId ?? "" === "") { return; }
+const DEV_CONFIG = getDevConfig();
+if (!DEV_CONFIG) return;
+if (DEV_CONFIG.clientId === "") { return; }
+if (DEV_CONFIG.guildId === "") { return; }
 
 const rest = new REST({ version: "9" }).setToken(API_TOKEN);
 
@@ -28,7 +30,7 @@ const rest = new REST({ version: "9" }).setToken(API_TOKEN);
 	try {
 		console.log(`Started deploying ${allSlashCommandBuilders.length} application commands.`);
 		await rest.put(
-			Routes.applicationGuildCommands(CONFIG.dev.clientId, CONFIG.dev.guildId),
+			Routes.applicationGuildCommands(DEV_CONFIG.clientId, DEV_CONFIG.guildId),
 			{ body: allSlashCommandBuilders },
 		);
 		console.log("Successfully deployed application commands.");
