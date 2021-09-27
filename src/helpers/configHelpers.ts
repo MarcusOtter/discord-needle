@@ -17,8 +17,7 @@ export function setConfig(guildId: string, configObject: Record<string, unknown>
 }
 
 /**
- * Removes the keys of an object that are not valid keys of a configuration object.
- * `discordApiToken` and similar keys *are* allowed, so results will need to be sanitized further to get a SafeConfig.
+ * Removes the keys of an object that are not valid keys of a safe configuration object.
  */
 export function removeInvalidConfigKeys(configObject: Record<string, unknown>): Record<string, unknown> {
 	const validConfigKeys = Object.keys(sanitizeConfig(dangerouslyGetConfig()));
@@ -41,6 +40,7 @@ export function getDevConfig(): DangerousConfig["dev"] {
 	return dangerouslyGetConfig().dev;
 }
 
+// TODO: This should probably not modify the parameter. Make a clone and return that.
 function sanitizeConfig(config: DangerousConfig): SafeConfig {
 	delete config.discordApiToken;
 	delete config.dev;
