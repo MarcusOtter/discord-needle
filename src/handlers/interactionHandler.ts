@@ -1,11 +1,21 @@
 import { Interaction } from "discord.js";
+import { resetMessageContext, addMessageContext } from "../helpers/messageHelpers";
 import { handleButtonClickedInteraction, handleCommandInteraction } from "./commandHandler";
 
-export function handleInteractionCreate(interaction: Interaction): void {
+export async function handleInteractionCreate(interaction: Interaction): Promise<void> {
+	addMessageContext({
+		invoker: interaction.user,
+		interaction: interaction,
+		sourceChannel: interaction.channel ?? undefined,
+		guildId: interaction.guildId,
+	});
+
 	if (interaction.isCommand()) {
-		handleCommandInteraction(interaction);
+		await handleCommandInteraction(interaction);
 	}
 	else if (interaction.isButton()) {
-		handleButtonClickedInteraction(interaction);
+		await handleButtonClickedInteraction(interaction);
 	}
+
+	resetMessageContext();
 }

@@ -1,14 +1,14 @@
 import { CommandInteraction, MessageComponentInteraction } from "discord.js";
 import { promises } from "fs";
 import { resolve as pathResolve } from "path";
-import { messageReply } from "../helpers/messageHelpers";
+import { getMessage, interactionReply } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
 
 const COMMANDS_PATH = pathResolve(__dirname, "../commands");
 
 let loadedCommands: NeedleCommand[] = [];
 
-export async function handleCommandInteraction(interaction: CommandInteraction): Promise<void> {
+export function handleCommandInteraction(interaction: CommandInteraction): Promise<void> {
 	const command = getCommand(interaction.commandName);
 	if (!command) return Promise.reject();
 
@@ -17,7 +17,7 @@ export async function handleCommandInteraction(interaction: CommandInteraction):
 	}
 	catch (error) {
 		console.error(error);
-		return messageReply(interaction, "ERR_UNKNOWN");
+		return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
 	}
 }
 
@@ -30,7 +30,7 @@ export async function handleButtonClickedInteraction(interaction: MessageCompone
 	}
 	catch (error) {
 		console.error(error);
-		return messageReply(interaction, "ERR_UNKNOWN");
+		return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
 	}
 }
 

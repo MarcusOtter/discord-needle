@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, GuildMember, Permissions } from "discord.js";
-import { messageReply, getThreadStartMessage } from "../helpers/messageHelpers";
+import { interactionReply, getThreadStartMessage, getMessage } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
 
 export const command: NeedleCommand = {
@@ -24,27 +24,27 @@ export const command: NeedleCommand = {
 	async execute(interaction: CommandInteraction): Promise<void> {
 		const member = interaction.member;
 		if (!(member instanceof GuildMember)) {
-			return messageReply(interaction, "ERR_UNKNOWN");
+			return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
 		}
 
 		const channel = interaction.channel;
 		if (!channel?.isThread()) {
-			return messageReply(interaction, "ERR_ONLY_IN_THREAD");
+			return interactionReply(interaction, getMessage("ERR_ONLY_IN_THREAD"));
 		}
 
 		const parentMessage = await getThreadStartMessage(channel);
 		if (!parentMessage) {
-			return messageReply(interaction, "ERR_UNKNOWN");
+			return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
 		}
 
 		const hasChangeTitlePermissions = member.permissionsIn(channel).has(Permissions.FLAGS.MANAGE_THREADS, true);
 		if (!hasChangeTitlePermissions && parentMessage.author !== interaction.user) {
-			return messageReply(interaction, "ERR_ONLY_THREAD_OWNER");
+			return interactionReply(interaction, getMessage("ERR_ONLY_THREAD_OWNER"));
 		}
 
 		const newThreadName = interaction.options.getString("value");
 		if (!newThreadName) {
-			return messageReply(interaction, "ERR_PARAMETER_MISSING");
+			return interactionReply(interaction, getMessage("ERR_PARAMETER_MISSING"));
 		}
 
 		const oldThreadName = channel.name;

@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, GuildMember, MessageComponentInteraction, MessageEmbed, Permissions } from "discord.js";
-import { messageReply, getThreadStartMessage } from "../helpers/messageHelpers";
+import { CommandInteraction, GuildMember, MessageComponentInteraction, Permissions } from "discord.js";
+import { interactionReply, getThreadStartMessage, getMessage } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
 
 export const command: NeedleCommand = {
@@ -18,37 +18,29 @@ export const command: NeedleCommand = {
 	async execute(interaction: CommandInteraction | MessageComponentInteraction): Promise<void> {
 		const member = interaction.member;
 		if (!(member instanceof GuildMember)) {
-			return messageReply(interaction, "ERR_UNKNOWN");
+			return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
 		}
 
 		const channel = interaction.channel;
 		if (!channel?.isThread()) {
-			return messageReply(interaction, "ERR_ONLY_IN_THREAD");
+			return interactionReply(interaction, getMessage("ERR_ONLY_IN_THREAD"));
 		}
 
 		const parentMessage = await getThreadStartMessage(channel);
 		if (!parentMessage) {
-			return messageReply(interaction, "ERR_UNKNOWN");
+			return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
 		}
 
 		const hasChangeTitlePermissions = member.permissionsIn(channel).has(Permissions.FLAGS.MANAGE_THREADS, true);
 		if (!hasChangeTitlePermissions && parentMessage.author !== interaction.user) {
-			return messageReply(interaction, "ERR_ONLY_THREAD_OWNER");
+			return interactionReply(interaction, getMessage("ERR_ONLY_THREAD_OWNER"));
 		}
 
 		if (channel.autoArchiveDuration === 60) {
-			return messageReply(interaction, "ERR_NO_EFFECT");
+			return interactionReply(interaction, getMessage("ERR_NO_EFFECT"));
 		}
 
-		const previousAutoArchiveDuration = !channel.autoArchiveDuration || channel.autoArchiveDuration === "MAX"
-			? ""
-			: ` (${channel.autoArchiveDuration / 60} hours)`;
-
 		await channel.setAutoArchiveDuration(60);
-		await interaction.reply({ embeds: [
-			new MessageEmbed()
-				.setTitle("This thread will be archived soon  🗃️") // :card_box:
-				.setDescription(`As requested by <@${member.id}>, this thread will automatically be archived when one hour passes without any new messages.\n\nThe thread's content will still be searchable with Discord's search function, and anyone will be able to un-archive it at any point in the future by simply sending a message in the thread again.\n\nIf you believe this was an error, you can ask a server moderator to undo this by setting the auto-archive duration back to what it was previously${previousAutoArchiveDuration}.`),
-		] });
+		await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE"), false);
 	},
 };

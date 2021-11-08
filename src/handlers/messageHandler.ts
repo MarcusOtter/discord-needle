@@ -1,5 +1,6 @@
 import { Message, MessageActionRow, MessageButton } from "discord.js";
 import { getConfig } from "../helpers/configHelpers";
+import { getMessage, resetMessageContext, addMessageContext } from "../helpers/messageHelpers";
 import { getRequiredPermissions } from "../helpers/permissionHelpers";
 
 export async function handleMessageCreate(message: Message): Promise<void> {
@@ -39,6 +40,12 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 		return;
 	}
 
+	addMessageContext({
+		invoker: authorUser,
+		sourceChannel: channel,
+		sourceMessage: message,
+	});
+
 	const creationDate = message.createdAt.toISOString().slice(0, 10);
 	const authorName = authorMember === null || authorMember.nickname === null
 		? authorUser.username
@@ -51,19 +58,17 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 
 	const closeButton = new MessageButton()
 		.setCustomId("close")
-		.setLabel("Close thread")
+		.setLabel("Archive thread")
 		.setStyle("DANGER")
-		.setEmoji("🗑️");
+		.setEmoji("🗃️");
 
 	const buttonRow = new MessageActionRow().addComponents(closeButton);
 
-	const channelMention = `<#${channel.id}>`;
-	const relativeTimestamp = `<t:${Math.round(message.createdTimestamp / 1000)}:R>`;
-
 	await thread.send({
-		content: `Hello <@${authorUser.id}>! This helpful thread has been automatically created from your message in ${channelMention} ${relativeTimestamp}.\n\nWant to unsubscribe from this thread? Right-click the thread (or use the \`...\` menu) and select **Leave Thread**.\n\nIf you are done using this thread, you can click the button below to close this thread.`,
+		content: getMessage("SUCCESS_THREAD_CREATE"),
 		components: [buttonRow],
 	});
 
 	await thread.leave();
+	resetMessageContext();
 }

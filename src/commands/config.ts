@@ -1,7 +1,7 @@
 import { codeBlock, SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
 import { getConfig, removeInvalidConfigKeys, setConfig } from "../helpers/configHelpers";
-import { messageReply, getCodeFromCodeBlock } from "../helpers/messageHelpers";
+import { interactionReply, getCodeFromCodeBlock, getMessage } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
 
 // TODO: PERMISSIONS!
@@ -46,7 +46,7 @@ export const command: NeedleCommand = {
 
 async function getConfigCommand(interaction: CommandInteraction): Promise<void> {
 	if (!interaction.guildId || !interaction.guild) {
-		return messageReply(interaction, "ERR_ONLY_IN_SERVER");
+		return interactionReply(interaction, getMessage("ERR_ONLY_IN_SERVER"));
 	}
 
 	const config = getConfig(interaction.guildId);
@@ -59,12 +59,12 @@ async function getConfigCommand(interaction: CommandInteraction): Promise<void> 
 
 async function setConfigCommand(interaction: CommandInteraction): Promise<void> {
 	if (!interaction.guildId) {
-		return messageReply(interaction, "ERR_ONLY_IN_SERVER");
+		return interactionReply(interaction, getMessage("ERR_ONLY_IN_SERVER"));
 	}
 
 	let configJson = interaction.options.getString("json");
 	if (!configJson) {
-		return messageReply(interaction, "ERR_JSON_MISSING");
+		return interactionReply(interaction, getMessage("ERR_JSON_MISSING"));
 	}
 
 	configJson = getCodeFromCodeBlock(configJson);
@@ -75,15 +75,15 @@ async function setConfigCommand(interaction: CommandInteraction): Promise<void> 
 		parsedJson = removeInvalidConfigKeys(parsedJson);
 	}
 	catch {
-		return messageReply(interaction, "ERR_JSON_INVALID");
+		return interactionReply(interaction, getMessage("ERR_JSON_INVALID"));
 	}
 
 	if (typeof parsedJson !== "object" || Object.keys(parsedJson).length === 0) {
-		return messageReply(interaction, "ERR_CONFIG_INVALID");
+		return interactionReply(interaction, getMessage("ERR_CONFIG_INVALID"));
 	}
 
 	const success = setConfig(interaction.guildId, parsedJson);
-	await messageReply(interaction, success
-		? "SUCCESS_SET_CONFIG"
-		: "ERR_CONFIG_INVALID");
+	await interactionReply(interaction, success
+		? getMessage("SUCCESS_CONFIG_SET")
+		: getMessage("ERR_CONFIG_INVALID"));
 }

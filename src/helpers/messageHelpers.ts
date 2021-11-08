@@ -1,5 +1,23 @@
-import { BaseCommandInteraction, Message, MessageButton, MessageComponentInteraction, TextBasedChannels } from "discord.js";
+import {
+	BaseCommandInteraction,
+	Message,
+	MessageButton,
+	MessageComponentInteraction,
+	TextBasedChannels,
+} from "discord.js";
+
+import { MessageContext } from "../types/messageContext";
 import { getConfig, SafeConfig } from "./configHelpers";
+
+let currentContext: MessageContext = {};
+
+export function addMessageContext(context: Partial<MessageContext>): void {
+	currentContext = Object.assign(currentContext, context);
+}
+
+export function resetMessageContext(): void {
+	currentContext = {};
+}
 
 export async function getThreadStartMessage(threadChannel: TextBasedChannels | null): Promise<Message | null> {
 	if (!threadChannel?.isThread()) { return null; }
@@ -25,15 +43,36 @@ export function getCodeFromCodeBlock(codeBlock: string): string {
 	return codeWithoutTags.trim();
 }
 
-export function messageReply(
+export function interactionReply(
 	interaction: BaseCommandInteraction | MessageComponentInteraction,
-	messageKey: keyof NonNullable<SafeConfig["messages"]>,
+	message: string,
 	ephemeral = true): Promise<void> {
+	if (!message || message.length == 0) { return Promise.resolve(); }
+	return interaction.reply({
+		content: message,
+		ephemeral: ephemeral,
+	});
+}
 
-	const config = getConfig(interaction.guildId);
-	return config.messages
-		? interaction.reply({ content: config["messages"][messageKey], ephemeral: ephemeral })
-		: Promise.resolve();
+export function getMessage(
+	messageKey: keyof NonNullable<SafeConfig["messages"]>): string {
+
+	const config = getConfig(currentContext?.guildId);
+	if (!config.messages) { return ""; }
+
+	const message = config.messages[messageKey];
+	if (!currentContext || !message) { return message; }
+
+	const invokerMention = currentContext.invoker ? `<@${currentContext.invoker.id}>` : "";
+	const sourceChannelMention = currentContext.sourceChannel ? `<#${currentContext.sourceChannel.id}>` : "";
+	const sourceMessageRelativeTimestamp = currentContext.sourceMessage
+		? `<t:${Math.round(currentContext.sourceMessage.createdTimestamp / 1000)}:R>`
+		: "";
+
+	return message
+		.replaceAll("$$invoker.mention", invokerMention)
+		.replaceAll("$$sourceChannel.mention", sourceChannelMention)
+		.replaceAll("$$sourceMessage.relativeTimestamp", sourceMessageRelativeTimestamp);
 }
 
 export function getDiscordInviteButton(buttonText = "Join the support server"): MessageButton {
