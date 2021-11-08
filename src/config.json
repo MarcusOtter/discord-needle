@@ -13,5 +13,20 @@
     "dev": {
         "clientId": "",
         "guildId": ""
+    },
+
+
+    "messages": {
+        "ERR_UNKNOWN": "An unexpected error occurred. Please try again later.",
+        "ERR_ONLY_IN_SERVER": "You can only perform this action inside a server.",
+        "ERR_ONLY_IN_THREAD": "You can only perform this action inside a thread.",
+        "ERR_ONLY_THREAD_OWNER": "You need to be the thread owner to perform this action.",
+        "ERR_NO_EFFECT": "This action will have no effect.",
+        "ERR_JSON_MISSING": "The JSON content was missing.",
+        "ERR_JSON_INVALID": "Your input was not valid JSON. You can use an online tool such as <https://onlinejsontools.com/validate-json> to validate your json.",
+        "ERR_CONFIG_INVALID": "Your config was invalid. Remember to: \n- Pass minified JSON, because new lines inside commands does not work in Discord. You can use an online tool such as <https://onlinejsontools.com/minify-json> for minification.\n- Wrap the config in an object. \n- Spell property keys correctly.\n\nIf you need help with the formatting, you can see the default config of Needle at <https://github.com/MarcusOtter/discord-needle/blob/main/src/config.json>. Changes to `discordApiToken` and `dev` will be ignored by this command.",
+        "ERR_PARAMETER_MISSING": "A non-optional parameter is missing from the command.",
+
+        "SUCCESS_SET_CONFIG": "Successfully set the config."
     }
 }

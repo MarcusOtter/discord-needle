@@ -1,4 +1,4 @@
-import { Message, MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
+import { Message, MessageActionRow, MessageButton } from "discord.js";
 import { getConfig } from "../helpers/configHelpers";
 import { getRequiredPermissions } from "../helpers/permissionHelpers";
 

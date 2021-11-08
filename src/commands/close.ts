@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, GuildMember, MessageComponentInteraction, MessageEmbed, Permissions } from "discord.js";
-import { ephemeralReply, getThreadStartMessage } from "../helpers/messageHelpers";
+import { messageReply, getThreadStartMessage } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
 
 export const command: NeedleCommand = {
@@ -18,26 +18,26 @@ export const command: NeedleCommand = {
 	async execute(interaction: CommandInteraction | MessageComponentInteraction): Promise<void> {
 		const member = interaction.member;
 		if (!(member instanceof GuildMember)) {
-			return ephemeralReply(interaction, "An unexpected error occurred.");
+			return messageReply(interaction, "ERR_UNKNOWN");
 		}
 
 		const channel = interaction.channel;
 		if (!channel?.isThread()) {
-			return ephemeralReply(interaction, "You can only use this command inside a thread.");
+			return messageReply(interaction, "ERR_ONLY_IN_THREAD");
 		}
 
 		const parentMessage = await getThreadStartMessage(channel);
 		if (!parentMessage) {
-			return ephemeralReply(interaction, "An unexpected error occurred.");
+			return messageReply(interaction, "ERR_UNKNOWN");
 		}
 
 		const hasChangeTitlePermissions = member.permissionsIn(channel).has(Permissions.FLAGS.MANAGE_THREADS, true);
 		if (!hasChangeTitlePermissions && parentMessage.author !== interaction.user) {
-			return ephemeralReply(interaction, "You need to be the thread owner to close the thread.");
+			return messageReply(interaction, "ERR_ONLY_THREAD_OWNER");
 		}
 
 		if (channel.autoArchiveDuration === 60) {
-			return ephemeralReply(interaction, "This server already has the auto-archive duration set to one hour.");
+			return messageReply(interaction, "ERR_NO_EFFECT");
 		}
 
 		const previousAutoArchiveDuration = !channel.autoArchiveDuration || channel.autoArchiveDuration === "MAX"

@@ -1,4 +1,5 @@
 import { BaseCommandInteraction, Message, MessageButton, MessageComponentInteraction, TextBasedChannels } from "discord.js";
+import { getConfig, SafeConfig } from "./configHelpers";
 
 export async function getThreadStartMessage(threadChannel: TextBasedChannels | null): Promise<Message | null> {
 	if (!threadChannel?.isThread()) { return null; }
@@ -24,8 +25,15 @@ export function getCodeFromCodeBlock(codeBlock: string): string {
 	return codeWithoutTags.trim();
 }
 
-export function ephemeralReply(interaction: BaseCommandInteraction | MessageComponentInteraction, replyContent: string): Promise<void> {
-	return interaction.reply({ content: replyContent, ephemeral: true });
+export function messageReply(
+	interaction: BaseCommandInteraction | MessageComponentInteraction,
+	messageKey: keyof NonNullable<SafeConfig["messages"]>,
+	ephemeral = true): Promise<void> {
+
+	const config = getConfig(interaction.guildId);
+	return config.messages
+		? interaction.reply({ content: config["messages"][messageKey], ephemeral: ephemeral })
+		: Promise.resolve();
 }
 
 export function getDiscordInviteButton(buttonText = "Join the support server"): MessageButton {

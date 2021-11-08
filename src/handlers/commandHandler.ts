@@ -1,7 +1,7 @@
 import { CommandInteraction, MessageComponentInteraction } from "discord.js";
 import { promises } from "fs";
 import { resolve as pathResolve } from "path";
-import { ephemeralReply } from "../helpers/messageHelpers";
+import { messageReply } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
 
 const COMMANDS_PATH = pathResolve(__dirname, "../commands");
@@ -17,7 +17,7 @@ export async function handleCommandInteraction(interaction: CommandInteraction):
 	}
 	catch (error) {
 		console.error(error);
-		return ephemeralReply(interaction, "There was an error while executing this command. Please try again later.");
+		return messageReply(interaction, "ERR_UNKNOWN");
 	}
 }
 
@@ -30,7 +30,7 @@ export async function handleButtonClickedInteraction(interaction: MessageCompone
 	}
 	catch (error) {
 		console.error(error);
-		return ephemeralReply(interaction, "There was an error while executing this command. Please try again later.");
+		return messageReply(interaction, "ERR_UNKNOWN");
 	}
 }
 
