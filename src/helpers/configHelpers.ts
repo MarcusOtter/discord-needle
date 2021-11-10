@@ -1,5 +1,6 @@
 import * as defaultConfig from "../config.json";
 import * as overrideConfig from "../overrideConfig.json";
+import { AutoArchiveDuration } from "../types/autoArchiveDuration";
 
 type DangerousConfig = Partial<typeof defaultConfig & typeof overrideConfig>;
 export type SafeConfig = Omit<DangerousConfig, "discordApiToken" | "dev">
@@ -13,6 +14,22 @@ export function getConfig(guildId = ""): SafeConfig {
 export function setConfig(guildId: string, configObject: Record<string, unknown>): boolean {
 	const validConfigObject = removeInvalidConfigKeys(configObject);
 	guildConfigs.set(guildId, sanitizeConfig(validConfigObject));
+	return true;
+}
+
+export function setAutoArchiveDuration(guildId: string, duration: string | number): boolean {
+	if (!isNaN(Number(duration))) {
+		duration = Number(duration);
+	}
+
+	if (!Object.values(AutoArchiveDuration).includes(duration)) {
+		return false;
+	}
+
+	const config = getConfig(guildId);
+
+	// TODO: Make an explicit type for config :(
+	config.threadArchiveDuration = duration;
 	return true;
 }
 
