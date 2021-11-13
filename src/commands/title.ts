@@ -34,7 +34,7 @@ export const command: NeedleCommand = {
 
 		const parentMessage = await getThreadStartMessage(channel);
 		if (!parentMessage) {
-			return ephemeralReply(interaction, "An unexpected error occurred.");
+			return ephemeralReply(interaction, "Could not find the start message of this thread.");
 		}
 
 		const hasChangeTitlePermissions = member.permissionsIn(channel).has(Permissions.FLAGS.MANAGE_THREADS, true);
@@ -52,6 +52,6 @@ export const command: NeedleCommand = {
 		// Current rate limit is 2 renames per thread per 10 minutes (2021-09-17).
 		// If that rate limit is hit, it will wait here until it is able to rename the thread.
 		await channel.setName(newThreadName, `Changed by ${member.user.tag} (${member.id})`);
-		await ephemeralReply(interaction, `Successfully changed title from \`${oldThreadName}\` to \`${newThreadName}\`.`);
+		await interaction.reply(`Successfully changed title from \`${oldThreadName}\` to \`${newThreadName}\`.`);
 	},
 };

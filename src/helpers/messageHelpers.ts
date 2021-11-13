@@ -7,8 +7,14 @@ export async function getThreadStartMessage(threadChannel: TextBasedChannels | n
 	const parentChannel = await threadChannel.guild?.channels.fetch(threadChannel.parentId);
 	if (!parentChannel?.isText()) { return null; }
 
-	// The thread's channel ID is the same as the start message's ID.
-	return parentChannel.messages.fetch(threadChannel.id);
+	// The thread's channel ID is the same as the start message's ID,
+	// but if the start message has been deleted this will throw an exception
+	return parentChannel.messages
+		.fetch(threadChannel.id)
+		.catch(() => {
+			console.error(`Start message has been deleted in thread "${threadChannel.name}"`);
+			return null;
+		});
 }
 
 export function ephemeralReply(interaction: BaseCommandInteraction | MessageComponentInteraction, replyContent: string): Promise<void> {
