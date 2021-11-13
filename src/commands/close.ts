@@ -6,7 +6,7 @@ import { NeedleCommand } from "../types/needleCommand";
 export const command: NeedleCommand = {
 	name: "close",
 	shortHelpDescription: "Closes a thread by setting the auto-archive duration to 1 hour",
-	longHelpDescription: "The close command archives a thread by setting the auto-archive duration to 1 hour.\n\nIt does not instantly archive the thread, because that would mean only moderators could un-archive it. When using auto-archive, the thread will automatically be archived when there have been no new messages in the thread for one hour.",
+	longHelpDescription: "The close command lets thread owners set the auto-archive duration to 1 hour.\n\nWhen using auto-archive, the thread will automatically be archived when there have been no new messages in the thread for one hour. This can be undone by a server moderator by manually changing the auto-archive duration back to what it was previously, using Discord's own interface.",
 
 	async getSlashCommandBuilder() {
 		return new SlashCommandBuilder()
