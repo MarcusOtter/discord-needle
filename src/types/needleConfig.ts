@@ -13,6 +13,7 @@ export interface NeedleConfig {
         ERR_JSON_INVALID?: string,
         ERR_CONFIG_INVALID?: string;
         ERR_PARAMETER_MISSING?: string,
+        ERR_THREAD_MESSAGE_MISSING?: string,
 
         SUCCESS_CONFIG_SET?: string,
         SUCCESS_THREAD_CREATE?: string,

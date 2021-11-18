@@ -6,7 +6,7 @@ import { NeedleCommand } from "../types/needleCommand";
 export const command: NeedleCommand = {
 	name: "close",
 	shortHelpDescription: "Closes a thread by setting the auto-archive duration to 1 hour",
-	longHelpDescription: "The close command archives a thread by setting the auto-archive duration to 1 hour.\n\nIt does not instantly archive the thread, because that would mean only moderators could un-archive it. When using auto-archive, the thread will automatically be archived when there have been no new messages in the thread for one hour.",
+	longHelpDescription: "The close command sets the auto-archive duration to 1 hour in a thread.\n\nWhen using auto-archive, the thread will automatically be archived when there have been no new messages in the thread for one hour. This can be undone by a server moderator by manually changing the auto-archive duration back to what it was previously, using Discord's own interface.",
 
 	async getSlashCommandBuilder() {
 		return new SlashCommandBuilder()
@@ -28,7 +28,7 @@ export const command: NeedleCommand = {
 
 		const parentMessage = await getThreadStartMessage(channel);
 		if (!parentMessage) {
-			return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
+			return interactionReply(interaction, getMessage("ERR_THREAD_MESSAGE_MISSING"));
 		}
 
 		const hasChangeTitlePermissions = member.permissionsIn(channel).has(Permissions.FLAGS.MANAGE_THREADS, true);

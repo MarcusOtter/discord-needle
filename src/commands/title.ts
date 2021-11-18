@@ -6,7 +6,7 @@ import { NeedleCommand } from "../types/needleCommand";
 export const command: NeedleCommand = {
 	name: "title",
 	shortHelpDescription: "Sets the title of a thread to `value`",
-	longHelpDescription: "The title command lets thread creators and users with the \"Manage Threads\" permissions to change the name of a thread.",
+	longHelpDescription: "The title command changes the title of a thread.",
 
 	async getSlashCommandBuilder() {
 		return new SlashCommandBuilder()
@@ -34,7 +34,7 @@ export const command: NeedleCommand = {
 
 		const parentMessage = await getThreadStartMessage(channel);
 		if (!parentMessage) {
-			return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
+			return interactionReply(interaction, getMessage("ERR_THREAD_MESSAGE_MISSING"));
 		}
 
 		const hasChangeTitlePermissions = member.permissionsIn(channel).has(Permissions.FLAGS.MANAGE_THREADS, true);
