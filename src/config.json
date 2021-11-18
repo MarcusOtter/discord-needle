@@ -6,7 +6,6 @@
             "messageContent": ""
         }
     ],
-    "threadArchiveDuration": "MAX",
     "messages": {
         "ERR_UNKNOWN": "An unexpected error occurred. Please try again later.",
         "ERR_ONLY_IN_SERVER": "You can only perform this action inside a server.",

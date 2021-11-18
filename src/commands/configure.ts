@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { ChannelType } from "discord-api-types";
 import { CommandInteraction } from "discord.js";
-import { getConfig, setAutoArchiveDuration } from "../helpers/configHelpers";
+import { getConfig } from "../helpers/configHelpers";
 import { interactionReply, getMessage } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
 
@@ -15,22 +15,6 @@ export const command: NeedleCommand = {
 		return new SlashCommandBuilder()
 			.setName("configure")
 			.setDescription("Modify the configuration of Needle")
-			.addSubcommand(subcommand => {
-				return subcommand
-					.setName("duration")
-					.setDescription("Change the default value of Discord's auto-archive duration on threads created by Needle")
-					.addStringOption(option => {
-						return option
-							.setName("duration")
-							.setDescription("The new duration")
-							.setRequired(true)
-							.addChoice("MAX", "MAX")
-							.addChoice("1 hour", "60")
-							.addChoice("1 day", "1440")
-							.addChoice("3 days", "4320")
-							.addChoice("1 week", "10080");
-					});
-			})
 			.addSubcommand(subcommand => {
 				return subcommand
 					.setName("message")
@@ -92,10 +76,6 @@ export const command: NeedleCommand = {
 			return interactionReply(interaction, getMessage("ERR_ONLY_IN_SERVER"));
 		}
 
-		if (interaction.options.getSubcommand() === "duration") {
-			return configureDuration(interaction);
-		}
-
 		if (interaction.options.getSubcommand() === "message") {
 			return configureMessage(interaction);
 		}
@@ -107,13 +87,6 @@ export const command: NeedleCommand = {
 		return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
 	},
 };
-
-function configureDuration(interaction: CommandInteraction): Promise<void> {
-	const success = setAutoArchiveDuration(interaction.guildId, interaction.options.getString("duration"));
-	return success
-		? interactionReply(interaction, "Yay we updated")
-		: interactionReply(interaction, "No shot");
-}
 
 function configureMessage(interaction: CommandInteraction): Promise<void> {
 	return Promise.resolve();

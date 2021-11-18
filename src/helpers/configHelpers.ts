@@ -1,6 +1,5 @@
 import * as defaultConfig from "../config.json";
 import * as overrideConfig from "../overrideConfig.json";
-import { AutoArchiveDuration } from "../types/autoArchiveDuration";
 import { NeedleConfig, SafeNeedleConfig } from "../types/needleConfig";
 
 const guildConfigs = new Map<string, SafeNeedleConfig>();
@@ -13,22 +12,6 @@ export function setConfig(guildId: string, configObject: Record<string, unknown>
 	const validConfigObject = removeInvalidConfigKeys(configObject);
 	guildConfigs.set(guildId, sanitizeConfig(validConfigObject));
 	return true;
-}
-
-export function setAutoArchiveDuration(guildId: string, duration: string | number | null): boolean {
-	if (!duration) { return false; }
-
-	if (!isNaN(Number(duration))) {
-		duration = Number(duration);
-	}
-
-	if (!Object.values(AutoArchiveDuration).includes(duration)) {
-		return false;
-	}
-
-	const config = getConfig(guildId);
-	config.threadArchiveDuration = duration as AutoArchiveDuration;
-	return setConfig(guildId, config);
 }
 
 /** Removes the keys of an object that are not valid keys of a safe configuration object. */

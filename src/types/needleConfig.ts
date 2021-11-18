@@ -1,11 +1,8 @@
-import { AutoArchiveDuration } from "./autoArchiveDuration";
-
 export type SafeNeedleConfig = Omit<NeedleConfig, "discordApiToken" | "dev">
 
 export interface NeedleConfig {
     discordApiToken?: string;
     threadChannels?: string[];
-    threadArchiveDuration?: AutoArchiveDuration,
     messages?: {
         ERR_UNKNOWN?: string,
         ERR_ONLY_IN_SERVER?: string,
