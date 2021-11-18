@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { ChannelType } from "discord-api-types";
 import { CommandInteraction } from "discord.js";
-import { getConfig } from "../helpers/configHelpers";
+import { getConfig, setAutoArchiveDuration } from "../helpers/configHelpers";
 import { interactionReply, getMessage } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
 
@@ -79,6 +79,11 @@ export const command: NeedleCommand = {
 							.setRequired(false);
 					});
 			})
+			.addSubcommand(subcommand => {
+				return subcommand
+					.setName("manually")
+					.setDescription("Store and modify the raw JSON configuration for Needle. This command is for advanced users.");
+			})
 			.toJSON();
 	},
 
@@ -103,15 +108,17 @@ export const command: NeedleCommand = {
 	},
 };
 
-async function configureDuration(interaction: CommandInteraction): Promise<void> {
-	// setAutoArchiveDuration("abc")
+function configureDuration(interaction: CommandInteraction): Promise<void> {
+	const success = setAutoArchiveDuration(interaction.guildId, interaction.options.getString("duration"));
+	return success
+		? interactionReply(interaction, "Yay we updated")
+		: interactionReply(interaction, "No shot");
+}
+
+function configureMessage(interaction: CommandInteraction): Promise<void> {
 	return Promise.resolve();
 }
 
-async function configureMessage(interaction: CommandInteraction): Promise<void> {
-	return Promise.resolve();
-}
-
-async function configureAutothreading(interaction: CommandInteraction): Promise<void> {
+function configureAutothreading(interaction: CommandInteraction): Promise<void> {
 	return Promise.resolve();
 }

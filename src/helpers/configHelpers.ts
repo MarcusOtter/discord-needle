@@ -1,13 +1,11 @@
 import * as defaultConfig from "../config.json";
 import * as overrideConfig from "../overrideConfig.json";
 import { AutoArchiveDuration } from "../types/autoArchiveDuration";
+import { NeedleConfig, SafeNeedleConfig } from "../types/needleConfig";
 
-type DangerousConfig = Partial<typeof defaultConfig & typeof overrideConfig>;
-export type SafeConfig = Omit<DangerousConfig, "discordApiToken" | "dev">
+const guildConfigs = new Map<string, SafeNeedleConfig>();
 
-const guildConfigs = new Map<string, SafeConfig>();
-
-export function getConfig(guildId = ""): SafeConfig {
+export function getConfig(guildId = ""): SafeNeedleConfig {
 	return sanitizeConfig(dangerouslyGetConfig(guildId));
 }
 
@@ -17,7 +15,9 @@ export function setConfig(guildId: string, configObject: Record<string, unknown>
 	return true;
 }
 
-export function setAutoArchiveDuration(guildId: string, duration: string | number): boolean {
+export function setAutoArchiveDuration(guildId: string, duration: string | number | null): boolean {
+	if (!duration) { return false; }
+
 	if (!isNaN(Number(duration))) {
 		duration = Number(duration);
 	}
@@ -27,10 +27,8 @@ export function setAutoArchiveDuration(guildId: string, duration: string | numbe
 	}
 
 	const config = getConfig(guildId);
-
-	// TODO: Make an explicit type for config :(
-	config.threadArchiveDuration = duration;
-	return true;
+	config.threadArchiveDuration = duration as AutoArchiveDuration;
+	return setConfig(guildId, config);
 }
 
 /** Removes the keys of an object that are not valid keys of a safe configuration object. */
@@ -45,22 +43,21 @@ export function removeInvalidConfigKeys(configObject: Record<string, unknown>): 
 	return configObject;
 }
 
-export function getApiToken(): DangerousConfig["discordApiToken"] {
-	const config = dangerouslyGetConfig();
-	return config.discordApiToken;
+export function getApiToken(): NeedleConfig["discordApiToken"] {
+	return dangerouslyGetConfig().discordApiToken;
 }
 
-export function getDevConfig(): DangerousConfig["dev"] {
+export function getDevConfig(): NeedleConfig["dev"] {
 	return dangerouslyGetConfig().dev;
 }
 
-function sanitizeConfig(config: DangerousConfig): SafeConfig {
+function sanitizeConfig(config: NeedleConfig): SafeNeedleConfig {
 	delete config.discordApiToken;
 	delete config.dev;
 	return config;
 }
 
-function dangerouslyGetConfig(guildId = ""): DangerousConfig {
+function dangerouslyGetConfig(guildId = ""): NeedleConfig {
 	const guildConfig = guildConfigs.get(guildId);
 
 	// Objects to the right overwrite the properties of objects to the left

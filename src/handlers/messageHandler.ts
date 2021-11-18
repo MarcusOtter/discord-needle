@@ -53,7 +53,7 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 
 	const thread = await message.startThread({
 		name: `${authorName} (${creationDate})`,
-		autoArchiveDuration: <60 | 1440 | 4320 | 10080 | "MAX"> config.threadArchiveDuration,
+		autoArchiveDuration: config.threadArchiveDuration,
 	});
 
 	const closeButton = new MessageButton()

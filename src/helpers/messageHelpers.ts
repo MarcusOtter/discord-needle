@@ -7,7 +7,8 @@ import {
 } from "discord.js";
 
 import { MessageContext } from "../types/messageContext";
-import { getConfig, SafeConfig } from "./configHelpers";
+import { NeedleConfig } from "../types/needleConfig";
+import { getConfig } from "./configHelpers";
 
 let currentContext: MessageContext = {};
 
@@ -45,7 +46,7 @@ export function getCodeFromCodeBlock(codeBlock: string): string {
 
 export function interactionReply(
 	interaction: BaseCommandInteraction | MessageComponentInteraction,
-	message: string,
+	message?: string,
 	ephemeral = true): Promise<void> {
 	if (!message || message.length == 0) { return Promise.resolve(); }
 	return interaction.reply({
@@ -55,7 +56,7 @@ export function interactionReply(
 }
 
 export function getMessage(
-	messageKey: keyof NonNullable<SafeConfig["messages"]>): string {
+	messageKey: keyof NonNullable<NeedleConfig["messages"]>): string | undefined {
 
 	const config = getConfig(currentContext?.guildId);
 	if (!config.messages) { return ""; }
