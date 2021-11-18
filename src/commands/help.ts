@@ -38,7 +38,6 @@ export const command: NeedleCommand = {
 				ephemeral: true,
 			});
 		}
-
 	},
 };
 

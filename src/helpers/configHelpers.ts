@@ -1,6 +1,7 @@
 import * as defaultConfig from "../config.json";
 import * as overrideConfig from "../overrideConfig.json";
 import { NeedleConfig, SafeNeedleConfig } from "../types/needleConfig";
+import { MessageKey } from "./messageHelpers";
 
 const guildConfigs = new Map<string, SafeNeedleConfig>();
 
@@ -32,6 +33,14 @@ export function getApiToken(): NeedleConfig["discordApiToken"] {
 
 export function getDevConfig(): NeedleConfig["dev"] {
 	return dangerouslyGetConfig().dev;
+}
+
+export function setMessage(guildId: string, messageKey: MessageKey, value: string): boolean {
+	const config = getConfig(guildId);
+	if (!config || !config.messages) { return false; }
+
+	config.messages[messageKey] = value;
+	return setConfig(guildId, config);
 }
 
 function sanitizeConfig(config: NeedleConfig): SafeNeedleConfig {

@@ -12,6 +12,8 @@ import { getConfig } from "./configHelpers";
 
 let currentContext: MessageContext = {};
 
+export type MessageKey = keyof NonNullable<NeedleConfig["messages"]>;
+
 export function addMessageContext(context: Partial<MessageContext>): void {
 	currentContext = Object.assign(currentContext, context);
 }
@@ -61,9 +63,7 @@ export function interactionReply(
 	});
 }
 
-export function getMessage(
-	messageKey: keyof NonNullable<NeedleConfig["messages"]>): string | undefined {
-
+export function getMessage(messageKey: MessageKey): string | undefined {
 	const config = getConfig(currentContext?.guildId);
 	if (!config.messages) { return ""; }
 
@@ -80,6 +80,16 @@ export function getMessage(
 		.replaceAll("$$invoker.mention", invokerMention)
 		.replaceAll("$$sourceChannel.mention", sourceChannelMention)
 		.replaceAll("$$sourceMessage.relativeTimestamp", sourceMessageRelativeTimestamp);
+}
+
+export function isValidMessageKey(messageKey?: string | null, guildId = ""): boolean {
+	if (!messageKey || messageKey.length === 0) { return false; }
+
+	const config = getConfig(guildId);
+	if (!config.messages) { return false; }
+
+	const key = messageKey as MessageKey;
+	return !!config.messages[key];
 }
 
 export function getDiscordInviteButton(buttonText = "Join the support server"): MessageButton {

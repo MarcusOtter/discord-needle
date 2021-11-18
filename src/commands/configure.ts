@@ -5,8 +5,6 @@ import { getConfig } from "../helpers/configHelpers";
 import { interactionReply, getMessage } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
 
-// TODO: PERMISSIONS!
-
 export const command: NeedleCommand = {
 	name: "configure",
 	shortHelpDescription: "Modify the configuration of Needle",
@@ -76,6 +74,8 @@ export const command: NeedleCommand = {
 			return interactionReply(interaction, getMessage("ERR_ONLY_IN_SERVER"));
 		}
 
+		// TODO: Moderator permissions
+
 		if (interaction.options.getSubcommand() === "message") {
 			return configureMessage(interaction);
 		}
@@ -84,14 +84,25 @@ export const command: NeedleCommand = {
 			return configureAutothreading(interaction);
 		}
 
+		// TODO: Admin permissions
+
+		if (interaction.options.getSubcommand() === "manually") {
+			return configureManually(interaction);
+		}
+
 		return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
 	},
 };
 
 function configureMessage(interaction: CommandInteraction): Promise<void> {
+
 	return Promise.resolve();
 }
 
 function configureAutothreading(interaction: CommandInteraction): Promise<void> {
+	return Promise.resolve();
+}
+
+function configureManually(interaction: CommandInteraction): Promise<void> {
 	return Promise.resolve();
 }
