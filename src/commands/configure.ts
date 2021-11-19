@@ -1,8 +1,8 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { ChannelType } from "discord-api-types";
 import { CommandInteraction } from "discord.js";
-import { getConfig } from "../helpers/configHelpers";
-import { interactionReply, getMessage } from "../helpers/messageHelpers";
+import { getConfig, setMessage } from "../helpers/configHelpers";
+import { interactionReply, getMessage, MessageKey } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
 
 export const command: NeedleCommand = {
@@ -95,8 +95,17 @@ export const command: NeedleCommand = {
 };
 
 function configureMessage(interaction: CommandInteraction): Promise<void> {
+	const key = interaction.options.getString("key") as MessageKey;
+	const value = interaction.options.getString("value");
 
-	return Promise.resolve();
+	if (!value || value.length === 0) {
+		return interactionReply(interaction, "`" + key + "`\n>>> " + getMessage(key));
+	}
+	else {
+		const oldValue = getMessage(key);
+		setMessage(interaction.guildId, key, value);
+		return interactionReply(interaction, "Changed " + key + " from " + oldValue + " to " + value);
+	}
 }
 
 function configureAutothreading(interaction: CommandInteraction): Promise<void> {

@@ -82,16 +82,6 @@ export function getMessage(messageKey: MessageKey): string | undefined {
 		.replaceAll("$$sourceMessage.relativeTimestamp", sourceMessageRelativeTimestamp);
 }
 
-export function isValidMessageKey(messageKey?: string | null, guildId = ""): boolean {
-	if (!messageKey || messageKey.length === 0) { return false; }
-
-	const config = getConfig(guildId);
-	if (!config.messages) { return false; }
-
-	const key = messageKey as MessageKey;
-	return !!config.messages[key];
-}
-
 export function getDiscordInviteButton(buttonText = "Join the support server"): MessageButton {
 	return new MessageButton()
 		.setLabel(buttonText)
