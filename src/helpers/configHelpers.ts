@@ -1,10 +1,11 @@
-import { TextBasedChannels } from "discord.js";
 import * as defaultConfig from "../config.json";
 import * as overrideConfig from "../overrideConfig.json";
 import { NeedleConfig, SafeNeedleConfig } from "../types/needleConfig";
 import { MessageKey } from "./messageHelpers";
 
 const guildConfigs = new Map<string, SafeNeedleConfig>();
+
+export const configChannelName = "needle-config";
 
 export function getConfig(guildId = ""): SafeNeedleConfig {
 	return sanitizeConfig(dangerouslyGetConfig(guildId));

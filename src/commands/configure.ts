@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { ChannelType } from "discord-api-types";
 import { CommandInteraction } from "discord.js";
-import { disableAutothreading, enableAutothreading, getConfig, setMessage } from "../helpers/configHelpers";
+import { configChannelName, disableAutothreading, enableAutothreading, getConfig, setMessage } from "../helpers/configHelpers";
 import { interactionReply, getMessage, MessageKey } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
 
@@ -135,8 +135,26 @@ function configureAutothreading(interaction: CommandInteraction): Promise<void> 
 	}
 }
 
-function configureManually(interaction: CommandInteraction): Promise<void> {
+async function configureManually(interaction: CommandInteraction): Promise<void> {
 	// Improvement: Would be nice to have a button to "reset config to default"
 
-	return Promise.resolve();
+	if (!interaction.guild) {
+		return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
+	}
+
+	let configChannel = interaction.guild.channels.cache.find(x => x.name === configChannelName);
+	if (configChannel) {
+		return interactionReply(interaction, `See <#${configChannel.id}>`);
+	}
+
+	configChannel = await interaction.guild.channels.create(configChannelName, { position: 0 });
+	if (!configChannel.isText()) {
+		return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
+	}
+
+	// await interaction.guild.channels.fetch();
+
+	await configChannel.send("CONFIG CHANNEL WOOOOOOOOOOOO");
+
+	return interactionReply(interaction, `Yes we created it see <#${configChannel.id}>`);
 }
