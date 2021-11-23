@@ -84,6 +84,6 @@ async function setConfigCommand(interaction: CommandInteraction): Promise<void> 
 
 	const success = setConfig(interaction.guildId, parsedJson);
 	await interactionReply(interaction, success
-		? getMessage("SUCCESS_CONFIG_SET")
+		? "temp"
 		: getMessage("ERR_CONFIG_INVALID"));
 }

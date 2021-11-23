@@ -19,10 +19,8 @@
         "ERR_PARAMETER_MISSING": "A non-optional parameter is missing from the command.",
         "ERR_THREAD_MESSAGE_MISSING": "The starting message for this thread could not be found, which prevents this action from being performed.",
 
-        "SUCCESS_CONFIG_SET": "Successfully set the config.",
-        "SUCCESS_THREAD_CREATE": "Hello $$invoker.mention! This helpful thread has been automatically created from your message in $$sourceChannel.mention $$sourceMessage.relativeTimestamp.\n\nWant to unsubscribe from this thread? Right-click the thread (or use the `...` menu) and select **Leave Thread**.\n\nIf you are done using this thread, you can click the button below to close this thread.",
-        "SUCCESS_THREAD_ARCHIVE": "**This thread will be archived soon** :card_box:\n\nAs requested by $$invoker.mention, this thread will automatically be archived when one hour passes without any new messages.\n\nThe thread's content will still be searchable with Discord's search function, and anyone will be able to un-archive it at any point in the future by simply sending a message in the thread again.\n\nIf you believe this was an error, you can ask a server moderator to undo this by setting the auto-archive duration back to what it was previously.",
-        "SUCCESS_DURATION_SET": "Successfully changed the auto-archive duration from $PREVIOUS to $CURRENT."
+        "SUCCESS_THREAD_CREATE": "Hello $USER! This helpful thread has been automatically created from your message in $CHANNEL $TIME_AGO.\n\nWant to unsubscribe from this thread? Right-click the thread (or use the `...` menu) and select **Leave Thread**.\n\nIf you are done using this thread, you can click the button below to close this thread.",
+        "SUCCESS_THREAD_ARCHIVE": "**This thread will be archived soon** :card_box:\n\nAs requested by $USER, this thread will automatically be archived when one hour passes without any new messages.\n\nThe thread's content will still be searchable with Discord's search function, and anyone will be able to un-archive it at any point in the future by simply sending a message in the thread again.\n\nIf you believe this was an error, you can ask a server moderator to undo this by setting the auto-archive duration back to what it was previously."
     },
     "dev": {
         "clientId": "",

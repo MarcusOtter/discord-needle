@@ -1,3 +1,4 @@
+import { TextBasedChannels } from "discord.js";
 import * as defaultConfig from "../config.json";
 import * as overrideConfig from "../overrideConfig.json";
 import { NeedleConfig, SafeNeedleConfig } from "../types/needleConfig";
@@ -38,8 +39,37 @@ export function getDevConfig(): NeedleConfig["dev"] {
 export function setMessage(guildId: string, messageKey: MessageKey, value: string): boolean {
 	const config = getConfig(guildId);
 	if (!config || !config.messages) { return false; }
+	if (value.length > 2000) { return false; }
 
 	config.messages[messageKey] = value;
+	return setConfig(guildId, config);
+}
+
+export function enableAutothreading(guildId: string, channelId: string, message = ""): boolean {
+	const config = getConfig(guildId);
+	if (!config || !config.threadChannels) { return false; }
+	if (message.length > 2000) { return false; }
+
+	const index = config.threadChannels.findIndex(x => x?.channelId === channelId);
+	if (index > -1) {
+		config.threadChannels[index].messageContent = message;
+	}
+	else {
+		config.threadChannels.push({ channelId: channelId, messageContent: message });
+	}
+
+	return setConfig(guildId, config);
+}
+
+export function disableAutothreading(guildId: string, channelId: string): boolean {
+	const config = getConfig(guildId);
+	if (!config || !config.threadChannels) { return false; }
+
+	const index = config.threadChannels.findIndex(x => x?.channelId === channelId);
+	if (index > -1) {
+		delete config.threadChannels[index];
+	}
+
 	return setConfig(guildId, config);
 }
 

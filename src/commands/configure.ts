@@ -1,9 +1,13 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { ChannelType } from "discord-api-types";
 import { CommandInteraction } from "discord.js";
-import { getConfig, setMessage } from "../helpers/configHelpers";
+import { disableAutothreading, enableAutothreading, getConfig, setMessage } from "../helpers/configHelpers";
 import { interactionReply, getMessage, MessageKey } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
+
+// Note:
+// The important messages of these commands should not be configurable
+// (prevents user made soft-locks)
 
 export const command: NeedleCommand = {
 	name: "configure",
@@ -99,19 +103,40 @@ function configureMessage(interaction: CommandInteraction): Promise<void> {
 	const value = interaction.options.getString("value");
 
 	if (!value || value.length === 0) {
-		return interactionReply(interaction, "`" + key + "`\n>>> " + getMessage(key));
+		return interactionReply(interaction, `Value of **${key}**:\n\n>>> ${getMessage(key, false)}`);
 	}
 	else {
 		const oldValue = getMessage(key);
 		setMessage(interaction.guildId, key, value);
-		return interactionReply(interaction, "Changed " + key + " from " + oldValue + " to " + value);
+		return interactionReply(interaction, `Changed ${key} from ${oldValue} to ${value}`, false);
 	}
 }
 
 function configureAutothreading(interaction: CommandInteraction): Promise<void> {
-	return Promise.resolve();
+	const channel = interaction.options.getChannel("channel");
+	const enabled = interaction.options.getBoolean("enabled");
+	const customMessage = interaction.options.getString("custom-message") ?? "";
+
+	if (!channel || enabled == null) {
+		return interactionReply(interaction, getMessage("ERR_PARAMETER_MISSING"));
+	}
+
+	if (enabled) {
+		const success = enableAutothreading(interaction.guildId, channel.id, customMessage);
+		return success
+			? interactionReply(interaction, `Updated auto-threading settings for <#${channel.id}>`, false)
+			: interactionReply(interaction, getMessage("ERR_UNKNOWN"));
+	}
+	else {
+		const success = disableAutothreading(interaction.guildId, channel.id);
+		return success
+			? interactionReply(interaction, `Removed auto-threading in <#${channel.id}>`, false)
+			: interactionReply(interaction, getMessage("ERR_UNKNOWN"));
+	}
 }
 
 function configureManually(interaction: CommandInteraction): Promise<void> {
+	// Improvement: Would be nice to have a button to "reset config to default"
+
 	return Promise.resolve();
 }

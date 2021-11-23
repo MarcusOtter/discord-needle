@@ -23,8 +23,8 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 	if (!(channel instanceof TextChannel) && !(channel instanceof NewsChannel)) return;
 	if (message.hasThread) return;
 
-	const config = getConfig();
-	if (!config?.threadChannels?.includes(channel.id)) return;
+	const config = getConfig(guild.id);
+	if (!config?.threadChannels?.some(x => x.channelId === channel.id)) return;
 
 	const botMember = await guild.members.fetch(clientUser);
 	const botPermissions = botMember.permissionsIn(message.channel.id);
@@ -42,9 +42,9 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 	}
 
 	addMessageContext({
-		invoker: authorUser,
-		sourceChannel: channel,
-		sourceMessage: message,
+		user: authorUser,
+		channel: channel,
+		message: message,
 	});
 
 	const creationDate = message.createdAt.toISOString().slice(0, 10);
@@ -65,10 +65,17 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 
 	const buttonRow = new MessageActionRow().addComponents(closeButton);
 
-	await thread.send({
-		content: getMessage("SUCCESS_THREAD_CREATE"),
-		components: [buttonRow],
-	});
+	const overrideMessageContent = config.threadChannels?.find(x => x?.channelId === channel.id)?.messageContent;
+	const msgContent = overrideMessageContent
+		? overrideMessageContent
+		: getMessage("SUCCESS_THREAD_CREATE");
+
+	if (msgContent && msgContent.length > 0) {
+		await thread.send({
+			content: msgContent,
+			components: [buttonRow],
+		});
+	}
 
 	await thread.leave();
 	resetMessageContext();

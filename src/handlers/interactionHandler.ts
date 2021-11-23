@@ -4,10 +4,9 @@ import { handleButtonClickedInteraction, handleCommandInteraction } from "./comm
 
 export async function handleInteractionCreate(interaction: Interaction): Promise<void> {
 	addMessageContext({
-		invoker: interaction.user,
+		user: interaction.user,
 		interaction: interaction,
-		sourceChannel: interaction.channel ?? undefined,
-		guildId: interaction.guildId,
+		channel: interaction.channel ?? undefined,
 	});
 
 	if (interaction.isCommand()) {

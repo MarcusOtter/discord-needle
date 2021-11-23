@@ -2,7 +2,7 @@ export type SafeNeedleConfig = Omit<NeedleConfig, "discordApiToken" | "dev">
 
 export interface NeedleConfig {
     discordApiToken?: string;
-    threadChannels?: string[];
+    threadChannels?: { channelId: string, messageContent: string }[];
     messages?: {
         ERR_UNKNOWN?: string,
         ERR_ONLY_IN_SERVER?: string,
@@ -15,10 +15,8 @@ export interface NeedleConfig {
         ERR_PARAMETER_MISSING?: string,
         ERR_THREAD_MESSAGE_MISSING?: string,
 
-        SUCCESS_CONFIG_SET?: string,
         SUCCESS_THREAD_CREATE?: string,
         SUCCESS_THREAD_ARCHIVE?: string,
-        SUCCESS_DURATION_SET?: string,
     },
     dev?: {
         clientId?: string,

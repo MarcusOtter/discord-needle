@@ -10,16 +10,16 @@ import { MessageContext } from "../types/messageContext";
 import { NeedleConfig } from "../types/needleConfig";
 import { getConfig } from "./configHelpers";
 
-let currentContext: MessageContext = {};
+let context: MessageContext = {};
 
 export type MessageKey = keyof NonNullable<NeedleConfig["messages"]>;
 
-export function addMessageContext(context: Partial<MessageContext>): void {
-	currentContext = Object.assign(currentContext, context);
+export function addMessageContext(additionalContext: Partial<MessageContext>): void {
+	context = Object.assign(context, additionalContext);
 }
 
 export function resetMessageContext(): void {
-	currentContext = {};
+	context = {};
 }
 
 export async function getThreadStartMessage(threadChannel: TextBasedChannels | null): Promise<Message | null> {
@@ -63,23 +63,25 @@ export function interactionReply(
 	});
 }
 
-export function getMessage(messageKey: MessageKey): string | undefined {
-	const config = getConfig(currentContext?.guildId);
+export function getMessage(messageKey: MessageKey, replaceVariables = true): string | undefined {
+	const config = getConfig(context?.interaction?.guildId);
 	if (!config.messages) { return ""; }
 
 	const message = config.messages[messageKey];
-	if (!currentContext || !message) { return message; }
+	if (!context || !message) { return message; }
 
-	const invokerMention = currentContext.invoker ? `<@${currentContext.invoker.id}>` : "";
-	const sourceChannelMention = currentContext.sourceChannel ? `<#${currentContext.sourceChannel.id}>` : "";
-	const sourceMessageRelativeTimestamp = currentContext.sourceMessage
-		? `<t:${Math.round(currentContext.sourceMessage.createdTimestamp / 1000)}:R>`
-		: "";
+	const user = context.user ? `<@${context.user.id}>` : "";
+	const channel = context.channel ? `<#${context.channel.id}>` : "";
+	const timeAgo = context.timeAgo || (context.message
+		? `<t:${Math.round(context.message.createdTimestamp / 1000)}:R>`
+		: "");
 
-	return message
-		.replaceAll("$$invoker.mention", invokerMention)
-		.replaceAll("$$sourceChannel.mention", sourceChannelMention)
-		.replaceAll("$$sourceMessage.relativeTimestamp", sourceMessageRelativeTimestamp);
+	return !replaceVariables
+		? message
+		: message
+			.replaceAll("$USER", user)
+			.replaceAll("$CHANNEL", channel)
+			.replaceAll("$TIME_AGO", timeAgo);
 }
 
 export function getDiscordInviteButton(buttonText = "Join the support server"): MessageButton {
