@@ -1,9 +1,10 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { ChannelType } from "discord-api-types";
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, Message, MessageActionRow, MessageAttachment, Permissions } from "discord.js";
 import { configChannelName, disableAutothreading, enableAutothreading, getConfig, setMessage } from "../helpers/configHelpers";
-import { interactionReply, getMessage, MessageKey } from "../helpers/messageHelpers";
+import { interactionReply, getMessage, MessageKey, getCloseConfigChannelButton } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
+import { Readable } from "stream";
 
 // Note:
 // The important messages of these commands should not be configurable
@@ -136,25 +137,81 @@ function configureAutothreading(interaction: CommandInteraction): Promise<void> 
 }
 
 async function configureManually(interaction: CommandInteraction): Promise<void> {
-	// Improvement: Would be nice to have a button to "reset config to default"
+	const guild = interaction.guild;
+	const user = interaction.user;
+	const clientUser = interaction.client.user;
 
-	if (!interaction.guild) {
+	if (!guild || !user || !clientUser) {
 		return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
 	}
 
-	let configChannel = interaction.guild.channels.cache.find(x => x.name === configChannelName);
+	const defaultConfig = getConfig();
+	const guildConfig = getConfig(guild.id);
+
+	let configChannel = guild.channels.cache.find(x => x.name === configChannelName);
 	if (configChannel) {
-		return interactionReply(interaction, `See <#${configChannel.id}>`);
+		return interactionReply(interaction, `Configuration channel already exists: <#${configChannel.id}>`);
 	}
 
-	configChannel = await interaction.guild.channels.create(configChannelName, { position: 0 });
+	configChannel = await guild.channels.create(configChannelName, {
+		position: 0,
+		permissionOverwrites: [
+			{
+				id: guild.roles.everyone.id,
+				deny: [Permissions.FLAGS.VIEW_CHANNEL],
+			},
+			{
+				id: user.id,
+				allow: [Permissions.FLAGS.VIEW_CHANNEL],
+			},
+		],
+	});
+
 	if (!configChannel.isText()) {
 		return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
 	}
 
-	// await interaction.guild.channels.fetch();
+	// Improvement: Would be nice to have a button to "reset config to default"
+	// Need a button to return to automatic configuration (file system I guess)
 
-	await configChannel.send("CONFIG CHANNEL WOOOOOOOOOOOO");
+	const msg = await configChannel.send({
+		components: [
+			new MessageActionRow().addComponents(
+				getCloseConfigChannelButton()),
+		],
+		content: `
+Welcome to the **Manual configuration channel** for <@${clientUser.id}> :gear:
 
-	return interactionReply(interaction, `Yes we created it see <#${configChannel.id}>`);
+This is where the configuration is currently hosted, so **DELETING THIS CHANNEL WILL RESET THE CONFIGURATION FOR THIS SERVER** :warning: If you want the configuration to be hosted automatically again, use the __CLOSE CHANNEL__ button below (your configuration will remain the same).
+
+This channel does not change how the \`/configure\` commands work: they can be used as usual. However, you are also able to view and change the raw configuration manually in this channel. This enables exporting/importing the configuration between servers, for example.
+
+:bulb: **How it works**:
+• <@${clientUser.id}> tries to read the configuration from the latest message in this channel that has valid JSON data attached.
+• To change the current configuration manually, send a new message with valid configuration JSON data in a code block (prefix and suffix the JSON with \\\`\\\`\\\`) or as an attached \`.json\` file to the message.
+
+*Channel created by <@${user.id}> <t:${Math.round(interaction.createdTimestamp / 1000)}>*
+`,
+	});
+	await msg.pin();
+
+	const defaultConfigStream = Readable.from(JSON.stringify(defaultConfig, undefined, 2));
+	await configChannel.send({
+		content: "Global default config:",
+		files: [new MessageAttachment(defaultConfigStream, "config.json")],
+	});
+
+	// Has bug right now, always equal
+	if (defaultConfig !== guildConfig) {
+		const currentConfigStream = Readable.from(JSON.stringify(guildConfig, undefined, 2));
+		await configChannel.send({
+			content: "Server config:",
+			files: [new MessageAttachment(currentConfigStream, "config.json")],
+		});
+	}
+
+	// TODO: Add cool versioning so like what user changed it and how (if not manual message)
+	// Optionally append a link to the needle config channel whenever config is changed
+
+	return interactionReply(interaction, `Configuration channel created: <#${configChannel.id}>`);
 }

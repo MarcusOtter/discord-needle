@@ -80,6 +80,7 @@ function sanitizeConfig(config: NeedleConfig): SafeNeedleConfig {
 	return config;
 }
 
+// TODO: Figure out why guild config is returend even if id is empty
 function dangerouslyGetConfig(guildId = ""): NeedleConfig {
 	const guildConfig = guildConfigs.get(guildId);
 

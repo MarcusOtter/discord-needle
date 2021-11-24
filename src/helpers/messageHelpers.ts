@@ -115,3 +115,10 @@ export function getFeatureRequestButton(buttonText = "Suggest a feature"): Messa
 		.setURL("https://github.com/MarcusOtter/discord-needle/issues/new/choose")
 		.setEmoji("💡");
 }
+
+export function getCloseConfigChannelButton(): MessageButton {
+	return new MessageButton()
+		.setCustomId("close-config-channel")
+		.setLabel("Close channel")
+		.setStyle("DANGER");
+}
