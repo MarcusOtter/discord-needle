@@ -1,10 +1,9 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { ChannelType } from "discord-api-types";
-import { CommandInteraction, GuildMember, MessageActionRow, MessageAttachment, Permissions } from "discord.js";
-import { configChannelName, disableAutothreading, enableAutothreading, getConfig, setMessage } from "../helpers/configHelpers";
+import { CommandInteraction, GuildMember, MessageActionRow, Permissions } from "discord.js";
+import { configChannelName, disableAutothreading, enableAutothreading, getConfig, getManualConfigChannel, setMessage } from "../helpers/configHelpers";
 import { interactionReply, getMessage, MessageKey, getCloseConfigChannelButton, isAutoThreadChannel } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
-import { Readable } from "stream";
 import { memberIsAdmin, memberIsModerator } from "../helpers/permissionHelpers";
 import { createJsonMessageAttachment } from "../helpers/fileHelpers";
 
@@ -109,15 +108,18 @@ function configureMessage(interaction: CommandInteraction): Promise<void> {
 	const key = interaction.options.getString("key") as MessageKey;
 	const value = interaction.options.getString("value");
 
+	if (!interaction.guild) {
+		return interactionReply(interaction, getMessage("ERR_ONLY_IN_SERVER"));
+	}
+
 	if (!value || value.length === 0) {
 		return interactionReply(interaction, `**${key}** message:\n\n>>> ${getMessage(key, false)}`);
 	}
-	else {
-		const oldValue = getMessage(key, false);
-		return setMessage(interaction.guildId, key, value)
-			? interactionReply(interaction, `Changed **${key}**\n\nOld message:\n> ${oldValue?.replaceAll("\n", "\n> ")}\n\nNew message:\n>>> ${value}`, false)
-			: interactionReply(interaction, getMessage("ERR_UNKNOWN"));
-	}
+
+	const oldValue = getMessage(key, false);
+	return setMessage(interaction.guild, key, value)
+		? interactionReply(interaction, `Changed **${key}**\n\nOld message:\n> ${oldValue?.replaceAll("\n", "\n> ")}\n\nNew message:\n>>> ${value}`, false)
+		: interactionReply(interaction, getMessage("ERR_UNKNOWN"));
 }
 
 function configureAutothreading(interaction: CommandInteraction): Promise<void> {
@@ -125,25 +127,29 @@ function configureAutothreading(interaction: CommandInteraction): Promise<void> 
 	const enabled = interaction.options.getBoolean("enabled");
 	const customMessage = interaction.options.getString("custom-message") ?? "";
 
+	if (!interaction.guild) {
+		return interactionReply(interaction, getMessage("ERR_ONLY_IN_SERVER"));
+	}
+
 	if (!channel || enabled == null) {
 		return interactionReply(interaction, getMessage("ERR_PARAMETER_MISSING"));
 	}
 
 	if (enabled) {
-		const success = enableAutothreading(interaction.guildId, channel.id, customMessage);
+		const success = enableAutothreading(interaction.guild, channel.id, customMessage);
 		return success
 			? interactionReply(interaction, `Updated auto-threading settings for <#${channel.id}>`, false)
 			: interactionReply(interaction, getMessage("ERR_UNKNOWN"));
 	}
-	else {
-		if (!isAutoThreadChannel(channel.id, interaction.guildId)) {
-			return interactionReply(interaction, getMessage("ERR_NO_EFFECT"));
-		}
-		const success = disableAutothreading(interaction.guildId, channel.id);
-		return success
-			? interactionReply(interaction, `Removed auto-threading in <#${channel.id}>`, false)
-			: interactionReply(interaction, getMessage("ERR_UNKNOWN"));
+
+	if (!isAutoThreadChannel(channel.id, interaction.guildId)) {
+		return interactionReply(interaction, getMessage("ERR_NO_EFFECT"));
 	}
+
+	const success = disableAutothreading(interaction.guild, channel.id);
+	return success
+		? interactionReply(interaction, `Removed auto-threading in <#${channel.id}>`, false)
+		: interactionReply(interaction, getMessage("ERR_UNKNOWN"));
 }
 
 async function configureManually(interaction: CommandInteraction): Promise<void> {
@@ -158,7 +164,7 @@ async function configureManually(interaction: CommandInteraction): Promise<void>
 	const defaultConfig = getConfig();
 	const guildConfig = getConfig(guild.id);
 
-	let configChannel = guild.channels.cache.find(x => x.name === configChannelName);
+	let configChannel = getManualConfigChannel(guild);
 	if (configChannel) {
 		return interactionReply(interaction, `Configuration channel already exists: <#${configChannel.id}>`);
 	}

@@ -4,8 +4,6 @@ import { getConfig, removeInvalidConfigKeys, setConfig } from "../helpers/config
 import { interactionReply, getCodeFromCodeBlock, getMessage } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
 
-// TODO: PERMISSIONS!
-
 export const command: NeedleCommand = {
 	name: "config",
 	shortHelpDescription: "Modify or view the configuration of Needle",
@@ -82,7 +80,7 @@ async function setConfigCommand(interaction: CommandInteraction): Promise<void> 
 		return interactionReply(interaction, getMessage("ERR_CONFIG_INVALID"));
 	}
 
-	const success = setConfig(interaction.guildId, parsedJson);
+	const success = setConfig(interaction.guild, parsedJson);
 	await interactionReply(interaction, success
 		? "temp"
 		: getMessage("ERR_CONFIG_INVALID"));

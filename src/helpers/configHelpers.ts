@@ -1,19 +1,26 @@
+import { Guild, GuildTextBasedChannel } from "discord.js";
 import * as defaultConfig from "../config.json";
 import * as overrideConfig from "../overrideConfig.json";
 import { NeedleConfig, SafeNeedleConfig } from "../types/needleConfig";
 import { MessageKey } from "./messageHelpers";
 
-const guildConfigs = new Map<string, SafeNeedleConfig>();
-
 export const configChannelName = "needle-config";
+const guildConfigs = new Map<string, SafeNeedleConfig>();
 
 export function getConfig(guildId = ""): SafeNeedleConfig {
 	return sanitizeConfig(dangerouslyGetConfig(guildId));
 }
 
-export function setConfig(guildId: string, configObject: Record<string, unknown>): boolean {
+export function setConfig(guild: Guild | null | undefined, configObject: Record<string, unknown>): boolean {
+	if (!guild) { return false; }
 	const validConfigObject = removeInvalidConfigKeys(configObject);
-	guildConfigs.set(guildId, sanitizeConfig(validConfigObject));
+	guildConfigs.set(guild.id, sanitizeConfig(validConfigObject));
+
+	const configChannel = getManualConfigChannel(guild);
+	if (configChannel) {
+		configChannel.send("We updating config in here");
+	}
+
 	return true;
 }
 
@@ -37,17 +44,17 @@ export function getDevConfig(): NeedleConfig["dev"] {
 	return dangerouslyGetConfig().dev;
 }
 
-export function setMessage(guildId: string, messageKey: MessageKey, value: string): boolean {
-	const config = getConfig(guildId);
+export function setMessage(guild: Guild, messageKey: MessageKey, value: string): boolean {
+	const config = getConfig(guild.id);
 	if (!config || !config.messages) { return false; }
 	if (value.length > 2000) { return false; }
 
 	config.messages[messageKey] = value;
-	return setConfig(guildId, config);
+	return setConfig(guild, config);
 }
 
-export function enableAutothreading(guildId: string, channelId: string, message = ""): boolean {
-	const config = getConfig(guildId);
+export function enableAutothreading(guild: Guild, channelId: string, message = ""): boolean {
+	const config = getConfig(guild.id);
 	if (!config || !config.threadChannels) { return false; }
 	if (message.length > 2000) { return false; }
 
@@ -59,11 +66,11 @@ export function enableAutothreading(guildId: string, channelId: string, message 
 		config.threadChannels.push({ channelId: channelId, messageContent: message });
 	}
 
-	return setConfig(guildId, config);
+	return setConfig(guild, config);
 }
 
-export function disableAutothreading(guildId: string, channelId: string): boolean {
-	const config = getConfig(guildId);
+export function disableAutothreading(guild: Guild, channelId: string): boolean {
+	const config = getConfig(guild.id);
 	if (!config || !config.threadChannels) { return false; }
 
 	const index = config.threadChannels.findIndex(x => x?.channelId === channelId);
@@ -71,7 +78,16 @@ export function disableAutothreading(guildId: string, channelId: string): boolea
 		delete config.threadChannels[index];
 	}
 
-	return setConfig(guildId, config);
+	return setConfig(guild, config);
+}
+
+export function getManualConfigChannel(guild: Guild): GuildTextBasedChannel | undefined {
+	const channel = guild.channels.cache.find(x => x.name === configChannelName);
+	if (!channel || channel.isThread() || !channel.isText()) {
+		return undefined;
+	}
+
+	return channel;
 }
 
 function sanitizeConfig(config: NeedleConfig): SafeNeedleConfig {
