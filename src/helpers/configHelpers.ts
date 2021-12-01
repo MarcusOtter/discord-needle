@@ -80,10 +80,10 @@ function sanitizeConfig(config: NeedleConfig): SafeNeedleConfig {
 	return config;
 }
 
-// TODO: Figure out why guild config is returend even if id is empty
 function dangerouslyGetConfig(guildId = ""): NeedleConfig {
 	const guildConfig = guildConfigs.get(guildId);
-
-	// Objects to the right overwrite the properties of objects to the left
-	return Object.assign(defaultConfig, guildConfig, overrideConfig);
+	// I don't quite understand why I need to make copies here, but if I don't, the default config is overriden.
+	const defaultConfigCopy = JSON.parse(JSON.stringify(defaultConfig));
+	const overrideConfigCopy = JSON.parse(JSON.stringify(overrideConfig));
+	return Object.assign({}, defaultConfigCopy, overrideConfigCopy, guildConfig);
 }

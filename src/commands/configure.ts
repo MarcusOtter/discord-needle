@@ -1,14 +1,16 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { ChannelType } from "discord-api-types";
-import { CommandInteraction, Message, MessageActionRow, MessageAttachment, Permissions } from "discord.js";
+import { CommandInteraction, GuildMember, MessageActionRow, MessageAttachment, Permissions } from "discord.js";
 import { configChannelName, disableAutothreading, enableAutothreading, getConfig, setMessage } from "../helpers/configHelpers";
-import { interactionReply, getMessage, MessageKey, getCloseConfigChannelButton } from "../helpers/messageHelpers";
+import { interactionReply, getMessage, MessageKey, getCloseConfigChannelButton, isAutoThreadChannel } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
 import { Readable } from "stream";
+import { memberIsAdmin, memberIsModerator } from "../helpers/permissionHelpers";
+import { createJsonMessageAttachment } from "../helpers/fileHelpers";
 
 // Note:
 // The important messages of these commands should not be configurable
-// (prevents user made soft-locks)
+// (prevents user made soft-locks where it's hard to figure out how to fix it)
 
 export const command: NeedleCommand = {
 	name: "configure",
@@ -79,7 +81,9 @@ export const command: NeedleCommand = {
 			return interactionReply(interaction, getMessage("ERR_ONLY_IN_SERVER"));
 		}
 
-		// TODO: Moderator permissions
+		if (!memberIsModerator(interaction.member as GuildMember)) {
+			return interactionReply(interaction, getMessage("ERR_INSUFFICIENT_PERMS"));
+		}
 
 		if (interaction.options.getSubcommand() === "message") {
 			return configureMessage(interaction);
@@ -89,7 +93,9 @@ export const command: NeedleCommand = {
 			return configureAutothreading(interaction);
 		}
 
-		// TODO: Admin permissions
+		if (!memberIsAdmin(interaction.member as GuildMember)) {
+			return interactionReply(interaction, getMessage("ERR_INSUFFICIENT_PERMS"));
+		}
 
 		if (interaction.options.getSubcommand() === "manually") {
 			return configureManually(interaction);
@@ -104,12 +110,13 @@ function configureMessage(interaction: CommandInteraction): Promise<void> {
 	const value = interaction.options.getString("value");
 
 	if (!value || value.length === 0) {
-		return interactionReply(interaction, `Value of **${key}**:\n\n>>> ${getMessage(key, false)}`);
+		return interactionReply(interaction, `**${key}** message:\n\n>>> ${getMessage(key, false)}`);
 	}
 	else {
-		const oldValue = getMessage(key);
-		setMessage(interaction.guildId, key, value);
-		return interactionReply(interaction, `Changed ${key} from ${oldValue} to ${value}`, false);
+		const oldValue = getMessage(key, false);
+		return setMessage(interaction.guildId, key, value)
+			? interactionReply(interaction, `Changed **${key}**\n\nOld message:\n> ${oldValue?.replaceAll("\n", "\n> ")}\n\nNew message:\n>>> ${value}`, false)
+			: interactionReply(interaction, getMessage("ERR_UNKNOWN"));
 	}
 }
 
@@ -129,6 +136,9 @@ function configureAutothreading(interaction: CommandInteraction): Promise<void> 
 			: interactionReply(interaction, getMessage("ERR_UNKNOWN"));
 	}
 	else {
+		if (!isAutoThreadChannel(channel.id, interaction.guildId)) {
+			return interactionReply(interaction, getMessage("ERR_NO_EFFECT"));
+		}
 		const success = disableAutothreading(interaction.guildId, channel.id);
 		return success
 			? interactionReply(interaction, `Removed auto-threading in <#${channel.id}>`, false)
@@ -187,26 +197,25 @@ This is where the configuration is currently hosted, so **DELETING THIS CHANNEL 
 This channel does not change how the \`/configure\` commands work: they can be used as usual. However, you are also able to view and change the raw configuration manually in this channel. This enables exporting/importing the configuration between servers, for example.
 
 :bulb: **How it works**:
-• <@${clientUser.id}> tries to read the configuration from the latest message in this channel that has valid JSON data attached.
-• To change the current configuration manually, send a new message with valid configuration JSON data in a code block (prefix and suffix the JSON with \\\`\\\`\\\`) or as an attached \`.json\` file to the message.
+• When a change is made with the \`/configure\` command, <@${clientUser.id}> will post a message with the updated configuration in this channel.
+• To read this server's configuration, <@${clientUser.id}> will fetch the latest message in this channel that has valid JSON data attached.
+• To change the current configuration manually, send a new message with valid configuration JSON data as an attached \`.json\` file to the message.
 
 *Channel created by <@${user.id}> <t:${Math.round(interaction.createdTimestamp / 1000)}>*
 `,
 	});
 	await msg.pin();
 
-	const defaultConfigStream = Readable.from(JSON.stringify(defaultConfig, undefined, 2));
 	await configChannel.send({
 		content: "Global default config:",
-		files: [new MessageAttachment(defaultConfigStream, "config.json")],
+		files: [createJsonMessageAttachment(defaultConfig, "config.json")],
 	});
 
-	// Has bug right now, always equal
-	if (defaultConfig !== guildConfig) {
-		const currentConfigStream = Readable.from(JSON.stringify(guildConfig, undefined, 2));
+	const serverHasCustomConfig = JSON.stringify(defaultConfig) !== JSON.stringify(guildConfig);
+	if (serverHasCustomConfig) {
 		await configChannel.send({
-			content: "Server config:",
-			files: [new MessageAttachment(currentConfigStream, "config.json")],
+			content: `Config for \`${guild.name}\`:`,
+			files: [createJsonMessageAttachment(guildConfig, "config.json")],
 		});
 	}
 

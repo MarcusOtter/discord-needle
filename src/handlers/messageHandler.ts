@@ -1,6 +1,6 @@
 import { Message, MessageActionRow, MessageButton, NewsChannel, TextChannel } from "discord.js";
 import { getConfig } from "../helpers/configHelpers";
-import { getMessage, resetMessageContext, addMessageContext } from "../helpers/messageHelpers";
+import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel } from "../helpers/messageHelpers";
 import { getRequiredPermissions } from "../helpers/permissionHelpers";
 
 export async function handleMessageCreate(message: Message): Promise<void> {
@@ -22,9 +22,7 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 	if (!channel.isText()) return;
 	if (!(channel instanceof TextChannel) && !(channel instanceof NewsChannel)) return;
 	if (message.hasThread) return;
-
-	const config = getConfig(guild.id);
-	if (!config?.threadChannels?.some(x => x.channelId === channel.id)) return;
+	if (!isAutoThreadChannel(channel.id, guild.id)) return;
 
 	const botMember = await guild.members.fetch(clientUser);
 	const botPermissions = botMember.permissionsIn(message.channel.id);
@@ -65,7 +63,7 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 
 	const buttonRow = new MessageActionRow().addComponents(closeButton);
 
-	const overrideMessageContent = config.threadChannels?.find(x => x?.channelId === channel.id)?.messageContent;
+	const overrideMessageContent = getConfig(guild.id).threadChannels?.find(x => x?.channelId === channel.id)?.messageContent;
 	const msgContent = overrideMessageContent
 		? overrideMessageContent
 		: getMessage("SUCCESS_THREAD_CREATE");

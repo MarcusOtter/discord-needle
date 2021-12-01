@@ -22,6 +22,11 @@ export function resetMessageContext(): void {
 	context = {};
 }
 
+export function isAutoThreadChannel(channelId: string, guildId: string): boolean {
+	const config = getConfig(guildId);
+	return config?.threadChannels?.some(x => x.channelId === channelId) ?? false;
+}
+
 export async function getThreadStartMessage(threadChannel: TextBasedChannels | null): Promise<Message | null> {
 	if (!threadChannel?.isThread()) { return null; }
 	if (!threadChannel.parentId) { return null; }
@@ -108,7 +113,7 @@ export function getBugReportButton(buttonText = "Report a bug"): MessageButton {
 		.setEmoji("🐛");
 }
 
-export function getFeatureRequestButton(buttonText = "Suggest a feature"): MessageButton {
+export function getFeatureRequestButton(buttonText = "Suggest an improvement"): MessageButton {
 	return new MessageButton()
 		.setLabel(buttonText)
 		.setStyle("LINK")

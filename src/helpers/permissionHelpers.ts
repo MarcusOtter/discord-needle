@@ -1,4 +1,4 @@
-import { Permissions } from "discord.js";
+import { GuildMember, Permissions } from "discord.js";
 
 export function getRequiredPermissions(): bigint[] {
 	const output = [
@@ -8,4 +8,12 @@ export function getRequiredPermissions(): bigint[] {
 	];
 
 	return output;
+}
+
+export function memberIsModerator(member: GuildMember): boolean {
+	return member.permissions.has(Permissions.FLAGS.KICK_MEMBERS);
+}
+
+export function memberIsAdmin(member: GuildMember): boolean {
+	return member.permissions.has(Permissions.FLAGS.ADMINISTRATOR);
 }
