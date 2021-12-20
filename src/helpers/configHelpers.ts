@@ -1,10 +1,9 @@
-import { Guild, GuildTextBasedChannel } from "discord.js";
+import { Guild } from "discord.js";
 import * as defaultConfig from "../config.json";
 import * as overrideConfig from "../overrideConfig.json";
 import { NeedleConfig, SafeNeedleConfig } from "../types/needleConfig";
 import { MessageKey } from "./messageHelpers";
 
-export const configChannelName = "needle-config";
 const guildConfigs = new Map<string, SafeNeedleConfig>();
 
 export function getConfig(guildId = ""): SafeNeedleConfig {
@@ -15,11 +14,6 @@ export function setConfig(guild: Guild | null | undefined, configObject: Record<
 	if (!guild) { return false; }
 	const validConfigObject = removeInvalidConfigKeys(configObject);
 	guildConfigs.set(guild.id, sanitizeConfig(validConfigObject));
-
-	const configChannel = getManualConfigChannel(guild);
-	if (configChannel) {
-		configChannel.send("We updating config in here");
-	}
 
 	return true;
 }
@@ -79,15 +73,6 @@ export function disableAutothreading(guild: Guild, channelId: string): boolean {
 	}
 
 	return setConfig(guild, config);
-}
-
-export function getManualConfigChannel(guild: Guild): GuildTextBasedChannel | undefined {
-	const channel = guild.channels.cache.find(x => x.name === configChannelName);
-	if (!channel || channel.isThread() || !channel.isText()) {
-		return undefined;
-	}
-
-	return channel;
 }
 
 function sanitizeConfig(config: NeedleConfig): SafeNeedleConfig {
