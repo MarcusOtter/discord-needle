@@ -17,7 +17,7 @@ const GUILD_ID = getGuildId();
 
 if (!API_TOKEN || !CLIENT_ID || !GUILD_ID) {
 	console.log("API_TOKEN, CLIENT_ID, or GUILD_ID was missing from the .env file: aborting command deployment");
-	console.log("Hint: If you just want to start the bot without doing development, type \"npm run start\" instead\n");
+	console.log("Hint: If you just want to start the bot without developing commands, type \"npm start\" instead\n");
 	return;
 }
 
