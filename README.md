@@ -9,20 +9,14 @@ Needle is a [Discord](https://discord.com/) bot that helps you manage your [Disc
 
 ## Running the bot
 1. Clone the repository
-2. Edit the `src/config.json` with API token and the IDs of the channels you want to thread every message in:
-    ```json
-    {
-        "discordApiToken": "INSERT TOKEN",
-        "threadChannels": [
-            "CHANNEL ID 1",
-            "CHANNEL ID 2",
-        ]
-    }
-    ```
+2. Create a `.env` file in the root directory and insert your Discord API token:
+   ```bash
+   DISCORD_API_TOKEN=abcd1234...
+   ```
 3. Run `npm install`
 4. Make sure the bot has the required permissions in Discord. They are:
-    - `USE_PUBLIC_THREADS`
-    - `SEND_MESSAGES_IN_THREADS`
-    - `READ_MESSAGE_HISTORY`
+   - `USE_PUBLIC_THREADS`
+   - `SEND_MESSAGES_IN_THREADS`
+   - `READ_MESSAGE_HISTORY`
 5. Run `npm start`
 6. Done! :tada:
