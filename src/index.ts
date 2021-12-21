@@ -5,6 +5,8 @@ import { handleMessageCreate } from "./handlers/messageHandler";
 import { getApiToken } from "./helpers/configHelpers";
 
 (async () => {
+	(await import("dotenv")).config();
+
 	// Initial load of all commands
 	await getOrLoadAllCommands(false);
 

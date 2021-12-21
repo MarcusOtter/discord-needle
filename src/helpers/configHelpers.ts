@@ -1,41 +1,31 @@
 import { Guild } from "discord.js";
 import * as defaultConfig from "../config.json";
-import * as overrideConfig from "../overrideConfig.json";
-import { NeedleConfig, SafeNeedleConfig } from "../types/needleConfig";
+import { NeedleConfig } from "../types/needleConfig";
 import { MessageKey } from "./messageHelpers";
 
-const guildConfigs = new Map<string, SafeNeedleConfig>();
+const guildConfigs = new Map<string, NeedleConfig>();
 
-export function getConfig(guildId = ""): SafeNeedleConfig {
-	return sanitizeConfig(dangerouslyGetConfig(guildId));
+export function getConfig(guildId = ""): NeedleConfig {
+	const guildConfig = guildConfigs.get(guildId);
+
+	// I don't quite understand why I need to make copies here
+	// but if I don't, the default config is overriden
+	const defaultConfigCopy = JSON.parse(JSON.stringify(defaultConfig));
+	return Object.assign({}, defaultConfigCopy, guildConfig);
 }
 
-export function setConfig(guild: Guild | null | undefined, configObject: Record<string, unknown>): boolean {
-	if (!guild) { return false; }
-	const validConfigObject = removeInvalidConfigKeys(configObject);
-	guildConfigs.set(guild.id, sanitizeConfig(validConfigObject));
-
-	return true;
+export function getApiToken(): string | undefined {
+	return process.env.DISCORD_API_TOKEN;
 }
 
-/** Removes the keys of an object that are not valid keys of a safe configuration object. */
-export function removeInvalidConfigKeys(configObject: Record<string, unknown>): Record<string, unknown> {
-	const validConfigKeys = Object.keys(sanitizeConfig(dangerouslyGetConfig()));
-
-	Object.keys(configObject).forEach(key => {
-		if (validConfigKeys.includes(key)) return;
-		delete configObject[key];
-	});
-
-	return configObject;
+// Used by deploy-commands.js
+export function getClientId(): string | undefined {
+	return process.env.CLIENT_ID;
 }
 
-export function getApiToken(): NeedleConfig["discordApiToken"] {
-	return dangerouslyGetConfig().discordApiToken;
-}
-
-export function getDevConfig(): NeedleConfig["dev"] {
-	return dangerouslyGetConfig().dev;
+// Used by deploy-commands.js
+export function getGuildId(): string | undefined {
+	return process.env.GUILD_ID;
 }
 
 export function setMessage(guild: Guild, messageKey: MessageKey, value: string): boolean {
@@ -75,16 +65,9 @@ export function disableAutothreading(guild: Guild, channelId: string): boolean {
 	return setConfig(guild, config);
 }
 
-function sanitizeConfig(config: NeedleConfig): SafeNeedleConfig {
-	delete config.discordApiToken;
-	delete config.dev;
-	return config;
-}
+function setConfig(guild: Guild | null | undefined, config: NeedleConfig): boolean {
+	if (!guild) { return false; }
 
-function dangerouslyGetConfig(guildId = ""): NeedleConfig {
-	const guildConfig = guildConfigs.get(guildId);
-	// I don't quite understand why I need to make copies here, but if I don't, the default config is overriden.
-	const defaultConfigCopy = JSON.parse(JSON.stringify(defaultConfig));
-	const overrideConfigCopy = JSON.parse(JSON.stringify(overrideConfig));
-	return Object.assign({}, defaultConfigCopy, overrideConfigCopy, guildConfig);
+	guildConfigs.set(guild.id, config);
+	return true;
 }

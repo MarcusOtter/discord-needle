@@ -3,22 +3,25 @@
 
 // TODO: Make this a separate script when commands are more stable (don't try to run it on npm start)
 
+require("dotenv").config();
+
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 
 const { getOrLoadAllCommands } = require("../dist/handlers/commandHandler");
-const { getDevConfig, getApiToken } = require("../dist/helpers/configHelpers");
+const { getApiToken, getGuildId, getClientId } = require("../dist/helpers/configHelpers");
 
 const API_TOKEN = getApiToken();
-if (!API_TOKEN) return;
+const CLIENT_ID = getClientId();
+const GUILD_ID = getGuildId();
 
-const DEV_CONFIG = getDevConfig();
-if (!DEV_CONFIG) return;
-if (DEV_CONFIG.clientId === "") { return; }
-if (DEV_CONFIG.guildId === "") { return; }
+if (!API_TOKEN || !CLIENT_ID || !GUILD_ID) {
+	console.log("API_TOKEN, CLIENT_ID, or GUILD_ID was missing from the .env file: aborting command deployment");
+	console.log("Hint: If you just want to start the bot without doing development, type \"npm run start\" instead\n");
+	return;
+}
 
 const rest = new REST({ version: "9" }).setToken(API_TOKEN);
-
 (async () => {
 	const allNeedleCommands = await getOrLoadAllCommands();
 	const allSlashCommandBuilders = [];
@@ -30,7 +33,7 @@ const rest = new REST({ version: "9" }).setToken(API_TOKEN);
 	try {
 		console.log(`Started deploying ${allSlashCommandBuilders.length} application commands.`);
 		await rest.put(
-			Routes.applicationGuildCommands(DEV_CONFIG.clientId, DEV_CONFIG.guildId),
+			Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
 			{ body: allSlashCommandBuilders },
 		);
 		console.log("Successfully deployed application commands.");

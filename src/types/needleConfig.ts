@@ -1,7 +1,4 @@
-export type SafeNeedleConfig = Omit<NeedleConfig, "discordApiToken" | "dev">
-
 export interface NeedleConfig {
-    discordApiToken?: string;
     threadChannels?: { channelId: string, messageContent: string }[];
     messages?: {
         ERR_UNKNOWN?: string,
@@ -19,8 +16,4 @@ export interface NeedleConfig {
         SUCCESS_THREAD_CREATE?: string,
         SUCCESS_THREAD_ARCHIVE?: string,
     },
-    dev?: {
-        clientId?: string,
-        guildId?: string
-    }
 }
