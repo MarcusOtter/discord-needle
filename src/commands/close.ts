@@ -26,18 +26,24 @@ export const command: NeedleCommand = {
 			return interactionReply(interaction, getMessage("ERR_ONLY_IN_THREAD"));
 		}
 
+		if (channel.autoArchiveDuration === 60) {
+			return interactionReply(interaction, getMessage("ERR_NO_EFFECT"));
+		}
+
+		const hasChangeTitlePermissions = member.permissionsIn(channel).has(Permissions.FLAGS.MANAGE_THREADS, true);
+		if (hasChangeTitlePermissions) {
+			await channel.setAutoArchiveDuration(60);
+			await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE"), false);
+			return;
+		}
+
 		const parentMessage = await getThreadStartMessage(channel);
 		if (!parentMessage) {
 			return interactionReply(interaction, getMessage("ERR_THREAD_MESSAGE_MISSING"));
 		}
 
-		const hasChangeTitlePermissions = member.permissionsIn(channel).has(Permissions.FLAGS.MANAGE_THREADS, true);
-		if (!hasChangeTitlePermissions && parentMessage.author !== interaction.user) {
+		if (parentMessage.author !== interaction.user) {
 			return interactionReply(interaction, getMessage("ERR_ONLY_THREAD_OWNER"));
-		}
-
-		if (channel.autoArchiveDuration === 60) {
-			return interactionReply(interaction, getMessage("ERR_NO_EFFECT"));
 		}
 
 		await channel.setAutoArchiveDuration(60);

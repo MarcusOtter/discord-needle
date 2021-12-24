@@ -82,12 +82,14 @@ function getGuildConfigPath(guildId: string) {
 }
 
 function setConfig(guild: Guild | null | undefined, config: NeedleConfig): boolean {
-	if (!guild) return false;
+	if (!guild || !config) return false;
 
 	const path = getGuildConfigPath(guild.id);
 	if (!fs.existsSync(CONFIGS_PATH)) {
 		fs.mkdirSync(CONFIGS_PATH);
 	}
+
+	config.threadChannels = config.threadChannels?.filter(val => val != null && val != undefined);
 
 	fs.writeFileSync(path, JSON.stringify(config), { encoding: "utf-8" });
 	guildConfigsCache.set(guild.id, config);

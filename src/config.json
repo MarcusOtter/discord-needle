@@ -14,7 +14,7 @@
         "ERR_INSUFFICIENT_PERMS": "You do not have permission to perform this action.",
         "ERR_THREAD_MESSAGE_MISSING": "The starting message for this thread could not be found, which prevents this action from being performed.",
 
-        "SUCCESS_THREAD_CREATE": "Hello $USER! This helpful thread has been automatically created from your message in $CHANNEL $TIME_AGO.\n\nWant to unsubscribe from this thread? Right-click the thread (or use the `...` menu) and select **Leave Thread**.\n\nIf you are done using this thread, you can click the button below to close this thread.",
+        "SUCCESS_THREAD_CREATE": "Hello $USER!\nThis thread has been automatically created from your message in $CHANNEL $TIME_AGO.\n\n**Want to unsubscribe from this thread?**\nRight-click the thread (or use the `...` menu) and select **Leave Thread**.\n\n**Done using the thread?**\nClick the button below to arhive it.",
         "SUCCESS_THREAD_ARCHIVE": "**This thread will be archived soon** :card_box:\n\nAs requested by $USER, this thread will automatically be archived when one hour passes without any new messages.\n\nThe thread's content will still be searchable with Discord's search function, and anyone will be able to un-archive it at any point in the future by simply sending a message in the thread again.\n\nIf you believe this was an error, you can ask a server moderator to undo this by setting the auto-archive duration back to what it was previously."
     }
 }

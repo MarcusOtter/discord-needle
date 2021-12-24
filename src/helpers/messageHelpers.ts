@@ -24,7 +24,7 @@ export function resetMessageContext(): void {
 
 export function isAutoThreadChannel(channelId: string, guildId: string): boolean {
 	const config = getConfig(guildId);
-	return config?.threadChannels?.some(x => x.channelId === channelId) ?? false;
+	return config?.threadChannels?.some(x => x?.channelId === channelId) ?? false;
 }
 
 export async function getThreadStartMessage(threadChannel: TextBasedChannels | null): Promise<Message | null> {
@@ -39,7 +39,7 @@ export async function getThreadStartMessage(threadChannel: TextBasedChannels | n
 	return parentChannel.messages
 		.fetch(threadChannel.id)
 		.catch(() => {
-			console.error(`Start message has been deleted in thread "${threadChannel.name}"`);
+			console.error(`Start message is missing in thread "${threadChannel.name}"`);
 			return null;
 		});
 }
