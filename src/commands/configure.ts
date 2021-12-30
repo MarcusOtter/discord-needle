@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { ChannelType } from "discord-api-types";
 import { CommandInteraction, GuildMember, GuildTextBasedChannel, Permissions } from "discord.js";
-import { disableAutothreading, enableAutothreading, getConfig, setMessage } from "../helpers/configHelpers";
+import { disableAutothreading, enableAutothreading, getConfig, resetConfigToDefault, setMessage } from "../helpers/configHelpers";
 import { interactionReply, getMessage, MessageKey, isAutoThreadChannel, addMessageContext } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
 import { memberIsModerator } from "../helpers/permissionHelpers";
@@ -43,6 +43,11 @@ export const command: NeedleCommand = {
 			})
 			.addSubcommand(subcommand => {
 				return subcommand
+					.setName("default")
+					.setDescription("Reset the server's custom Needle configuration to the default");
+			})
+			.addSubcommand(subcommand => {
+				return subcommand
 					.setName("autothreading")
 					.setDescription("Enable or disable automatic creation of threads on every new message in a channel")
 					.addChannelOption(option => {
@@ -76,6 +81,13 @@ export const command: NeedleCommand = {
 
 		if (!memberIsModerator(interaction.member as GuildMember)) {
 			return interactionReply(interaction, getMessage("ERR_INSUFFICIENT_PERMS"));
+		}
+
+		if (interaction.options.getSubcommand() === "default") {
+			const success = resetConfigToDefault(interaction.guild.id);
+			return interactionReply(interaction, success
+				? "Successfully reset the Needle configuration to the default."
+				: getMessage("ERR_NO_EFFECT"), !success);
 		}
 
 		if (interaction.options.getSubcommand() === "message") {

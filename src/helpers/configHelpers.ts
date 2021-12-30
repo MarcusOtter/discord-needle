@@ -71,6 +71,14 @@ export function disableAutothreading(guild: Guild, channelId: string): boolean {
 	return setConfig(guild, config);
 }
 
+export function resetConfigToDefault(guildId: string): boolean {
+	const path = getGuildConfigPath(guildId);
+	if (!fs.existsSync(path)) return false;
+	fs.rmSync(path);
+	guildConfigsCache.delete(guildId);
+	return true;
+}
+
 function readConfigFromFile(guildId: string): NeedleConfig | undefined {
 	const path = getGuildConfigPath(guildId);
 	if (!fs.existsSync(path)) return undefined;
