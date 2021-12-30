@@ -29,16 +29,16 @@
          <img src="https://raw.githubusercontent.com/MarcusOtter/discord-needle/custom-config/branding/logo-64x64.png" height="39" width="39">
       </sub>
    </h1>
-   Needle is a <a href="https://discord.com/">Discord</a> bot that helps you manage your <a href="https://support.discord.com/hc/en-us/articles/4403205878423-Threads-FAQ">Discord threads</a> 🪡.
+   Needle is a <b><a href="https://discord.com/">Discord</a> bot</b> that helps you manage your <b><a href="https://support.discord.com/hc/en-us/articles/4403205878423-Threads-FAQ">Discord threads</a></b> 🪡.
    <br/>
-   Visit the links for more info &rarr;
+   <sup>Visit the links for <i>more information</i> &rarr;</sup>
    <br/><br/>
-   <a href="https://needle.gg/invite"><img src="https://badgen.net/badge/Invite/to server/3f74a2?icon=discord&scale=1.4"/></a>
-   <a href="https://needle.gg/"><img src="https://badgen.net/badge/Visit/the website/3f74a2?icon=firefox&scale=1.4"/></a>
+   <a href="https://needle.gg/invite"><img src="https://badgen.net/badge/Invite/to server/3f74a2?icon=discord&scale=1.25"/></a>
+   <a href="https://needle.gg/"><img src="https://badgen.net/badge/Visit/the website/3f74a2?icon=firefox&scale=1.25"/></a>
    <br/>
-   <a href="#"><img src="https://badgen.net/github/stars/MarcusOtter/discord-needle?scale=1.1"/></a>
-   <a href="#"><img src="https://badgen.net/github/license/MarcusOtter/discord-needle?scale=1.1"/></a>
-   <a href="#"><img src="https://badgen.net/github/release/MarcusOtter/discord-needle?scale=1.1"/></a>
+   <a href="#"><img src="https://badgen.net/github/stars/MarcusOtter/discord-needle?scale=1"/></a>
+   <a href="#"><img src="https://badgen.net/github/license/MarcusOtter/discord-needle?scale=1"/></a>
+   <a href="#"><img src="https://badgen.net/github/release/MarcusOtter/discord-needle?scale=1"/></a>
    <br/><br/>
 </div>
 
