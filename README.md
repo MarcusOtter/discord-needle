@@ -29,7 +29,7 @@
          <img src="https://raw.githubusercontent.com/MarcusOtter/discord-needle/custom-config/branding/logo-64x64.png" height="39" width="39">
       </sub>
    </h1>
-   Needle is a <b><a href="https://discord.com/">Discord</a> bot</b> that helps you manage your <b><a href="https://support.discord.com/hc/en-us/articles/4403205878423-Threads-FAQ">Discord threads</a></b> 🪡.
+   Needle is a <b><a href="https://discord.com/">Discord</a> bot</b> that helps you manage your <b><a href="https://support.discord.com/hc/en-us/articles/4403205878423-Threads-FAQ">Discord threads</a></b> 🪡
    <br/>
    <sup>Visit the links for <i>more information</i> &rarr;</sup>
    <br/><br/>
