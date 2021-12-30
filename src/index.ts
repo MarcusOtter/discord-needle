@@ -11,12 +11,10 @@ import { getApiToken } from "./helpers/configHelpers";
 	await getOrLoadAllCommands(false);
 
 	const CLIENT = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
-	CLIENT.once("ready", async () => {
-		console.log("Ready!");
-	});
+	CLIENT.once("ready", () => console.log("Ready!"));
 
-	CLIENT.on("interactionCreate", interaction => handleInteractionCreate(interaction));
-	CLIENT.on("messageCreate", message => handleMessageCreate(message));
+	CLIENT.on("interactionCreate", interaction => handleInteractionCreate(interaction).catch(e => console.log(e)));
+	CLIENT.on("messageCreate", message => handleMessageCreate(message).catch(e => console.log(e)));
 
 	CLIENT.login(getApiToken() ?? undefined);
 })();
