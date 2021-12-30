@@ -9,7 +9,7 @@ Needle is a [Discord](https://discord.com/) bot that helps you manage your [Disc
 
 ## Running the bot
 1. Clone the repository
-2. Create a `.env` file in the root directory and insert your Discord API token:
+2. Create a file named `.env`  in the root directory and insert your Discord API token:
    ```bash
    DISCORD_API_TOKEN=abcd1234...
    ```
