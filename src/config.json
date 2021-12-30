@@ -15,7 +15,7 @@
         "ERR_CHANNEL_VISIBILITY": "The $CHANNEL channel is not visible to the bot. Change the permissions and try again.",
         "ERR_THREAD_MESSAGE_MISSING": "The starting message for this thread could not be found, which prevents this action from being performed.",
 
-        "SUCCESS_THREAD_CREATE": "Hello $USER!\nThis thread has been automatically created from your message in $CHANNEL $TIME_AGO.\n\n**Want to unsubscribe from this thread?**\nRight-click the thread (or use the `...` menu) and select **Leave Thread**.\n\n**Done using the thread?**\nClick the button below to archive it.",
+        "SUCCESS_THREAD_CREATE": "Hello $USER!\nThis thread has been automatically created from your message in $CHANNEL $TIME_AGO.\n\n**Want to unsubscribe from this thread?**\nRight-click the thread (or use the `...` menu) and select **Leave Thread**.\n\n**Want to change the title?**\nUse the `/title` command!\n\n**Done using the thread?**\nClick the button below to archive it.",
         "SUCCESS_THREAD_ARCHIVE": "**This thread will be archived soon** :card_box:\nAs requested by $USER, this thread will automatically be archived when **one hour passes without any new messages**.\n\n• The thread's content will still be searchable with Discord's search function\n• Anyone will be able to un-archive the thread at any point in the future by sending a message in the thread again"
     }
 }
