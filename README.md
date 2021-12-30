@@ -4,7 +4,7 @@
    <h1>
       Needle
       <sub>
-         <img src="https://raw.githubusercontent.com/MarcusOtter/discord-needle/custom-config/branding/logo-64x64.png" height="39" width="39">
+         <a href="#"><img src="https://raw.githubusercontent.com/MarcusOtter/discord-needle/custom-config/branding/logo-64x64.png" height="39" width="39"></a>
       </sub>
    </h1>
    <!--<a href="#"><img src="https://badgen.net/github/stars/MarcusOtter/discord-needle?scale=1"/></a>
