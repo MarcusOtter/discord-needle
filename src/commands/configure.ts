@@ -1,8 +1,8 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { ChannelType } from "discord-api-types";
-import { CommandInteraction, GuildMember } from "discord.js";
+import { CommandInteraction, GuildMember, GuildTextBasedChannel, Permissions } from "discord.js";
 import { disableAutothreading, enableAutothreading, getConfig, setMessage } from "../helpers/configHelpers";
-import { interactionReply, getMessage, MessageKey, isAutoThreadChannel } from "../helpers/messageHelpers";
+import { interactionReply, getMessage, MessageKey, isAutoThreadChannel, addMessageContext } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
 import { memberIsModerator } from "../helpers/permissionHelpers";
 
@@ -44,7 +44,7 @@ export const command: NeedleCommand = {
 			.addSubcommand(subcommand => {
 				return subcommand
 					.setName("autothreading")
-					.setDescription("Enable or disable automatic creation of threads when new messages are sent in a given channel")
+					.setDescription("Enable or disable automatic creation of threads on every new message in a channel")
 					.addChannelOption(option => {
 						return option
 							.setName("channel")
@@ -108,8 +108,8 @@ function configureMessage(interaction: CommandInteraction): Promise<void> {
 		: interactionReply(interaction, getMessage("ERR_UNKNOWN"));
 }
 
-function configureAutothreading(interaction: CommandInteraction): Promise<void> {
-	const channel = interaction.options.getChannel("channel");
+async function configureAutothreading(interaction: CommandInteraction): Promise<void> {
+	const channel = interaction.options.getChannel("channel") as GuildTextBasedChannel;
 	const enabled = interaction.options.getBoolean("enabled");
 	const customMessage = interaction.options.getString("custom-message") ?? "";
 
@@ -119,6 +119,15 @@ function configureAutothreading(interaction: CommandInteraction): Promise<void> 
 
 	if (!channel || enabled == null) {
 		return interactionReply(interaction, getMessage("ERR_PARAMETER_MISSING"));
+	}
+
+	const clientUser = interaction.client.user;
+	if (!clientUser) return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
+
+	const botMember = await interaction.guild.members.fetch(clientUser);
+	if (!botMember.permissionsIn(channel.id).has(Permissions.FLAGS.VIEW_CHANNEL)) {
+		addMessageContext({ channel: channel });
+		return interactionReply(interaction, getMessage("ERR_CHANNEL_VISIBILITY"));
 	}
 
 	if (enabled) {

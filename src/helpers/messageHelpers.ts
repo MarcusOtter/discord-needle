@@ -61,7 +61,13 @@ export function interactionReply(
 	interaction: BaseCommandInteraction | MessageComponentInteraction,
 	message?: string,
 	ephemeral = true): Promise<void> {
-	if (!message || message.length == 0) { return Promise.resolve(); }
+	if (!message || message.length == 0) {
+		return interaction.reply({
+			content: getMessage("ERR_UNKNOWN"),
+			ephemeral: true,
+		});
+	}
+
 	return interaction.reply({
 		content: message,
 		ephemeral: ephemeral,

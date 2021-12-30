@@ -11,9 +11,11 @@ const guildConfigsCache = new Map<string, NeedleConfig>();
 export function getConfig(guildId = ""): NeedleConfig {
 	const guildConfig = guildConfigsCache.get(guildId) ?? readConfigFromFile(guildId);
 
-	// I don't quite understand why I need to make copies here
-	// but if I don't, the default config is overriden
-	const defaultConfigCopy = JSON.parse(JSON.stringify(defaultConfig));
+	const defaultConfigCopy = JSON.parse(JSON.stringify(defaultConfig)) as NeedleConfig;
+	if (guildConfig) {
+		guildConfig.messages = Object.assign({}, defaultConfigCopy.messages, guildConfig?.messages);
+	}
+
 	return Object.assign({}, defaultConfigCopy, guildConfig);
 }
 
@@ -88,8 +90,16 @@ function setConfig(guild: Guild | null | undefined, config: NeedleConfig): boole
 	if (!fs.existsSync(CONFIGS_PATH)) {
 		fs.mkdirSync(CONFIGS_PATH);
 	}
-
 	config.threadChannels = config.threadChannels?.filter(val => val != null && val != undefined);
+
+	// Only save messages that are different from the defaults
+	const defaultConfigCopy = JSON.parse(JSON.stringify(defaultConfig)) as NeedleConfig;
+	if (defaultConfigCopy.messages && config.messages) {
+		for(const [key, message] of Object.entries(config.messages)) {
+			if (message !== defaultConfigCopy.messages[key as MessageKey]) continue;
+			delete config.messages[key as MessageKey];
+		}
+	}
 
 	fs.writeFileSync(path, JSON.stringify(config), { encoding: "utf-8" });
 	guildConfigsCache.set(guild.id, config);

@@ -2,8 +2,10 @@ import { GuildMember, Permissions } from "discord.js";
 
 export function getRequiredPermissions(): bigint[] {
 	const output = [
-		Permissions.FLAGS.USE_PUBLIC_THREADS,
+		Permissions.FLAGS.VIEW_CHANNEL,
+		Permissions.FLAGS.SEND_MESSAGES,
 		Permissions.FLAGS.SEND_MESSAGES_IN_THREADS,
+		Permissions.FLAGS.CREATE_PUBLIC_THREADS,
 		Permissions.FLAGS.READ_MESSAGE_HISTORY,
 	];
 

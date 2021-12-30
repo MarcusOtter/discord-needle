@@ -50,10 +50,11 @@
    ```
 3. Run `npm install`
 4. Make sure the bot has the required permissions in Discord:
-   - [x] Read messages
+   - [x] View channels
+   - [x] Send messages
    - [x] Send messages in threads
    - [x] Create public threads
-   - [x] Read message history 
+   - [x] Read message history
 5. Run `npm start`
 6. Deploy! :tada:
 
