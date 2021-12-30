@@ -13,7 +13,7 @@
       <td>
          <a href="https://needle.gg/invite">
             Invite Needle
-            <img src="https://user-images.githubusercontent.com/35617441/147720732-eadb9269-4ea2-4462-9949-dc20d74180bb.png" width="16" height="12"/>
+            <img src="https://discord.com/assets/3437c10597c1526c3dbd98c737c2bcae.svg" width="14" height="14"/>
          </a>
       </td>
    </tr>
