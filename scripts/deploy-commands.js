@@ -1,23 +1,51 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 // IMPORTANT: You need to `tsc` before running this script.
 
-// TODO: Make this a separate script when commands are more stable (don't try to run it on npm start)
+require("dotenv").config();
 
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 
 const { getOrLoadAllCommands } = require("../dist/handlers/commandHandler");
-const { getConfig } = require("../dist/helpers/configHelpers");
+const { getApiToken, getGuildId, getClientId } = require("../dist/helpers/configHelpers");
 
-const CONFIG = getConfig();
-if (!CONFIG) { return; }
-if (!CONFIG.dev) { return; }
-if (!CONFIG.dev.clientId || CONFIG.dev.clientId === "") { return; }
-if (!CONFIG.dev.guildId || CONFIG.dev.guildId === "") { return; }
+const API_TOKEN = getApiToken();
+const CLIENT_ID = getClientId();
+const GUILD_ID = getGuildId();
 
-const rest = new REST({ version: "9" }).setToken(CONFIG.discordApiToken);
+if (!API_TOKEN || !CLIENT_ID || !GUILD_ID) {
+	console.log("API_TOKEN, CLIENT_ID, or GUILD_ID was missing from the .env file: aborting command deployment");
+	console.log("Hint: If you just want to start the bot without developing commands, type \"npm start\" instead\n");
+	return;
+}
 
+const route = process.argv.some(x => x === "--global")
+	? Routes.applicationCommands(CLIENT_ID)
+	: Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID);
+
+const rest = new REST({ version: "9" }).setToken(API_TOKEN);
 (async () => {
+	const builders = await getSlashCommandBuilders();
+
+	try {
+		console.log(`Started deploying ${builders.length} application commands.`);
+		await rest.put(
+			route,
+			{ body: builders },
+		);
+		console.log("Successfully deployed application commands.\n");
+	}
+	catch (error) {
+		console.error(error);
+	}
+})();
+
+async function getSlashCommandBuilders() {
+	if (process.argv.some(x => x === "--undeploy")) {
+		console.log("Undeploying guild commands");
+		return [];
+	}
+
 	const allNeedleCommands = await getOrLoadAllCommands();
 	const allSlashCommandBuilders = [];
 	for (const command of allNeedleCommands) {
@@ -25,16 +53,5 @@ const rest = new REST({ version: "9" }).setToken(CONFIG.discordApiToken);
 		allSlashCommandBuilders.push(builder);
 	}
 
-	try {
-		console.log(`Started deploying ${allSlashCommandBuilders.length} application commands.`);
-		await rest.put(
-			Routes.applicationGuildCommands(CONFIG.dev.clientId, CONFIG.dev.guildId),
-			{ body: allSlashCommandBuilders },
-		);
-		console.log("Successfully deployed application commands.");
-	}
-	catch (error) {
-		console.error(error);
-	}
-})();
-
+	return allSlashCommandBuilders;
+}

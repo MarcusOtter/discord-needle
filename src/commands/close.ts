@@ -1,12 +1,12 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, GuildMember, MessageComponentInteraction, Permissions } from "discord.js";
-import { ephemeralReply, getThreadStartMessage } from "../helpers/messageHelpers";
+import { interactionReply, getThreadStartMessage, getMessage } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
 
 export const command: NeedleCommand = {
 	name: "close",
 	shortHelpDescription: "Closes a thread by setting the auto-archive duration to 1 hour",
-	longHelpDescription: "The close command lets thread owners set the auto-archive duration to 1 hour.\n\nWhen using auto-archive, the thread will automatically be archived when there have been no new messages in the thread for one hour. This can be undone by a server moderator by manually changing the auto-archive duration back to what it was previously, using Discord's own interface.",
+	longHelpDescription: "The close command sets the auto-archive duration to 1 hour in a thread.\n\nWhen using auto-archive, the thread will automatically be archived when there have been no new messages in the thread for one hour. This can be undone by a server moderator by manually changing the auto-archive duration back to what it was previously, using Discord's own interface.",
 
 	async getSlashCommandBuilder() {
 		return new SlashCommandBuilder()
@@ -18,29 +18,35 @@ export const command: NeedleCommand = {
 	async execute(interaction: CommandInteraction | MessageComponentInteraction): Promise<void> {
 		const member = interaction.member;
 		if (!(member instanceof GuildMember)) {
-			return ephemeralReply(interaction, "An unexpected error occurred.");
+			return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
 		}
 
 		const channel = interaction.channel;
 		if (!channel?.isThread()) {
-			return ephemeralReply(interaction, "You can only use this command inside a thread.");
+			return interactionReply(interaction, getMessage("ERR_ONLY_IN_THREAD"));
+		}
+
+		if (channel.autoArchiveDuration === 60) {
+			return interactionReply(interaction, getMessage("ERR_NO_EFFECT"));
+		}
+
+		const hasChangeTitlePermissions = member.permissionsIn(channel).has(Permissions.FLAGS.MANAGE_THREADS, true);
+		if (hasChangeTitlePermissions) {
+			await channel.setAutoArchiveDuration(60);
+			await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE"), false);
+			return;
 		}
 
 		const parentMessage = await getThreadStartMessage(channel);
 		if (!parentMessage) {
-			return ephemeralReply(interaction, "Could not find the start message of this thread.");
+			return interactionReply(interaction, getMessage("ERR_THREAD_MESSAGE_MISSING"));
 		}
 
-		const hasChangeTitlePermissions = member.permissionsIn(channel).has(Permissions.FLAGS.MANAGE_THREADS, true);
-		if (!hasChangeTitlePermissions && parentMessage.author !== interaction.user) {
-			return ephemeralReply(interaction, "You need to be the thread owner to close the thread.");
-		}
-
-		if (channel.autoArchiveDuration === 60) {
-			return ephemeralReply(interaction, "This server already has the auto-archive duration set to one hour.");
+		if (parentMessage.author !== interaction.user) {
+			return interactionReply(interaction, getMessage("ERR_ONLY_THREAD_OWNER"));
 		}
 
 		await channel.setAutoArchiveDuration(60);
-		await interaction.reply(`**This thread will be archived soon** :card_box:\n\nAs requested by <@${member.user.id}>, this thread will automatically be archived when one hour passes without any new messages.\n\nThe thread's content will still be searchable with Discord's search function, and anyone will be able to un-archive it at any point in the future by simply sending a message in the thread again.\n\nA server moderator can undo this action by manually setting the auto-archive duration back to what it was previously.`);
+		await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE"), false);
 	},
 };

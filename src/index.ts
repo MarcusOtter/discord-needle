@@ -2,18 +2,20 @@ import { Client, Intents } from "discord.js";
 import { getOrLoadAllCommands } from "./handlers/commandHandler";
 import { handleInteractionCreate } from "./handlers/interactionHandler";
 import { handleMessageCreate } from "./handlers/messageHandler";
-import { getConfig } from "./helpers/configHelpers";
+import { getApiToken } from "./helpers/configHelpers";
 
-const CLIENT = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
-
-CLIENT.once("ready", async () => {
-	console.log("Ready!");
+(async () => {
+	(await import("dotenv")).config();
 
 	// Initial load of all commands
-	await getOrLoadAllCommands();
-});
+	await getOrLoadAllCommands(false);
 
-CLIENT.on("interactionCreate", interaction => handleInteractionCreate(interaction));
-CLIENT.on("messageCreate", message => handleMessageCreate(message));
+	const CLIENT = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+	CLIENT.once("ready", () => console.log("Ready!"));
 
-CLIENT.login(getConfig().discordApiToken);
+	CLIENT.on("interactionCreate", interaction => handleInteractionCreate(interaction).catch(e => console.log(e)));
+	CLIENT.on("messageCreate", message => handleMessageCreate(message).catch(e => console.log(e)));
+
+	CLIENT.login(getApiToken() ?? undefined);
+})();
+

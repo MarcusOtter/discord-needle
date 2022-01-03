@@ -1,5 +1,6 @@
-import { Message, MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
+import { Message, MessageActionRow, MessageButton, NewsChannel, TextChannel } from "discord.js";
 import { getConfig } from "../helpers/configHelpers";
+import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel } from "../helpers/messageHelpers";
 import { getRequiredPermissions } from "../helpers/permissionHelpers";
 
 export async function handleMessageCreate(message: Message): Promise<void> {
@@ -19,10 +20,9 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 	if (message.system) return;
 	if (authorUser.bot) return;
 	if (!channel.isText()) return;
+	if (!(channel instanceof TextChannel) && !(channel instanceof NewsChannel)) return;
 	if (message.hasThread) return;
-
-	const config = getConfig();
-	if (!config?.threadChannels?.includes(channel.id)) return;
+	if (!isAutoThreadChannel(channel.id, guild.id)) return;
 
 	const botMember = await guild.members.fetch(clientUser);
 	const botPermissions = botMember.permissionsIn(message.channel.id);
@@ -39,6 +39,12 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 		return;
 	}
 
+	addMessageContext({
+		user: authorUser,
+		channel: channel,
+		message: message,
+	});
+
 	const creationDate = message.createdAt.toISOString().slice(0, 10);
 	const authorName = authorMember === null || authorMember.nickname === null
 		? authorUser.username
@@ -46,24 +52,29 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 
 	const thread = await message.startThread({
 		name: `${authorName} (${creationDate})`,
-		autoArchiveDuration: <60 | 1440 | 4320 | 10080 | "MAX"> config.threadArchiveDuration,
+		autoArchiveDuration: channel.defaultAutoArchiveDuration,
 	});
 
 	const closeButton = new MessageButton()
 		.setCustomId("close")
-		.setLabel("Close thread")
+		.setLabel("Archive thread")
 		.setStyle("DANGER")
-		.setEmoji("🗑️");
+		.setEmoji("🗃️");
 
 	const buttonRow = new MessageActionRow().addComponents(closeButton);
 
-	const channelMention = `<#${channel.id}>`;
-	const relativeTimestamp = `<t:${Math.round(message.createdTimestamp / 1000)}:R>`;
+	const overrideMessageContent = getConfig(guild.id).threadChannels?.find(x => x?.channelId === channel.id)?.messageContent;
+	const msgContent = overrideMessageContent
+		? overrideMessageContent
+		: getMessage("SUCCESS_THREAD_CREATE");
 
-	await thread.send({
-		content: `Hello <@${authorUser.id}>! This helpful thread has been automatically created from your message in ${channelMention} ${relativeTimestamp}.\n\nWant to unsubscribe from this thread? Right-click the thread (or use the \`...\` menu) and select **Leave Thread**.\n\nIf you are done using this thread, you can click the button below to close this thread.`,
-		components: [buttonRow],
-	});
+	if (msgContent && msgContent.length > 0) {
+		await thread.send({
+			content: msgContent,
+			components: [buttonRow],
+		});
+	}
 
 	await thread.leave();
+	resetMessageContext();
 }

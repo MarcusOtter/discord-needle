@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, MessageActionRow, MessageEmbed } from "discord.js";
-import { APIApplicationCommandOption } from "discord.js/node_modules/discord-api-types";
+import { APIApplicationCommandOption } from "discord-api-types";
 import { getCommand, getOrLoadAllCommands } from "../handlers/commandHandler";
 import { getBugReportButton, getDiscordInviteButton, getFeatureRequestButton } from "../helpers/messageHelpers";
 import { NeedleCommand } from "../types/needleCommand";
@@ -38,7 +38,6 @@ export const command: NeedleCommand = {
 				ephemeral: true,
 			});
 		}
-
 	},
 };
 
@@ -49,7 +48,7 @@ async function getCommandDetailsEmbed(commandName: string): Promise<MessageEmbed
 	const cmdOptionString = await getCommandOptionString(cmd);
 	const cmdOptions = await getCommandOptions(cmd);
 	let cmdOptionExplanations = "";
-	for (const option of cmdOptions) {
+	for (const option of cmdOptions ?? []) {
 		cmdOptionExplanations += `\`${option.name}\` - ${option.required ? "" : "(optional)"} ${option.description}\n`;
 	}
 
@@ -66,7 +65,7 @@ async function getCommandDetailsEmbed(commandName: string): Promise<MessageEmbed
 }
 
 async function getAllCommandsEmbed(): Promise<MessageEmbed> {
-	const embed = new MessageEmbed().setTitle("Needle Commands  🪡"); // :sewing_needle:
+	const embed = new MessageEmbed().setTitle("🪡  Needle Commands"); // :sewing_needle:
 	const commands = await getOrLoadAllCommands();
 	for (const cmd of commands) {
 		// Help command gets special treatment
@@ -83,6 +82,8 @@ async function getAllCommandsEmbed(): Promise<MessageEmbed> {
 
 async function getCommandOptionString(cmd: NeedleCommand): Promise<string> {
 	const commandInfo = await cmd.getSlashCommandBuilder();
+	if (!commandInfo.options) { return ""; }
+
 	let output = "";
 	for (const option of commandInfo.options) {
 		output += `  \`${option.name}${option.required ? "" : "?"}\``;
@@ -90,7 +91,7 @@ async function getCommandOptionString(cmd: NeedleCommand): Promise<string> {
 	return output;
 }
 
-async function getCommandOptions(cmd: NeedleCommand): Promise<APIApplicationCommandOption[]> {
+async function getCommandOptions(cmd: NeedleCommand): Promise<APIApplicationCommandOption[] | undefined> {
 	const commandInfo = await cmd.getSlashCommandBuilder();
 	return commandInfo.options;
 }
