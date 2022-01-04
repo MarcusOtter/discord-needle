@@ -1,13 +1,13 @@
 ---
-name: "\U0001F4A1 Feature request"
-about: Suggest an idea for this project
-title: "\U0001F4A1 Feature: "
-labels: "feature request \U0001F4A1"
+name: "\U0001F4A1 Improvement"
+about: Suggest an improvement for this project
+title: "\U0001F4A1 Improvement: "
+labels: "improvement \U0001F4A1"
 assignees: ''
 
 ---
 
-**Is your feature request related to a problem? Please describe.**
+**Is your request for improvement related to a problem? Please describe.**
 A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
 **Describe the solution you'd like**
