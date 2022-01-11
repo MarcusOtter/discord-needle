@@ -100,7 +100,7 @@ export function getDiscordInviteButton(buttonText = "Join the support server"): 
 		.setLabel(buttonText)
 		.setStyle("LINK")
 		.setURL("https://discord.gg/8BmnndXHp6")
-		.setEmoji("888980792271859732"); // :discord_light:
+		.setEmoji("930584823473516564"); // :discord_light:
 }
 
 export function getGithubRepoButton(buttonText = "Source code"): MessageButton {
