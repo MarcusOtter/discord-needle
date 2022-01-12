@@ -1,13 +1,13 @@
 import {
 	BaseCommandInteraction,
-	Message,
+	type Message,
 	MessageButton,
 	MessageComponentInteraction,
-	TextBasedChannels,
+	type TextBasedChannel,
 } from "discord.js";
 
-import { MessageContext } from "../types/messageContext";
-import { NeedleConfig } from "../types/needleConfig";
+import type { MessageContext } from "../types/messageContext";
+import type { NeedleConfig } from "../types/needleConfig";
 import { getConfig } from "./configHelpers";
 
 let context: MessageContext = {};
@@ -27,7 +27,7 @@ export function isAutoThreadChannel(channelId: string, guildId: string): boolean
 	return config?.threadChannels?.some(x => x?.channelId === channelId) ?? false;
 }
 
-export async function getThreadStartMessage(threadChannel: TextBasedChannels | null): Promise<Message | null> {
+export async function getThreadStartMessage(threadChannel: TextBasedChannel | null): Promise<Message | null> {
 	if (!threadChannel?.isThread()) { return null; }
 	if (!threadChannel.parentId) { return null; }
 
@@ -75,7 +75,7 @@ export function interactionReply(
 }
 
 export function getMessage(messageKey: MessageKey, replaceVariables = true): string | undefined {
-	const config = getConfig(context?.interaction?.guildId);
+	const config = getConfig(context?.interaction?.guildId!);
 	if (!config.messages) { return ""; }
 
 	const message = config.messages[messageKey];

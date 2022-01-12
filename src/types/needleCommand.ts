@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, MessageComponentInteraction } from "discord.js";
+import type { CommandInteraction, MessageComponentInteraction } from "discord.js";
 
 export interface NeedleCommand {
 	name: string;

@@ -3,7 +3,7 @@ import { ChannelType } from "discord-api-types";
 import { CommandInteraction, GuildMember, GuildTextBasedChannel, Permissions } from "discord.js";
 import { disableAutothreading, enableAutothreading, getConfig, resetConfigToDefault, setMessage } from "../helpers/configHelpers";
 import { interactionReply, getMessage, MessageKey, isAutoThreadChannel, addMessageContext } from "../helpers/messageHelpers";
-import { NeedleCommand } from "../types/needleCommand";
+import type { NeedleCommand } from "../types/needleCommand";
 import { memberIsModerator } from "../helpers/permissionHelpers";
 
 // Note:
@@ -125,7 +125,7 @@ async function configureAutothreading(interaction: CommandInteraction): Promise<
 	const enabled = interaction.options.getBoolean("enabled");
 	const customMessage = interaction.options.getString("custom-message") ?? "";
 
-	if (!interaction.guild) {
+	if (!interaction.guild || !interaction.guildId) {
 		return interactionReply(interaction, getMessage("ERR_ONLY_IN_SERVER"));
 	}
 

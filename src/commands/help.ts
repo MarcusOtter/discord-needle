@@ -3,7 +3,7 @@ import { CommandInteraction, MessageActionRow, MessageEmbed } from "discord.js";
 import { APIApplicationCommandOption } from "discord-api-types";
 import { getCommand, getOrLoadAllCommands } from "../handlers/commandHandler";
 import { getBugReportButton, getDiscordInviteButton, getFeatureRequestButton } from "../helpers/messageHelpers";
-import { NeedleCommand } from "../types/needleCommand";
+import type { NeedleCommand } from "../types/needleCommand";
 
 export const command: NeedleCommand = {
 	name: "help",
