@@ -1,4 +1,4 @@
-import { CommandInteraction, MessageComponentInteraction } from "discord.js";
+import { type CommandInteraction, type MessageComponentInteraction } from "discord.js";
 import { promises } from "fs";
 import { resolve as pathResolve } from "path";
 import { getMessage, interactionReply } from "../helpers/messageHelpers";

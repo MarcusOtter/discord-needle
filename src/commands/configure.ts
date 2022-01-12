@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { ChannelType } from "discord-api-types";
-import { CommandInteraction, GuildMember, GuildTextBasedChannel, Permissions } from "discord.js";
+import { type CommandInteraction, GuildMember, type GuildTextBasedChannel, Permissions } from "discord.js";
 import { disableAutothreading, enableAutothreading, getConfig, resetConfigToDefault, setMessage } from "../helpers/configHelpers";
 import { interactionReply, getMessage, MessageKey, isAutoThreadChannel, addMessageContext } from "../helpers/messageHelpers";
 import type { NeedleCommand } from "../types/needleCommand";

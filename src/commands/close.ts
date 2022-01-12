@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, GuildMember, MessageComponentInteraction, Permissions } from "discord.js";
+import { type CommandInteraction, GuildMember, MessageComponentInteraction, Permissions } from "discord.js";
 import { interactionReply, getThreadStartMessage, getMessage } from "../helpers/messageHelpers";
 import type { NeedleCommand } from "../types/needleCommand";
 
