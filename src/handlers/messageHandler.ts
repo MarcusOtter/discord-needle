@@ -1,7 +1,7 @@
 import { Message, MessageActionRow, MessageButton, NewsChannel, TextChannel } from "discord.js";
 import { getConfig } from "../helpers/configHelpers";
 import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel } from "../helpers/messageHelpers";
-import { getRequiredPermissions } from "../helpers/permissionHelpers";
+import { getRequiredPermissions, getSafeDefaultAutoArchiveDuration } from "../helpers/permissionHelpers";
 
 export async function handleMessageCreate(message: Message): Promise<void> {
 	const clientUser = message.client.user;
@@ -18,7 +18,7 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 	const channel = message.channel;
 
 	if (message.system) return;
-	if (authorUser.bot) return;
+	if (authorUser.bot) return; // TODO: Make configurable, some users want this to be allowed (in certain channels)
 	if (!channel.isText()) return;
 	if (!(channel instanceof TextChannel) && !(channel instanceof NewsChannel)) return;
 	if (message.hasThread) return;
@@ -52,7 +52,7 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 
 	const thread = await message.startThread({
 		name: `${authorName} (${creationDate})`,
-		autoArchiveDuration: channel.defaultAutoArchiveDuration,
+		autoArchiveDuration: getSafeDefaultAutoArchiveDuration(channel),
 	});
 
 	const closeButton = new MessageButton()
