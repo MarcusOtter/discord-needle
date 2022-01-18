@@ -26,14 +26,16 @@ export const command: NeedleCommand = {
 			return interactionReply(interaction, getMessage("ERR_ONLY_IN_THREAD"));
 		}
 
-		if (channel.autoArchiveDuration === 60) {
+		// Invoking slash commands seem to unarchive the threads for now so ironically, this has no effect
+		// Leaving this in if Discord decides to change their API around this
+		if (channel.archived) {
 			return interactionReply(interaction, getMessage("ERR_NO_EFFECT"));
 		}
 
 		const hasChangeTitlePermissions = member.permissionsIn(channel).has(Permissions.FLAGS.MANAGE_THREADS, true);
 		if (hasChangeTitlePermissions) {
-			await channel.setAutoArchiveDuration(60);
 			await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE"), false);
+			await channel.setArchived(true);
 			return;
 		}
 
@@ -46,7 +48,7 @@ export const command: NeedleCommand = {
 			return interactionReply(interaction, getMessage("ERR_ONLY_THREAD_OWNER"));
 		}
 
-		await channel.setAutoArchiveDuration(60);
 		await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE"), false);
+		await channel.setArchived(true);
 	},
 };
