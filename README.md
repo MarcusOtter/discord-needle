@@ -19,7 +19,7 @@
 </div>
 
 ## Self-hosting
-This step-by-step guide assumes you have [NodeJS](https://nodejs.org/en/) version `16.6.0` or higher and that you have a Discord Bot user set up at [Discord's developer page](https://discord.com/developers/applications).
+This step-by-step guide assumes you have [NodeJS](https://nodejs.org/en/) version `16.6.0` or higher installed and that you have a Discord Bot user set up at [Discord's developer page](https://discord.com/developers/applications).
 
 1. Clone the repository
 2. Create a file named `.env`  in the root directory and insert the Discord API token for your bot:
