@@ -76,6 +76,7 @@ export function resetConfigToDefault(guildId: string): boolean {
 	if (!fs.existsSync(path)) return false;
 	fs.rmSync(path);
 	guildConfigsCache.delete(guildId);
+	console.log(`Deleted data for guild ${guildId}`);
 	return true;
 }
 
@@ -90,7 +91,6 @@ export function deleteConfigsFromUnkownServers(client: Client): void {
 		const guildId = file.split(".")[0];
 		if (!client.guilds.cache.has(guildId)) {
 			resetConfigToDefault(guildId);
-			console.log(`Deleted config for guild ${guildId}`);
 		}
 	});
 }

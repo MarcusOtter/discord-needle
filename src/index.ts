@@ -18,10 +18,7 @@ import { deleteConfigsFromUnkownServers, getApiToken, resetConfigToDefault } fro
 
 	CLIENT.on("interactionCreate", interaction => handleInteractionCreate(interaction).catch(e => console.log(e)));
 	CLIENT.on("messageCreate", message => handleMessageCreate(message).catch(e => console.log(e)));
-	CLIENT.on("guildDelete", guild => {
-		resetConfigToDefault(guild.id);
-		console.log(`Deleted data for guild ${guild.id}`);
-	});
+	CLIENT.on("guildDelete", guild => { resetConfigToDefault(guild.id); });
 
 	CLIENT.login(getApiToken() ?? undefined);
 })();
