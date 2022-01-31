@@ -13,13 +13,29 @@ const API_TOKEN = getApiToken();
 const CLIENT_ID = getClientId();
 const GUILD_ID = getGuildId();
 
-if (!API_TOKEN || !CLIENT_ID || !GUILD_ID) {
-	console.log("API_TOKEN, CLIENT_ID, or GUILD_ID was missing from the .env file: aborting command deployment");
-	console.log("Hint: If you just want to start the bot without developing commands, type \"npm start\" instead\n");
+const isGlobal = process.argv.some(x => x === "--global");
+const isUndeploy = process.argv.some(x => x === "--undeploy");
+
+if (!API_TOKEN || !CLIENT_ID) {
+	console.log("Aborting command deployment");
+	console.log("DISCORD_API_TOKEN or CLIENT_ID missing from the .env file.\n");
 	return;
 }
 
-const route = process.argv.some(x => x === "--global")
+if (isUndeploy && !GUILD_ID) {
+	console.log("Aborting undeployment of guild commands");
+	console.log("GUILD_ID is missing from the .env file, assuming no guild commands need to be undeployed.\n");
+	return;
+}
+
+if (!isGlobal && !GUILD_ID) {
+	console.log("Aborting guild command deployment");
+	console.log("GUILD_ID is missing from the .env file.");
+	console.log("Hint: If you just want to start the bot without developing new commands, type \"npm start\" instead\n");
+	return;
+}
+
+const route = isGlobal
 	? Routes.applicationCommands(CLIENT_ID)
 	: Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID);
 
@@ -41,7 +57,7 @@ const rest = new REST({ version: "9" }).setToken(API_TOKEN);
 })();
 
 async function getSlashCommandBuilders() {
-	if (process.argv.some(x => x === "--undeploy")) {
+	if (isUndeploy) {
 		console.log("Undeploying guild commands");
 		return [];
 	}
