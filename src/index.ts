@@ -1,12 +1,8 @@
 import { Client, Intents } from "discord.js";
-import { resolve as pathResolve } from "path";
-import { readdirSync } from "fs";
 import { getOrLoadAllCommands } from "./handlers/commandHandler";
 import { handleInteractionCreate } from "./handlers/interactionHandler";
 import { handleMessageCreate } from "./handlers/messageHandler";
-import { getApiToken, resetConfigToDefault } from "./helpers/configHelpers";
-
-const CONFIGS_PATH = pathResolve(__dirname, "../configs");
+import { deleteConfigsFromUnkownServers, getApiToken, resetConfigToDefault } from "./helpers/configHelpers";
 
 (async () => {
 	(await import("dotenv")).config();
@@ -17,20 +13,7 @@ const CONFIGS_PATH = pathResolve(__dirname, "../configs");
 	const CLIENT = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 	CLIENT.once("ready", () => {
 		console.log("Ready!");
-
-		if (!CLIENT.guilds.cache.size) {
-			console.warn("No guilds available; skipping config deletion.");
-			return;
-		}
-
-		const files = readdirSync(CONFIGS_PATH);
-		files.forEach(file => {
-			const id = file.split(".")[0];
-			if (!CLIENT.guilds.cache.has(id)) {
-				resetConfigToDefault(id);
-				console.log(`Deleted config for guild ${id}`);
-			}
-		});
+		deleteConfigsFromUnkownServers(CLIENT);
 	});
 
 	CLIENT.on("interactionCreate", interaction => handleInteractionCreate(interaction).catch(e => console.log(e)));
