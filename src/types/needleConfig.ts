@@ -16,6 +16,7 @@ export interface NeedleConfig {
         ERR_THREAD_MESSAGE_MISSING?: string,
 
         SUCCESS_THREAD_CREATE?: string,
-        SUCCESS_THREAD_ARCHIVE?: string,
+        SUCCESS_THREAD_ARCHIVE_IMMEDIATE?: string,
+        SUCCESS_THREAD_ARCHIVE_SLOW?: string,
     },
 }

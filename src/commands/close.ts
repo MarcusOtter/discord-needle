@@ -54,7 +54,7 @@ export const command: NeedleCommand = {
 			const config = getConfig(thread.guildId);
 
 			if (config.archiveImmediately) {
-				await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE"), false);
+				await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE_IMMEDIATE"), false);
 				await thread.setArchived(true);
 				return;
 			}
@@ -63,7 +63,7 @@ export const command: NeedleCommand = {
 				return interactionReply(interaction, getMessage("ERR_NO_EFFECT"));
 			}
 
-			await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE"), false);
+			await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE_SLOW"), false);
 			await thread.setAutoArchiveDuration(60);
 		}
 	},

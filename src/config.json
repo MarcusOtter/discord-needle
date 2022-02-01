@@ -17,6 +17,7 @@
         "ERR_THREAD_MESSAGE_MISSING": "The starting message for this thread could not be found, which prevents this action from being performed.",
 
         "SUCCESS_THREAD_CREATE": "This thread has been automatically created from your message in $CHANNEL.\n**Helpful commands**: `/title`, `/close`, `/help`",
-        "SUCCESS_THREAD_ARCHIVE": "This thread was archived by $USER. You can send a message in the thread to unarchive it."
+        "SUCCESS_THREAD_ARCHIVE_IMMEDIATE": "This thread was archived by $USER. You can send a message to unarchive it.",
+        "SUCCESS_THREAD_ARCHIVE_SLOW": "This thread will be archived automatically after 1 hour of inactivity as requested by $USER."
     }
 }
