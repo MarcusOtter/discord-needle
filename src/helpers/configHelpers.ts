@@ -76,7 +76,23 @@ export function resetConfigToDefault(guildId: string): boolean {
 	if (!fs.existsSync(path)) return false;
 	fs.rmSync(path);
 	guildConfigsCache.delete(guildId);
+	console.log(`Deleted data for guild ${guildId}`);
 	return true;
+}
+
+export function deleteConfigsFromUnkownServers(client: Client): void {
+	if (!client.guilds.cache.size) {
+		console.warn("No guilds available; skipping config deletion.");
+		return;
+	}
+
+	const configFiles = fs.readdirSync(CONFIGS_PATH);
+	configFiles.forEach(file => {
+		const guildId = file.split(".")[0];
+		if (!client.guilds.cache.has(guildId)) {
+			resetConfigToDefault(guildId);
+		}
+	});
 }
 
 function readConfigFromFile(guildId: string): NeedleConfig | undefined {
