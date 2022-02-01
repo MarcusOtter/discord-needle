@@ -1,4 +1,4 @@
-import { Message, MessageActionRow, MessageButton, NewsChannel, TextChannel } from "discord.js";
+import { type Message, MessageActionRow, MessageButton, NewsChannel, TextChannel } from "discord.js";
 import { getConfig } from "../helpers/configHelpers";
 import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel } from "../helpers/messageHelpers";
 import { getRequiredPermissions, getSafeDefaultAutoArchiveDuration } from "../helpers/permissionHelpers";

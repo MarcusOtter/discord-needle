@@ -1,8 +1,8 @@
-import { CommandInteraction, MessageComponentInteraction } from "discord.js";
+import { type CommandInteraction, type MessageComponentInteraction } from "discord.js";
 import { promises } from "fs";
 import { resolve as pathResolve } from "path";
 import { getMessage, interactionReply } from "../helpers/messageHelpers";
-import { NeedleCommand } from "../types/needleCommand";
+import type { NeedleCommand } from "../types/needleCommand";
 
 const COMMANDS_PATH = pathResolve(__dirname, "../commands");
 

@@ -1,4 +1,4 @@
-import { Interaction } from "discord.js";
+import type { Interaction } from "discord.js";
 import { resetMessageContext, addMessageContext } from "../helpers/messageHelpers";
 import { handleButtonClickedInteraction, handleCommandInteraction } from "./commandHandler";
 
