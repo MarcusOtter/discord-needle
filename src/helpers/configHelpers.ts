@@ -1,8 +1,8 @@
-import { Client, Guild } from "discord.js";
+import type { Client, Guild } from "discord.js";
 import * as defaultConfig from "../config.json";
 import { resolve as pathResolve } from "path";
 import * as fs from "fs";
-import { NeedleConfig } from "../types/needleConfig";
+import type { NeedleConfig } from "../types/needleConfig";
 import { MessageKey } from "./messageHelpers";
 
 const CONFIGS_PATH = pathResolve(__dirname, "../../configs");

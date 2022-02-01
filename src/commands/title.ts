@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, GuildMember, Permissions } from "discord.js";
+import { type CommandInteraction, GuildMember, Permissions } from "discord.js";
 import { interactionReply, getThreadStartMessage, getMessage } from "../helpers/messageHelpers";
-import { NeedleCommand } from "../types/needleCommand";
+import type { NeedleCommand } from "../types/needleCommand";
 
 export const command: NeedleCommand = {
 	name: "title",
