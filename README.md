@@ -36,3 +36,6 @@ This step-by-step guide assumes you have [NodeJS](https://nodejs.org/en/) versio
 Coming soon :tm:
 
 [Join the Discord](https://needle.gg/chat) if interested!
+
+## License
+This program is released under [version 3 of the GNU Affero General Public License](LICENSE).
