@@ -18,7 +18,7 @@ import { deleteConfigsFromUnkownServers, getApiToken, resetConfigToDefault } fro
 		],
 		presence: {
 			activities: [{
-				type: ActivityTypes.WATCHING,
+				type: ActivityTypes.LISTENING,
 				name: "/help",
 			}],
 		},

@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { type CommandInteraction, GuildMember, MessageComponentInteraction, Permissions } from "discord.js";
+import { type CommandInteraction, GuildMember, MessageComponentInteraction, Permissions, ThreadChannel } from "discord.js";
+import { getConfig } from "../helpers/configHelpers";
 import { interactionReply, getThreadStartMessage, getMessage } from "../helpers/messageHelpers";
 import type { NeedleCommand } from "../types/needleCommand";
 
@@ -32,10 +33,9 @@ export const command: NeedleCommand = {
 			return interactionReply(interaction, getMessage("ERR_NO_EFFECT"));
 		}
 
-		const hasChangeTitlePermissions = member.permissionsIn(channel).has(Permissions.FLAGS.MANAGE_THREADS, true);
-		if (hasChangeTitlePermissions) {
-			await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE"), false);
-			await channel.setArchived(true);
+		const hasManageThreadsPermissions = member.permissionsIn(channel).has(Permissions.FLAGS.MANAGE_THREADS, true);
+		if (hasManageThreadsPermissions) {
+			await archiveThread(channel);
 			return;
 		}
 
@@ -48,7 +48,23 @@ export const command: NeedleCommand = {
 			return interactionReply(interaction, getMessage("ERR_ONLY_THREAD_OWNER"));
 		}
 
-		await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE"), false);
-		await channel.setArchived(true);
+		await archiveThread(channel);
+
+		async function archiveThread(thread: ThreadChannel) {
+			const config = getConfig(thread.guildId);
+
+			if (config.archiveImmediately) {
+				await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE"), false);
+				await thread.setArchived(true);
+				return;
+			}
+
+			if (thread.autoArchiveDuration === 60) {
+				return interactionReply(interaction, getMessage("ERR_NO_EFFECT"));
+			}
+
+			await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE"), false);
+			await thread.setAutoArchiveDuration(60);
+		}
 	},
 };

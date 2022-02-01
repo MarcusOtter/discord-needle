@@ -1,5 +1,6 @@
 export interface NeedleConfig {
     threadChannels?: { channelId: string, messageContent: string }[];
+    archiveImmediately: boolean;
     messages?: {
         ERR_UNKNOWN?: string,
         ERR_ONLY_IN_SERVER?: string,

@@ -1,4 +1,4 @@
-import { GuildMember, NewsChannel, Permissions, TextChannel, ThreadAutoArchiveDuration } from "discord.js";
+import { type GuildMember, type NewsChannel, Permissions, type TextChannel, type ThreadAutoArchiveDuration } from "discord.js";
 
 export function getRequiredPermissions(): bigint[] {
 	const output = [

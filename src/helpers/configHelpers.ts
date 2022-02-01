@@ -80,6 +80,14 @@ export function resetConfigToDefault(guildId: string): boolean {
 	return true;
 }
 
+export function setArchiveImmediately(guild: Guild | null, value: boolean): boolean {
+	const config = getConfig(guild?.id);
+	if (!config) return false;
+
+	config.archiveImmediately = value;
+	return setConfig(guild, config);
+}
+
 export function deleteConfigsFromUnkownServers(client: Client): void {
 	if (!client.guilds.cache.size) {
 		console.warn("No guilds available; skipping config deletion.");
