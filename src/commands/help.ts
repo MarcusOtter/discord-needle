@@ -21,7 +21,7 @@ export const command: NeedleCommand = {
 				getBugReportButton(),
 				getFeatureRequestButton());
 
-		const commandName = interaction.options.getString("command");
+		const commandName = interaction.options?.getString("command");
 		if (commandName) { // User wrote for example "/help title"
 			const commandsEmbed = await getCommandDetailsEmbed(commandName);
 			await interaction.reply({

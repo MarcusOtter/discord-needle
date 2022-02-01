@@ -1,6 +1,6 @@
 import { type Message, MessageActionRow, MessageButton, NewsChannel, TextChannel } from "discord.js";
 import { getConfig } from "../helpers/configHelpers";
-import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel } from "../helpers/messageHelpers";
+import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel, getHelpButton } from "../helpers/messageHelpers";
 import { getRequiredPermissions, getSafeDefaultAutoArchiveDuration } from "../helpers/permissionHelpers";
 
 export async function handleMessageCreate(message: Message): Promise<void> {
@@ -58,10 +58,12 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 	const closeButton = new MessageButton()
 		.setCustomId("close")
 		.setLabel("Archive thread")
-		.setStyle("DANGER")
-		.setEmoji("🗃️");
+		.setStyle("SUCCESS")
+		.setEmoji("937932140014866492"); // :archive:
 
-	const buttonRow = new MessageActionRow().addComponents(closeButton);
+	const helpButton = getHelpButton();
+
+	const buttonRow = new MessageActionRow().addComponents(closeButton, helpButton);
 
 	const overrideMessageContent = getConfig(guild.id).threadChannels?.find(x => x?.channelId === channel.id)?.messageContent;
 	const msgContent = overrideMessageContent

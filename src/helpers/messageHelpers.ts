@@ -75,7 +75,7 @@ export function interactionReply(
 }
 
 export function getMessage(messageKey: MessageKey, replaceVariables = true): string | undefined {
-	const config = getConfig(context?.interaction?.guildId!);
+	const config = getConfig(context?.interaction?.guildId ?? undefined);
 	if (!config.messages) { return ""; }
 
 	const message = config.messages[messageKey];
@@ -127,9 +127,10 @@ export function getFeatureRequestButton(buttonText = "Suggest an improvement"): 
 		.setEmoji("💡");
 }
 
-export function getCloseConfigChannelButton(): MessageButton {
+export function getHelpButton(): MessageButton {
 	return new MessageButton()
-		.setCustomId("close-config-channel")
-		.setLabel("Close channel")
-		.setStyle("DANGER");
+		.setCustomId("help")
+		.setLabel("Commands")
+		.setStyle("SECONDARY")
+		.setEmoji("937931337942306877"); // :slash_commands:
 }
