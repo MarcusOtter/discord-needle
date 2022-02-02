@@ -16,15 +16,13 @@
 // ________________________________________________________________________________________________
 
 import { Client, Intents } from "discord.js";
-import { ActivityTypes } from "discord.js/typings/enums";
 import { getOrLoadAllCommands } from "./handlers/commandHandler";
 import { handleInteractionCreate } from "./handlers/interactionHandler";
 import { handleMessageCreate } from "./handlers/messageHandler";
 import { handleThreadUpdate } from "./handlers/threadHandler";
 import { deleteConfigsFromUnkownServers, getApiToken, resetConfigToDefault } from "./helpers/configHelpers";
 
-console.log(
-`Needle, a Discord bot that declutters your server by creating threads
+console.log(`Needle, a Discord bot that declutters your server by creating threads
 Copyright (C) 2022  Marcus Otterström
 
 This program is free software: you can redistribute it and/or modify
@@ -54,7 +52,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 		],
 		presence: {
 			activities: [{
-				type: ActivityTypes.LISTENING,
+				type: "LISTENING",
 				name: "/help",
 			}],
 		},
