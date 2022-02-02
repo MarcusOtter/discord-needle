@@ -30,7 +30,7 @@ export function getRequiredPermissions(): bigint[] {
 }
 
 export function memberIsModerator(member: GuildMember): boolean {
-	return member.permissions.has(Permissions.FLAGS.KICK_MEMBERS, true);
+	return member.permissions.has(Permissions.FLAGS.KICK_MEMBERS);
 }
 
 export function memberIsAdmin(member: GuildMember): boolean {
