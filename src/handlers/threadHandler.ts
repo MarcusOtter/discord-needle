@@ -15,25 +15,35 @@
 //
 // ________________________________________________________________________________________________
 
-export interface NeedleConfig {
-    threadChannels?: { channelId: string, messageContent: string }[];
-    archiveImmediately: boolean;
-    messages?: {
-        ERR_UNKNOWN?: string,
-        ERR_ONLY_IN_SERVER?: string,
-        ERR_ONLY_IN_THREAD?: string,
-        ERR_ONLY_THREAD_OWNER?: string,
-        ERR_NO_EFFECT?: string,
-        ERR_JSON_MISSING?: string,
-        ERR_JSON_INVALID?: string,
-        ERR_CONFIG_INVALID?: string;
-        ERR_PARAMETER_MISSING?: string,
-        ERR_INSUFFICIENT_PERMS?: string,
-        ERR_CHANNEL_VISIBILITY?: string,
-        ERR_AMBIGUOUS_THREAD_AUTHOR?: string,
+import type { ThreadChannel } from "discord.js";
+import { getEmojiStatus } from "../helpers/threadHelpers";
 
-        SUCCESS_THREAD_CREATE?: string,
-        SUCCESS_THREAD_ARCHIVE_IMMEDIATE?: string,
-        SUCCESS_THREAD_ARCHIVE_SLOW?: string,
-    },
+export async function handleThreadUpdate(oldThread: ThreadChannel, newThread: ThreadChannel): Promise<void> {
+	const threadWasArchived = !oldThread.archived && newThread.archived;
+	if (!threadWasArchived) return;
+
+	const emojiStatus = getEmojiStatus(newThread);
+	if (!emojiStatus) return;
+
+	// if (emojiStatus === "")
+
+	// if ()
+	// if (!newThread.lastMessage?.createdAt) return;
+
+	const millisecondsPerHour = 1000 * 60 * 60;
+	const differenceInMs = Date.now() - (newThread.lastMessage?.createdAt.getTime() ?? 0);
+
+	console.log(differenceInMs);
+	console.log(millisecondsPerHour);
+
+	// 📂
+
+	// if (newThread.lastMessage?.createdAt.getTimezoneOffset)
+
+	// lastMessageId
+	// autoArchiveDuration
+	// archiveTimestamp
+	// locked
+
+	console.log("I hope a thread was archived now");
 }

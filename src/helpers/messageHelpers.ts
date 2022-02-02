@@ -16,11 +16,13 @@
 // ________________________________________________________________________________________________
 
 import {
-	BaseCommandInteraction,
+	type BaseCommandInteraction,
 	type Message,
 	MessageButton,
-	MessageComponentInteraction,
+	type MessageComponentInteraction,
 	type TextBasedChannel,
+	type ThreadChannel,
+	type User,
 } from "discord.js";
 
 import type { MessageContext } from "../types/messageContext";
@@ -44,34 +46,23 @@ export function isAutoThreadChannel(channelId: string, guildId: string): boolean
 	return config?.threadChannels?.some(x => x?.channelId === channelId) ?? false;
 }
 
-export async function getThreadStartMessage(threadChannel: TextBasedChannel | null): Promise<Message | null> {
-	if (!threadChannel?.isThread()) { return null; }
-	if (!threadChannel.parentId) { return null; }
+export async function getThreadAuthor(channel: ThreadChannel): Promise<User | undefined> {
+	const parentMessage = await getThreadStartMessage(channel);
 
-	const parentChannel = await threadChannel.guild?.channels.fetch(threadChannel.parentId);
-	if (!parentChannel?.isText()) { return null; }
+	if (parentMessage) return parentMessage.author;
 
-	// The thread's channel ID is the same as the start message's ID,
-	// but if the start message has been deleted this will throw an exception
-	return parentChannel.messages
-		.fetch(threadChannel.id)
-		.catch(() => {
-			console.error(`Start message is missing in thread "${threadChannel.name}"`);
-			return null;
-		});
+	// https://github.com/MarcusOtter/discord-needle/issues/49
+	const firstMessage = await getFirstMessageInChannel(channel);
+	const author = firstMessage?.mentions.users.first();
+
+	if (!author) console.log(`Could not determine author of thread "${channel.name}"`);
+	return author;
 }
 
-export function getCodeFromCodeBlock(codeBlock: string): string {
-	const codeBlockStart = codeBlock.match(/^```(\w*)/ig);
-
-	// If it has no code block
-	if (codeBlockStart?.length === 0) {
-		return codeBlock;
-	}
-
-	// Replace start and end tags
-	const codeWithoutTags = codeBlock.replaceAll(/^```(\w*)/ig, "").replaceAll(/```$/ig, "");
-	return codeWithoutTags.trim();
+export async function getFirstMessageInChannel(channel: TextBasedChannel): Promise<Message | undefined> {
+	const amount = channel.isThread() ? 2 : 1; // threads have an empty message as the first message
+	const messages = await channel.messages.fetch({ after: "0", limit: amount });
+	return messages.first();
 }
 
 export function interactionReply(
@@ -150,4 +141,18 @@ export function getHelpButton(): MessageButton {
 		.setLabel("Commands")
 		.setStyle("SECONDARY")
 		.setEmoji("937931337942306877"); // :slash_commands:
+}
+
+async function getThreadStartMessage(threadChannel: TextBasedChannel | null): Promise<Message | null> {
+	if (!threadChannel?.isThread()) { return null; }
+	if (!threadChannel.parentId) { return null; }
+
+	const parentChannel = await threadChannel.guild?.channels.fetch(threadChannel.parentId);
+	if (!parentChannel?.isText()) { return null; }
+
+	// The thread's channel ID is the same as the start message's ID,
+	// but if the start message has been deleted this will throw an exception
+	return parentChannel.messages
+		.fetch(threadChannel.id)
+		.catch(() => null);
 }

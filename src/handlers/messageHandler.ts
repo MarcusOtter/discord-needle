@@ -15,33 +15,58 @@
 //
 // ________________________________________________________________________________________________
 
-import { type Message, MessageActionRow, MessageButton, NewsChannel, TextChannel } from "discord.js";
+import { type Message, MessageActionRow, MessageButton, NewsChannel, TextChannel, ThreadChannel } from "discord.js";
 import { getConfig } from "../helpers/configHelpers";
-import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel, getHelpButton } from "../helpers/messageHelpers";
+import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel, getHelpButton, getThreadAuthor } from "../helpers/messageHelpers";
 import { getRequiredPermissions, getSafeDefaultAutoArchiveDuration } from "../helpers/permissionHelpers";
 
 export async function handleMessageCreate(message: Message): Promise<void> {
-	const clientUser = message.client.user;
-
 	// Server outage
 	if (!message.guild?.available) return;
 
 	// Not logged in
-	if (clientUser === null) return;
+	if (message.client.user === null) return;
+
+	if (message.system) return;
+	if (message.author.bot) return; // TODO: Make configurable, some users want this to be allowed (in certain channels) Also we probably need to check against ourselves if removed
+	if (!message.channel.isText()) return;
+
+	if (message.channel.isThread()) {
+		await updateTitle(message.channel, message);
+		return;
+	}
+
+	autoCreateThread(message);
+}
+
+async function updateTitle(thread: ThreadChannel, message: Message) {
+	if (message.author.bot) return;
+	if (!thread.joined) return;
+
+	const threadAuthor = await getThreadAuthor(thread);
+	if (message.author == threadAuthor || !threadAuthor) return;
+
+	await thread.setName(thread.name.replace("🆕", "🧵"));
+	await thread.leave();
+}
+
+async function autoCreateThread(message: Message) {
+	// Server outage
+	if (!message.guild?.available) return;
+
+	// Not logged in
+	if (message.client.user === null) return;
 
 	const authorUser = message.author;
 	const authorMember = message.member;
 	const guild = message.guild;
 	const channel = message.channel;
 
-	if (message.system) return;
-	if (authorUser.bot) return; // TODO: Make configurable, some users want this to be allowed (in certain channels)
-	if (!channel.isText()) return;
 	if (!(channel instanceof TextChannel) && !(channel instanceof NewsChannel)) return;
 	if (message.hasThread) return;
 	if (!isAutoThreadChannel(channel.id, guild.id)) return;
 
-	const botMember = await guild.members.fetch(clientUser);
+	const botMember = await guild.members.fetch(message.client.user);
 	const botPermissions = botMember.permissionsIn(message.channel.id);
 	const requiredPermissions = getRequiredPermissions();
 	if (!botPermissions.has(requiredPermissions)) {
@@ -68,7 +93,7 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 		: authorMember.nickname;
 
 	const thread = await message.startThread({
-		name: `${authorName} (${creationDate})`,
+		name: `🆕 ${authorName} (${creationDate})`,
 		autoArchiveDuration: getSafeDefaultAutoArchiveDuration(channel),
 	});
 
@@ -94,6 +119,5 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 		});
 	}
 
-	await thread.leave();
 	resetMessageContext();
 }

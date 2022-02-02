@@ -16,9 +16,9 @@
 // ________________________________________________________________________________________________
 
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { type CommandInteraction, GuildMember, MessageComponentInteraction, Permissions, ThreadChannel } from "discord.js";
+import { type CommandInteraction, GuildMember, type MessageComponentInteraction, Permissions, type ThreadChannel } from "discord.js";
 import { getConfig } from "../helpers/configHelpers";
-import { interactionReply, getThreadStartMessage, getMessage } from "../helpers/messageHelpers";
+import { interactionReply, getMessage, getThreadAuthor } from "../helpers/messageHelpers";
 import type { NeedleCommand } from "../types/needleCommand";
 
 export const command: NeedleCommand = {
@@ -56,12 +56,12 @@ export const command: NeedleCommand = {
 			return;
 		}
 
-		const parentMessage = await getThreadStartMessage(channel);
-		if (!parentMessage) {
-			return interactionReply(interaction, getMessage("ERR_THREAD_MESSAGE_MISSING"));
+		const threadAuthor = await getThreadAuthor(channel);
+		if (!threadAuthor) {
+			return interactionReply(interaction, getMessage("ERR_AMBIGUOUS_THREAD_AUTHOR"));
 		}
 
-		if (parentMessage.author !== interaction.user) {
+		if (threadAuthor !== interaction.user) {
 			return interactionReply(interaction, getMessage("ERR_ONLY_THREAD_OWNER"));
 		}
 

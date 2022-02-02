@@ -98,6 +98,46 @@ export const command: NeedleCommand = {
 							.setRequired(false);
 					});
 			})
+			.addSubcommand(subcommand => {
+				return subcommand
+					.setName("emojis")
+					.setDescription("Select status emojis for threads")
+					.addStringOption(option => {
+						return option
+							.setName("new")
+							.setDescription("Newly created thread without replies from other users")
+							.addChoices([
+								["NONE", "none"],
+								["✨ (default)", "sparkles"],
+								["🧑", "sparkles"],
+								["🗣", "sparkles"],
+								["📬", "sparkles"],
+								["📌", "sparkles"],
+								["📜", "sparkles"],
+								["🧍", "sparkles"],
+								["🌱", "sparkles"],
+								["🆕", "sparkles"],
+								["🔔", "sparkles"],
+							]);
+					})
+					.addStringOption(option => {
+						return option
+							.setName("has-reply")
+							.setDescription("Threads that have gotten at least one reply from another user")
+							.addChoices([
+								["NONE (default)", "none"],
+								["🧵", "sparkles"],
+								["👪", "sparkles"],
+								["👥", "sparkles"],
+								["🔹", "sparkles"],
+								["🌿", "sparkles"],
+								["📜", "sparkles"],
+								["🌳", "sparkles"],
+								["🗨", "sparkles"],
+								["💬", "sparkles"],
+							]);
+					});
+			})
 			.toJSON();
 	},
 
