@@ -18,7 +18,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { ChannelType } from "discord-api-types";
 import { type CommandInteraction, type GuildMember, type GuildTextBasedChannel, Permissions } from "discord.js";
-import { disableAutothreading, enableAutothreading, getConfig, resetConfigToDefault, setArchiveImmediately, setMessage } from "../helpers/configHelpers";
+import { disableAutothreading, enableAutothreading, getConfig, resetConfigToDefault, setMessage } from "../helpers/configHelpers";
 import { interactionReply, getMessage, MessageKey, isAutoThreadChannel, addMessageContext } from "../helpers/messageHelpers";
 import type { NeedleCommand } from "../types/needleCommand";
 import { memberIsModerator } from "../helpers/permissionHelpers";
@@ -65,16 +65,6 @@ export const command: NeedleCommand = {
 			})
 			.addSubcommand(subcommand => {
 				return subcommand
-					.setName("archive-immediately")
-					.setDescription("Configure whether threads are archived immediately when users close them or if it should take 1 hour")
-					.addBooleanOption(option => {
-						return option
-							.setName("value")
-							.setDescription("Whether or not threads should be archived immediately when users close a thread");
-					});
-			})
-			.addSubcommand(subcommand => {
-				return subcommand
 					.setName("autothreading")
 					.setDescription("Enable or disable automatic creation of threads on every new message in a channel")
 					.addChannelOption(option => {
@@ -93,8 +83,15 @@ export const command: NeedleCommand = {
 					})
 					.addStringOption(option => {
 						return option
+							.setName("archive-behavior")
+							.setDescription("What should happen when users close a thread?")
+							.addChoice("✅ Archive immediately (DEFAULT)", "immediately")
+							.addChoice("⌛ Archive after 1 hour of inactivity", "slow");
+					})
+					.addStringOption(option => {
+						return option
 							.setName("custom-message")
-							.setDescription("The message to send when a thread is created (uses the message SUCCESS_THREAD_CREATE if left blank)")
+							.setDescription("The message to send when a thread is created (\"\\n\" for new line)")
 							.setRequired(false);
 					});
 			})
@@ -157,10 +154,6 @@ export const command: NeedleCommand = {
 				: getMessage("ERR_NO_EFFECT"), !success);
 		}
 
-		if (interaction.options.getSubcommand() === "archive-immediately") {
-			return archiveImmediately(interaction);
-		}
-
 		if (interaction.options.getSubcommand() === "message") {
 			return configureMessage(interaction);
 		}
@@ -172,19 +165,6 @@ export const command: NeedleCommand = {
 		return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
 	},
 };
-
-async function archiveImmediately(interaction: CommandInteraction) {
-	const isImmediate = interaction.options.getBoolean("value");
-	if (isImmediate === null) return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
-
-	const config = getConfig(interaction.guildId ?? undefined);
-	if (isImmediate == config.archiveImmediately) return interactionReply(interaction, getMessage("ERR_NO_EFFECT"));
-
-	const result = setArchiveImmediately(interaction.guild, isImmediate);
-	return result
-		? interactionReply(interaction, isImmediate ? "Threads will now archive immediately when closed by users." : "Threads will now archive after 1 hour of inactivity when closed by users.", false)
-		: interactionReply(interaction, getMessage("ERR_UNKNOWN"));
-}
 
 function configureMessage(interaction: CommandInteraction): Promise<void> {
 	const key = interaction.options.getString("key") as MessageKey;
@@ -208,6 +188,7 @@ async function configureAutothreading(interaction: CommandInteraction): Promise<
 	const channel = interaction.options.getChannel("channel") as GuildTextBasedChannel;
 	const enabled = interaction.options.getBoolean("enabled");
 	const customMessage = interaction.options.getString("custom-message") ?? "";
+	const archiveImmediately = interaction.options.getString("archive-behavior") !== "slow";
 
 	if (!interaction.guild || !interaction.guildId) {
 		return interactionReply(interaction, getMessage("ERR_ONLY_IN_SERVER"));
@@ -227,7 +208,7 @@ async function configureAutothreading(interaction: CommandInteraction): Promise<
 	}
 
 	if (enabled) {
-		const success = enableAutothreading(interaction.guild, channel.id, customMessage);
+		const success = enableAutothreading(interaction.guild, channel.id, archiveImmediately, customMessage);
 		return success
 			? interactionReply(interaction, `Updated auto-threading settings for <#${channel.id}>`, false)
 			: interactionReply(interaction, getMessage("ERR_UNKNOWN"));

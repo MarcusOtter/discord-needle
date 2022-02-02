@@ -17,8 +17,9 @@
 
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { type CommandInteraction, GuildMember, type MessageComponentInteraction, Permissions, type ThreadChannel } from "discord.js";
-import { getConfig } from "../helpers/configHelpers";
+import { shouldArchiveImmediately } from "../helpers/configHelpers";
 import { interactionReply, getMessage, getThreadAuthor } from "../helpers/messageHelpers";
+import { setEmojiForNewThread } from "../helpers/threadHelpers";
 import type { NeedleCommand } from "../types/needleCommand";
 
 export const command: NeedleCommand = {
@@ -67,11 +68,20 @@ export const command: NeedleCommand = {
 
 		await archiveThread(channel);
 
-		async function archiveThread(thread: ThreadChannel) {
-			const config = getConfig(thread.guildId);
+		async function archiveThread(thread: ThreadChannel): Promise<void> {
+			if (shouldArchiveImmediately(thread)) {
+				if (interaction.isButton()) {
+					await interactionReply(interaction, "Success!");
+					const message = getMessage("SUCCESS_THREAD_ARCHIVE_IMMEDIATE");
+					if (message) {
+						await thread.send(message);
+					}
+				}
+				else if (interaction.isCommand()) {
+					await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE_IMMEDIATE"), false);
+				}
 
-			if (config.archiveImmediately) {
-				await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE_IMMEDIATE"), false);
+				await setEmojiForNewThread(thread, false);
 				await thread.setArchived(true);
 				return;
 			}
@@ -80,8 +90,19 @@ export const command: NeedleCommand = {
 				return interactionReply(interaction, getMessage("ERR_NO_EFFECT"));
 			}
 
-			await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE_SLOW"), false);
+			await setEmojiForNewThread(thread, false);
 			await thread.setAutoArchiveDuration(60);
+
+			if (interaction.isButton()) {
+				await interactionReply(interaction, "Success!");
+				const message = getMessage("SUCCESS_THREAD_ARCHIVE_SLOW");
+				if (message) {
+					await thread.send(message);
+				}
+			}
+			else if (interaction.isCommand()) {
+				await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE_SLOW"), false);
+			}
 		}
 	},
 };

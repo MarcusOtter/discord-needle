@@ -16,8 +16,7 @@
 // ________________________________________________________________________________________________
 
 export interface NeedleConfig {
-    threadChannels?: { channelId: string, messageContent: string }[];
-    archiveImmediately: boolean;
+    threadChannels?: AutothreadChannelConfig[];
     messages?: {
         ERR_UNKNOWN?: string,
         ERR_ONLY_IN_SERVER?: string,
@@ -36,4 +35,10 @@ export interface NeedleConfig {
         SUCCESS_THREAD_ARCHIVE_IMMEDIATE?: string,
         SUCCESS_THREAD_ARCHIVE_SLOW?: string,
     },
+}
+
+export interface AutothreadChannelConfig {
+    channelId: string,
+    archiveImmediately?: boolean,
+    messageContent?: string
 }

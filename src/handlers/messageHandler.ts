@@ -17,7 +17,7 @@
 
 import { type Message, MessageActionRow, MessageButton, NewsChannel, TextChannel, ThreadChannel } from "discord.js";
 import { getConfig } from "../helpers/configHelpers";
-import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel, getHelpButton, getThreadAuthor, replaceMessageVariables } from "../helpers/messageHelpers";
+import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel, getHelpButton, replaceMessageVariables, getThreadAuthor } from "../helpers/messageHelpers";
 import { getRequiredPermissions, getSafeDefaultAutoArchiveDuration } from "../helpers/permissionHelpers";
 
 export async function handleMessageCreate(message: Message): Promise<void> {
@@ -42,13 +42,11 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 
 async function updateTitle(thread: ThreadChannel, message: Message) {
 	if (message.author.bot) return;
-	if (!thread.joined) return;
 
 	const threadAuthor = await getThreadAuthor(thread);
-	if (message.author == threadAuthor || !threadAuthor) return;
+	if (message.author == threadAuthor) return;
 
-	await thread.setName(thread.name.replace("🆕", "🧵"));
-	await thread.leave();
+	await thread.setName(thread.name.replace("🆕", ""));
 }
 
 async function autoCreateThread(message: Message) {

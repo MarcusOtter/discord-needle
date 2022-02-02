@@ -15,11 +15,11 @@
 //
 // ________________________________________________________________________________________________
 
-import type { Client, Guild } from "discord.js";
+import type { Client, Guild, ThreadChannel } from "discord.js";
 import * as defaultConfig from "../config.json";
 import { resolve as pathResolve } from "path";
 import * as fs from "fs";
-import type { NeedleConfig } from "../types/needleConfig";
+import type { AutothreadChannelConfig, NeedleConfig } from "../types/needleConfig";
 import { MessageKey } from "./messageHelpers";
 
 const CONFIGS_PATH = pathResolve(__dirname, "../../configs");
@@ -36,6 +36,8 @@ export function getConfig(guildId = ""): NeedleConfig {
 	return Object.assign({}, defaultConfigCopy, guildConfig);
 }
 
+// Can probably remove the three methods below :)
+
 // Used by deploy-commands.js (!)
 export function getApiToken(): string | undefined {
 	return process.env.DISCORD_API_TOKEN;
@@ -51,6 +53,11 @@ export function getGuildId(): string | undefined {
 	return process.env.GUILD_ID;
 }
 
+export function shouldArchiveImmediately(thread: ThreadChannel) {
+	const config = getConfig(thread.guildId);
+	return config?.threadChannels?.find(x => x.channelId == thread.parentId)?.archiveImmediately ?? true;
+}
+
 export function setMessage(guild: Guild, messageKey: MessageKey, value: string): boolean {
 	const config = getConfig(guild.id);
 	if (!config || !config.messages) { return false; }
@@ -60,7 +67,7 @@ export function setMessage(guild: Guild, messageKey: MessageKey, value: string):
 	return setConfig(guild, config);
 }
 
-export function enableAutothreading(guild: Guild, channelId: string, message = ""): boolean {
+export function enableAutothreading(guild: Guild, channelId: string, archiveImmediately: boolean, message = ""): boolean {
 	const config = getConfig(guild.id);
 	if (!config || !config.threadChannels) { return false; }
 	if (message.length > 2000) { return false; }
@@ -68,9 +75,10 @@ export function enableAutothreading(guild: Guild, channelId: string, message = "
 	const index = config.threadChannels.findIndex(x => x?.channelId === channelId);
 	if (index > -1) {
 		config.threadChannels[index].messageContent = message;
+		config.threadChannels[index].archiveImmediately = archiveImmediately;
 	}
 	else {
-		config.threadChannels.push({ channelId: channelId, messageContent: message });
+		config.threadChannels.push({ channelId: channelId, archiveImmediately: archiveImmediately, messageContent: message });
 	}
 
 	return setConfig(guild, config);
@@ -95,14 +103,6 @@ export function resetConfigToDefault(guildId: string): boolean {
 	guildConfigsCache.delete(guildId);
 	console.log(`Deleted data for guild ${guildId}`);
 	return true;
-}
-
-export function setArchiveImmediately(guild: Guild | null, value: boolean): boolean {
-	const config = getConfig(guild?.id);
-	if (!config) return false;
-
-	config.archiveImmediately = value;
-	return setConfig(guild, config);
 }
 
 export function deleteConfigsFromUnkownServers(client: Client): void {

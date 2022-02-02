@@ -16,34 +16,30 @@
 // ________________________________________________________________________________________________
 
 import type { ThreadChannel } from "discord.js";
-import { getEmojiStatus } from "../helpers/threadHelpers";
 
 export async function handleThreadUpdate(oldThread: ThreadChannel, newThread: ThreadChannel): Promise<void> {
 	const threadWasArchived = !oldThread.archived && newThread.archived;
-	if (!threadWasArchived) return;
+	const threadWasUnarchived = oldThread.archived && !newThread.archived;
 
-	const emojiStatus = getEmojiStatus(newThread);
-	if (!emojiStatus) return;
+	if (!threadWasArchived && !threadWasUnarchived) return;
 
-	// if (emojiStatus === "")
+	// WIP!
 
-	// if ()
-	// if (!newThread.lastMessage?.createdAt) return;
+	if (threadWasArchived) {
+		// Cannot change title, it's archived
+		return;
+	}
 
-	const millisecondsPerHour = 1000 * 60 * 60;
-	const differenceInMs = Date.now() - (newThread.lastMessage?.createdAt.getTime() ?? 0);
+	if (threadWasUnarchived) {
+		// await setEmojiForNewThread(newThread, true);
+		return;
+	}
 
-	console.log(differenceInMs);
-	console.log(millisecondsPerHour);
-
-	// 📂
-
-	// if (newThread.lastMessage?.createdAt.getTimezoneOffset)
+	// const millisecondsPerHour = 1000 * 60 * 60;
+	// const differenceInMs = Date.now() - (newThread.lastMessage?.createdAt.getTime() ?? 0);
 
 	// lastMessageId
 	// autoArchiveDuration
 	// archiveTimestamp
 	// locked
-
-	console.log("I hope a thread was archived now");
 }
