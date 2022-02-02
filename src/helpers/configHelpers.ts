@@ -58,6 +58,19 @@ export function shouldArchiveImmediately(thread: ThreadChannel) {
 	return config?.threadChannels?.find(x => x.channelId == thread.parentId)?.archiveImmediately ?? true;
 }
 
+export function setEmojisEnabled(guild: Guild, enabled: boolean): boolean {
+	const config = getConfig(guild.id);
+	if (!config) { return false; }
+
+	config.emojisEnabled = enabled;
+	return setConfig(guild, config);
+}
+
+export function emojisEnabled(guild: Guild): boolean {
+	const config = getConfig(guild.id);
+	return config.emojisEnabled ?? true;
+}
+
 export function setMessage(guild: Guild, messageKey: MessageKey, value: string): boolean {
 	const config = getConfig(guild.id);
 	if (!config || !config.messages) { return false; }

@@ -18,7 +18,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { ChannelType } from "discord-api-types";
 import { type CommandInteraction, type GuildMember, type GuildTextBasedChannel, Permissions } from "discord.js";
-import { disableAutothreading, enableAutothreading, getConfig, resetConfigToDefault, setMessage } from "../helpers/configHelpers";
+import { disableAutothreading, emojisEnabled, enableAutothreading, getConfig, resetConfigToDefault, setEmojisEnabled, setMessage } from "../helpers/configHelpers";
 import { interactionReply, getMessage, MessageKey, isAutoThreadChannel, addMessageContext } from "../helpers/messageHelpers";
 import type { NeedleCommand } from "../types/needleCommand";
 import { memberIsModerator } from "../helpers/permissionHelpers";
@@ -98,41 +98,11 @@ export const command: NeedleCommand = {
 			.addSubcommand(subcommand => {
 				return subcommand
 					.setName("emojis")
-					.setDescription("Select status emojis for threads")
-					.addStringOption(option => {
+					.setDescription("Toggle thread name emojis on or off")
+					.addBooleanOption(option => {
 						return option
-							.setName("new")
-							.setDescription("Newly created thread without replies from other users")
-							.addChoices([
-								["NONE", "none"],
-								["✨ (default)", "sparkles"],
-								["🧑", "sparkles"],
-								["🗣", "sparkles"],
-								["📬", "sparkles"],
-								["📌", "sparkles"],
-								["📜", "sparkles"],
-								["🧍", "sparkles"],
-								["🌱", "sparkles"],
-								["🆕", "sparkles"],
-								["🔔", "sparkles"],
-							]);
-					})
-					.addStringOption(option => {
-						return option
-							.setName("has-reply")
-							.setDescription("Threads that have gotten at least one reply from another user")
-							.addChoices([
-								["NONE (default)", "none"],
-								["🧵", "sparkles"],
-								["👪", "sparkles"],
-								["👥", "sparkles"],
-								["🔹", "sparkles"],
-								["🌿", "sparkles"],
-								["📜", "sparkles"],
-								["🌳", "sparkles"],
-								["🗨", "sparkles"],
-								["💬", "sparkles"],
-							]);
+							.setName("enabled")
+							.setDescription("Whether emojis should be enabled for titles in autothreads");
 					});
 			})
 			.toJSON();
@@ -154,6 +124,10 @@ export const command: NeedleCommand = {
 				: getMessage("ERR_NO_EFFECT"), !success);
 		}
 
+		if (interaction.options.getSubcommand() === "emojis") {
+			return configureEmojis(interaction);
+		}
+
 		if (interaction.options.getSubcommand() === "message") {
 			return configureMessage(interaction);
 		}
@@ -165,6 +139,24 @@ export const command: NeedleCommand = {
 		return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
 	},
 };
+
+function configureEmojis(interaction: CommandInteraction): Promise<void> {
+	const enable = interaction.options.getBoolean("enabled");
+	if (enable === null || interaction.guild === null) {
+		return interactionReply(interaction, getMessage("ERR_PARAMETER_MISSING"));
+	}
+
+	if (enable === emojisEnabled(interaction.guild)) {
+		return interactionReply(interaction, getMessage("ERR_NO_EFFECT"));
+	}
+
+	const success = setEmojisEnabled(interaction.guild, enable);
+	if (!success) return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
+
+	return interactionReply(interaction, enable
+		? "Successfully enabled emojis."
+		: "Successfully disabled emojis.");
+}
 
 function configureMessage(interaction: CommandInteraction): Promise<void> {
 	const key = interaction.options.getString("key") as MessageKey;

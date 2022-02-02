@@ -1,4 +1,5 @@
 import type { ThreadChannel } from "discord.js";
+import { emojisEnabled } from "./configHelpers";
 
 // If that rate limit is hit, it will wait here until it is able to rename the thread.
 export function setThreadName(thread: ThreadChannel, name: string): Promise<ThreadChannel> {
@@ -28,6 +29,8 @@ export function getEmojiStatus(thread: ThreadChannel): string | undefined {
 export function setEmojiForNewThread(thread: ThreadChannel, shouldBeNew: boolean): Promise<ThreadChannel> {
 	const hasNewEmoji = thread.name.includes("🆕");
 	if (shouldBeNew === hasNewEmoji) return Promise.resolve(thread);
+
+	if (shouldBeNew && !emojisEnabled(thread.guild)) return Promise.resolve(thread);
 
 	return shouldBeNew
 		? thread.setName(`🆕 ${thread.name}`)

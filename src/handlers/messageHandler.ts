@@ -16,7 +16,7 @@
 // ________________________________________________________________________________________________
 
 import { type Message, MessageActionRow, MessageButton, NewsChannel, TextChannel, ThreadChannel } from "discord.js";
-import { getConfig } from "../helpers/configHelpers";
+import { emojisEnabled, getConfig } from "../helpers/configHelpers";
 import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel, getHelpButton, replaceMessageVariables, getThreadAuthor } from "../helpers/messageHelpers";
 import { getRequiredPermissions, getSafeDefaultAutoArchiveDuration } from "../helpers/permissionHelpers";
 
@@ -91,8 +91,12 @@ async function autoCreateThread(message: Message) {
 		? authorUser.username
 		: authorMember.nickname;
 
+	const name = emojisEnabled(guild)
+		? `🆕 ${authorName} (${creationDate})`
+		: `${authorName} (${creationDate})`;
+
 	const thread = await message.startThread({
-		name: `🆕 ${authorName} (${creationDate})`,
+		name: name,
 		autoArchiveDuration: getSafeDefaultAutoArchiveDuration(channel),
 	});
 

@@ -17,6 +17,7 @@
 
 export interface NeedleConfig {
     threadChannels?: AutothreadChannelConfig[];
+    emojisEnabled?: boolean;
     messages?: {
         ERR_UNKNOWN?: string,
         ERR_ONLY_IN_SERVER?: string,
