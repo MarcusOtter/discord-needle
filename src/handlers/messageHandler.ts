@@ -17,7 +17,7 @@
 
 import { type Message, MessageActionRow, MessageButton, NewsChannel, TextChannel, ThreadChannel } from "discord.js";
 import { getConfig } from "../helpers/configHelpers";
-import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel, getHelpButton, getThreadAuthor } from "../helpers/messageHelpers";
+import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel, getHelpButton, getThreadAuthor, replaceMessageVariables } from "../helpers/messageHelpers";
 import { getRequiredPermissions, getSafeDefaultAutoArchiveDuration } from "../helpers/permissionHelpers";
 
 export async function handleMessageCreate(message: Message): Promise<void> {
@@ -36,7 +36,8 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 		return;
 	}
 
-	autoCreateThread(message);
+	await autoCreateThread(message);
+	resetMessageContext();
 }
 
 async function updateTitle(thread: ThreadChannel, message: Message) {
@@ -109,7 +110,7 @@ async function autoCreateThread(message: Message) {
 
 	const overrideMessageContent = getConfig(guild.id).threadChannels?.find(x => x?.channelId === channel.id)?.messageContent;
 	const msgContent = overrideMessageContent
-		? overrideMessageContent
+		? replaceMessageVariables(overrideMessageContent)
 		: getMessage("SUCCESS_THREAD_CREATE");
 
 	if (msgContent && msgContent.length > 0) {

@@ -89,18 +89,22 @@ export function getMessage(messageKey: MessageKey, replaceVariables = true): str
 	const message = config.messages[messageKey];
 	if (!context || !message) { return message; }
 
+	return replaceVariables
+		? replaceMessageVariables(message)
+		: message;
+}
+
+export function replaceMessageVariables(message: string): string {
 	const user = context.user ? `<@${context.user.id}>` : "";
 	const channel = context.channel ? `<#${context.channel.id}>` : "";
 	const timeAgo = context.timeAgo || (context.message
 		? `<t:${Math.round(context.message.createdTimestamp / 1000)}:R>`
 		: "");
 
-	return !replaceVariables
-		? message
-		: message
-			.replaceAll("$USER", user)
-			.replaceAll("$CHANNEL", channel)
-			.replaceAll("$TIME_AGO", timeAgo);
+	return message
+		.replaceAll("$USER", user)
+		.replaceAll("$CHANNEL", channel)
+		.replaceAll("$TIME_AGO", timeAgo);
 }
 
 export function getDiscordInviteButton(buttonText = "Join the support server"): MessageButton {

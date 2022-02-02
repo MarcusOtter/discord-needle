@@ -22,7 +22,7 @@ This step-by-step guide assumes you have [NodeJS](https://nodejs.org/en/) versio
    CLIENT_ID=123456...
    ```
 3. Run `npm install`
-4. Run `npm deploy`. This will make the slash commands show up in the servers the bot are in, but **it can take up to _ONE HOUR_ before they show up**.
+4. Run `npm run deploy`. This will make the slash commands show up in the servers the bot are in, but **it can take up to _ONE HOUR_ before they show up**.
 5. Make sure the bot has the required permissions in Discord:
    - [x] View channels
    - [x] Send messages
