@@ -104,7 +104,8 @@ export function replaceMessageVariables(message: string): string {
 	return message
 		.replaceAll("$USER", user)
 		.replaceAll("$CHANNEL", channel)
-		.replaceAll("$TIME_AGO", timeAgo);
+		.replaceAll("$TIME_AGO", timeAgo)
+		.replaceAll("\\n", "\n");
 }
 
 export function getDiscordInviteButton(buttonText = "Join the support server"): MessageButton {
