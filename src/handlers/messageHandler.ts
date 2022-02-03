@@ -30,7 +30,7 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 	if (message.system) return;
 	if (!message.channel.isText()) return;
 	if (!message.inGuild()) return;
-	if (message.author == message.client.user) return;
+	if (message.author.id === message.client.user.id) return;
 
 	const includeBots = includeBotsForAutothread(message.guild.id, message.channel.id);
 	if (!includeBots && message.author.bot) return;
@@ -100,7 +100,7 @@ async function autoCreateThread(message: Message) {
 		: `${authorName} (${creationDate})`;
 
 	const thread = await message.startThread({
-		name: name,
+		name,
 		autoArchiveDuration: getSafeDefaultAutoArchiveDuration(channel),
 	});
 
