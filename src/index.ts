@@ -14,8 +14,8 @@
 // If not, see <https://www.gnu.org/licenses/>.
 //
 // ________________________________________________________________________________________________
-import * as dotenv from "dotenv";
-dotenv.config();
+import { config } from "dotenv";
+config();
 
 import { Client, Intents } from "discord.js";
 import { getOrLoadAllCommands } from "./handlers/commandHandler";
