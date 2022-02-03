@@ -1,6 +1,25 @@
+// ________________________________________________________________________________________________
+//
+// This file is part of Needle.
+//
+// Needle is free software: you can redistribute it and/or modify it under the terms of the GNU
+// Affero General Public License as published by the Free Software Foundation, either version 3 of
+// the License, or (at your option) any later version.
+//
+// Needle is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+// the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+// General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License along with Needle.
+// If not, see <https://www.gnu.org/licenses/>.
+//
+// ________________________________________________________________________________________________
+
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { type CommandInteraction, GuildMember, MessageComponentInteraction, Permissions } from "discord.js";
-import { interactionReply, getThreadStartMessage, getMessage } from "../helpers/messageHelpers";
+import { type CommandInteraction, GuildMember, type MessageComponentInteraction, Permissions, type ThreadChannel } from "discord.js";
+import { shouldArchiveImmediately } from "../helpers/configHelpers";
+import { interactionReply, getMessage, getThreadAuthor } from "../helpers/messageHelpers";
+import { setEmojiForNewThread } from "../helpers/threadHelpers";
 import type { NeedleCommand } from "../types/needleCommand";
 
 export const command: NeedleCommand = {
@@ -26,27 +45,64 @@ export const command: NeedleCommand = {
 			return interactionReply(interaction, getMessage("ERR_ONLY_IN_THREAD"));
 		}
 
-		if (channel.autoArchiveDuration === 60) {
+		// Invoking slash commands seem to unarchive the threads for now so ironically, this has no effect
+		// Leaving this in if Discord decides to change their API around this
+		if (channel.archived) {
 			return interactionReply(interaction, getMessage("ERR_NO_EFFECT"));
 		}
 
-		const hasChangeTitlePermissions = member.permissionsIn(channel).has(Permissions.FLAGS.MANAGE_THREADS, true);
-		if (hasChangeTitlePermissions) {
-			await channel.setAutoArchiveDuration(60);
-			await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE"), false);
+		const hasManageThreadsPermissions = member.permissionsIn(channel).has(Permissions.FLAGS.MANAGE_THREADS, true);
+		if (hasManageThreadsPermissions) {
+			await archiveThread(channel);
 			return;
 		}
 
-		const parentMessage = await getThreadStartMessage(channel);
-		if (!parentMessage) {
-			return interactionReply(interaction, getMessage("ERR_THREAD_MESSAGE_MISSING"));
+		const threadAuthor = await getThreadAuthor(channel);
+		if (!threadAuthor) {
+			return interactionReply(interaction, getMessage("ERR_AMBIGUOUS_THREAD_AUTHOR"));
 		}
 
-		if (parentMessage.author !== interaction.user) {
+		if (threadAuthor !== interaction.user) {
 			return interactionReply(interaction, getMessage("ERR_ONLY_THREAD_OWNER"));
 		}
 
-		await channel.setAutoArchiveDuration(60);
-		await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE"), false);
+		await archiveThread(channel);
+
+		async function archiveThread(thread: ThreadChannel): Promise<void> {
+			if (shouldArchiveImmediately(thread)) {
+				if (interaction.isButton()) {
+					await interactionReply(interaction, "Success!");
+					const message = getMessage("SUCCESS_THREAD_ARCHIVE_IMMEDIATE");
+					if (message) {
+						await thread.send(message);
+					}
+				}
+				else if (interaction.isCommand()) {
+					await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE_IMMEDIATE"), false);
+				}
+
+				await setEmojiForNewThread(thread, false);
+				await thread.setArchived(true);
+				return;
+			}
+
+			if (thread.autoArchiveDuration === 60) {
+				return interactionReply(interaction, getMessage("ERR_NO_EFFECT"));
+			}
+
+			await setEmojiForNewThread(thread, false);
+			await thread.setAutoArchiveDuration(60);
+
+			if (interaction.isButton()) {
+				await interactionReply(interaction, "Success!");
+				const message = getMessage("SUCCESS_THREAD_ARCHIVE_SLOW");
+				if (message) {
+					await thread.send(message);
+				}
+			}
+			else if (interaction.isCommand()) {
+				await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE_SLOW"), false);
+			}
+		}
 	},
 };

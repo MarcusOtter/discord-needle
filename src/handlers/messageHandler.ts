@@ -1,30 +1,75 @@
-import { type Message, MessageActionRow, MessageButton, NewsChannel, TextChannel } from "discord.js";
-import { getConfig } from "../helpers/configHelpers";
-import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel } from "../helpers/messageHelpers";
-import { getRequiredPermissions } from "../helpers/permissionHelpers";
+// ________________________________________________________________________________________________
+//
+// This file is part of Needle.
+//
+// Needle is free software: you can redistribute it and/or modify it under the terms of the GNU
+// Affero General Public License as published by the Free Software Foundation, either version 3 of
+// the License, or (at your option) any later version.
+//
+// Needle is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+// the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+// General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License along with Needle.
+// If not, see <https://www.gnu.org/licenses/>.
+//
+// ________________________________________________________________________________________________
+
+import { type Message, MessageActionRow, MessageButton, NewsChannel, TextChannel, ThreadChannel } from "discord.js";
+import { emojisEnabled, getConfig, includeBotsForAutothread } from "../helpers/configHelpers";
+import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel, getHelpButton, replaceMessageVariables, getThreadAuthor } from "../helpers/messageHelpers";
+import { getRequiredPermissions, getSafeDefaultAutoArchiveDuration } from "../helpers/permissionHelpers";
 
 export async function handleMessageCreate(message: Message): Promise<void> {
-	const clientUser = message.client.user;
-
 	// Server outage
 	if (!message.guild?.available) return;
 
 	// Not logged in
-	if (clientUser === null) return;
+	if (message.client.user === null) return;
+
+	if (message.system) return;
+	if (!message.channel.isText()) return;
+	if (!message.inGuild()) return;
+	if (message.author.id === message.client.user.id) return;
+
+	const includeBots = includeBotsForAutothread(message.guild.id, message.channel.id);
+	if (!includeBots && message.author.bot) return;
+
+	if (!message.author.bot && message.channel.isThread()) {
+		await updateTitle(message.channel, message);
+		return;
+	}
+
+	await autoCreateThread(message);
+	resetMessageContext();
+}
+
+async function updateTitle(thread: ThreadChannel, message: Message) {
+	if (message.author.bot) return;
+
+	const threadAuthor = await getThreadAuthor(thread);
+	if (message.author == threadAuthor) return;
+
+	await thread.setName(thread.name.replace("🆕", ""));
+}
+
+async function autoCreateThread(message: Message) {
+	// Server outage
+	if (!message.guild?.available) return;
+
+	// Not logged in
+	if (message.client.user === null) return;
 
 	const authorUser = message.author;
 	const authorMember = message.member;
 	const guild = message.guild;
 	const channel = message.channel;
 
-	if (message.system) return;
-	if (authorUser.bot) return;
-	if (!channel.isText()) return;
 	if (!(channel instanceof TextChannel) && !(channel instanceof NewsChannel)) return;
 	if (message.hasThread) return;
 	if (!isAutoThreadChannel(channel.id, guild.id)) return;
 
-	const botMember = await guild.members.fetch(clientUser);
+	const botMember = await guild.members.fetch(message.client.user);
 	const botPermissions = botMember.permissionsIn(message.channel.id);
 	const requiredPermissions = getRequiredPermissions();
 	if (!botPermissions.has(requiredPermissions)) {
@@ -50,22 +95,28 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 		? authorUser.username
 		: authorMember.nickname;
 
+	const name = emojisEnabled(guild)
+		? `🆕 ${authorName} (${creationDate})`
+		: `${authorName} (${creationDate})`;
+
 	const thread = await message.startThread({
-		name: `${authorName} (${creationDate})`,
-		autoArchiveDuration: channel.defaultAutoArchiveDuration,
+		name,
+		autoArchiveDuration: getSafeDefaultAutoArchiveDuration(channel),
 	});
 
 	const closeButton = new MessageButton()
 		.setCustomId("close")
 		.setLabel("Archive thread")
-		.setStyle("DANGER")
-		.setEmoji("🗃️");
+		.setStyle("SUCCESS")
+		.setEmoji("937932140014866492"); // :archive:
 
-	const buttonRow = new MessageActionRow().addComponents(closeButton);
+	const helpButton = getHelpButton();
+
+	const buttonRow = new MessageActionRow().addComponents(closeButton, helpButton);
 
 	const overrideMessageContent = getConfig(guild.id).threadChannels?.find(x => x?.channelId === channel.id)?.messageContent;
 	const msgContent = overrideMessageContent
-		? overrideMessageContent
+		? replaceMessageVariables(overrideMessageContent)
 		: getMessage("SUCCESS_THREAD_CREATE");
 
 	if (msgContent && msgContent.length > 0) {
@@ -75,6 +126,5 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 		});
 	}
 
-	await thread.leave();
 	resetMessageContext();
 }
