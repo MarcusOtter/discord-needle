@@ -14,6 +14,8 @@
 // If not, see <https://www.gnu.org/licenses/>.
 //
 // ________________________________________________________________________________________________
+import * as dotenv from "dotenv";
+dotenv.config();
 
 import { Client, Intents } from "discord.js";
 import { getOrLoadAllCommands } from "./handlers/commandHandler";
@@ -39,8 +41,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 `);
 
 (async () => {
-	(await import("dotenv")).config();
-
 	// Initial load of all commands
 	await getOrLoadAllCommands(false);
 
