@@ -1,0 +1,28 @@
+# Privacy policy
+
+Needle has never and will never collect any personal data. This includes message content, names, IP-adresses, time stamps, etc.
+
+
+## What we collect
+The only data we collect is user-provided configuration data for Needle. When this is provided (by invoking commands), we may collect:
+- Guild IDs
+- Channel IDs
+- Custom message replies
+- Which features are enabled or disabled
+
+### How do I delete my saved Needle configuration?
+The data is removed when one of the following occurs:
+- Needle is removed from the guild
+- A user successfully invokes the `/configure default` command
+- A user indicates to us by other means to remove their data
+
+## Where information is processed
+Needle is hosted on a data center in Helsinki, Finland by [Hetzner Online GmbH](https://www.hetzner.com/legal/privacy-policy). The bot communicates with [Discord](https://discord.com/privacy)'s API to interact with users.
+
+## Changes to this privacy policy
+We reserve the right to update this privacy policy at any time, with at least 24 hours prior notice in the [Discord support server](https://needle.gg/chat). Your continued use of Needle after the changes have been applied indicates that you agree with the revised privacy policy.
+
+## Contact
+Feel free to contact us at [privacy@needle.gg](mailto:privacy@needle.gg) if you have any questions about this privacy policy.
+
+<sub>Last updated and effective: February 3, 2022 - <a href="https://github.com/MarcusOtter/discord-needle/commits/main/PRIVACY_POLICY.md">see update history</a></sub>
