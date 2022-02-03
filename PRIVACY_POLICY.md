@@ -1,17 +1,17 @@
 # Privacy policy
 
-Needle has never and will never collect any personal data. This includes message content, names, IP-adresses, time stamps, etc.
+Needle has never and will never collect any personal data. This includes message content, names, IP-adresses, time stamps, member information, etc.
 
 
 ## What we collect
-The only data we collect is user-provided configuration data for Needle. When this is provided (by invoking commands), we may collect:
+We do not collect any data automatically. The only data we collect is user-provided guild configuration data for Needle. When this is provided (by invoking configuration commands), we may collect:
 - Guild IDs
 - Channel IDs
-- Custom message replies
+- Custom responses
 - Which features are enabled or disabled
 
-### How do I delete my saved Needle configuration?
-The data is deleted when one of the following occurs:
+## Data retention
+The data is deleted from the main disk when one of the following occurs:
 - Needle is removed from the guild
 - A user successfully invokes the `/configure default` command
 - A user indicates to us by other means that they want their data deleted
