@@ -11,10 +11,12 @@ The only data we collect is user-provided configuration data for Needle. When th
 - Which features are enabled or disabled
 
 ### How do I delete my saved Needle configuration?
-The data is removed when one of the following occurs:
+The data is deleted when one of the following occurs:
 - Needle is removed from the guild
 - A user successfully invokes the `/configure default` command
-- A user indicates to us by other means to remove their data
+- A user indicates to us by other means that they want their data deleted
+
+The data may persist in full-disk copies made for backup-purposes for up to 7 days after it was originally deleted.
 
 ## Where information is processed
 Needle is hosted on a data center in Helsinki, Finland by [Hetzner Online GmbH](https://www.hetzner.com/legal/privacy-policy). The bot communicates with [Discord](https://discord.com/privacy)'s API to interact with users.
