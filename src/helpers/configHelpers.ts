@@ -19,7 +19,7 @@ import type { Client, Guild, ThreadChannel } from "discord.js";
 import * as defaultConfig from "../config.json";
 import { resolve as pathResolve } from "path";
 import * as fs from "fs";
-import type { AutothreadChannelConfig, NeedleConfig } from "../types/needleConfig";
+import type { NeedleConfig } from "../types/needleConfig";
 import { MessageKey } from "./messageHelpers";
 
 const CONFIGS_PATH = pathResolve(__dirname, "../../configs");
@@ -55,13 +55,16 @@ export function getGuildId(): string | undefined {
 
 export function shouldArchiveImmediately(thread: ThreadChannel) {
 	const config = getConfig(thread.guildId);
-	return config?.threadChannels?.find(x => x.channelId == thread.parentId)?.archiveImmediately ?? true;
+	return config?.threadChannels?.find(x => x.channelId === thread.parentId)?.archiveImmediately ?? true;
+}
+
+export function includeBotsForAutothread(guildId: string, channelId: string) {
+	const config = getConfig(guildId);
+	return config?.threadChannels?.find(x => x.channelId === channelId)?.includeBots ?? false;
 }
 
 export function setEmojisEnabled(guild: Guild, enabled: boolean): boolean {
 	const config = getConfig(guild.id);
-	if (!config) { return false; }
-
 	config.emojisEnabled = enabled;
 	return setConfig(guild, config);
 }
@@ -80,20 +83,20 @@ export function setMessage(guild: Guild, messageKey: MessageKey, value: string):
 	return setConfig(guild, config);
 }
 
-export function enableAutothreading(guild: Guild, channelId: string, archiveImmediately: boolean, message = ""): boolean {
+export function enableAutothreading(guild: Guild, channelId: string, includeBots?: boolean, archiveImmediately?: boolean, messageContent?: string): boolean {
 	const config = getConfig(guild.id);
 	if (!config || !config.threadChannels) { return false; }
-	if (message.length > 2000) { return false; }
+	if ((messageContent?.length ?? 0) > 2000) { return false; }
 
 	const index = config.threadChannels.findIndex(x => x?.channelId === channelId);
 	if (index > -1) {
-		config.threadChannels[index].messageContent = message;
-		config.threadChannels[index].archiveImmediately = archiveImmediately;
+		if (includeBots !== undefined) config.threadChannels[index].includeBots = includeBots;
+		if (archiveImmediately !== undefined) config.threadChannels[index].archiveImmediately = archiveImmediately;
+		if (messageContent !== undefined) config.threadChannels[index].messageContent = messageContent;
 	}
 	else {
-		config.threadChannels.push({ channelId: channelId, archiveImmediately: archiveImmediately, messageContent: message });
+		config.threadChannels.push({ channelId, includeBots, archiveImmediately, messageContent });
 	}
-
 	return setConfig(guild, config);
 }
 

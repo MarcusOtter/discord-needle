@@ -2,12 +2,12 @@
 
 <div align="center">
    <h1>
-      Needle
       <sub>
          <a href="#"><img src="https://raw.githubusercontent.com/MarcusOtter/discord-needle/main/branding/logo-64x64.png" height="39" width="39"></a>
       </sub>
+      Needle
    </h1>
-   Needle is a <b><a href="https://discord.com/">Discord</a> bot</b> that helps you declutter your server by creating <a href="https://support.discord.com/hc/en-us/articles/4403205878423-Threads-FAQ">Discord threads</a> automatically
+   Needle is a <b><a href="https://discord.com/">Discord</a> bot</b> that helps you declutter your server by creating <a href="https://support.discord.com/hc/en-us/articles/4403205878423-Threads-FAQ">Discord threads</a> automatically.
    <br/><br/>
    <a href="https://needle.gg">Website ✨</a> &emsp; <a href="https://needle.gg/invite">Invite Needle 🪡</a> &emsp; <a href="https://needle.gg/chat">Get support 💬</a>
 </div>

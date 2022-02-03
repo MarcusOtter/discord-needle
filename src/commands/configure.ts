@@ -65,7 +65,7 @@ export const command: NeedleCommand = {
 			})
 			.addSubcommand(subcommand => {
 				return subcommand
-					.setName("autothreading")
+					.setName("auto-threading")
 					.setDescription("Enable or disable automatic creation of threads on every new message in a channel")
 					.addChannelOption(option => {
 						return option
@@ -81,6 +81,11 @@ export const command: NeedleCommand = {
 							.setDescription("Whether or not threads should be automatically created from new messages in the selected channel")
 							.setRequired(true);
 					})
+					.addBooleanOption(option => {
+						return option
+							.setName("include-bots")
+							.setDescription("Whether or not threads should be created on messages by bots. Default: False");
+					})
 					.addStringOption(option => {
 						return option
 							.setName("archive-behavior")
@@ -91,8 +96,7 @@ export const command: NeedleCommand = {
 					.addStringOption(option => {
 						return option
 							.setName("custom-message")
-							.setDescription("The message to send when a thread is created (\"\\n\" for new line)")
-							.setRequired(false);
+							.setDescription("The message to send when a thread is created (\"\\n\" for new line)");
 					});
 			})
 			.addSubcommand(subcommand => {
@@ -102,7 +106,7 @@ export const command: NeedleCommand = {
 					.addBooleanOption(option => {
 						return option
 							.setName("enabled")
-							.setDescription("Whether emojis should be enabled for titles in autothreads");
+							.setDescription("Whether or not emojis should be enabled for titles in auto-threads");
 					});
 			})
 			.toJSON();
@@ -132,7 +136,7 @@ export const command: NeedleCommand = {
 			return configureMessage(interaction);
 		}
 
-		if (interaction.options.getSubcommand() === "autothreading") {
+		if (interaction.options.getSubcommand() === "auto-threading") {
 			return configureAutothreading(interaction);
 		}
 
@@ -181,6 +185,7 @@ async function configureAutothreading(interaction: CommandInteraction): Promise<
 	const enabled = interaction.options.getBoolean("enabled");
 	const customMessage = interaction.options.getString("custom-message") ?? "";
 	const archiveImmediately = interaction.options.getString("archive-behavior") !== "slow";
+	const includeBots = interaction.options.getBoolean("include-bots") ?? false;
 
 	if (!interaction.guild || !interaction.guildId) {
 		return interactionReply(interaction, getMessage("ERR_ONLY_IN_SERVER"));
@@ -200,7 +205,7 @@ async function configureAutothreading(interaction: CommandInteraction): Promise<
 	}
 
 	if (enabled) {
-		const success = enableAutothreading(interaction.guild, channel.id, archiveImmediately, customMessage);
+		const success = enableAutothreading(interaction.guild, channel.id, includeBots, archiveImmediately, customMessage);
 		return success
 			? interactionReply(interaction, `Updated auto-threading settings for <#${channel.id}>`, false)
 			: interactionReply(interaction, getMessage("ERR_UNKNOWN"));

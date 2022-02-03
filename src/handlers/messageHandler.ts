@@ -16,7 +16,7 @@
 // ________________________________________________________________________________________________
 
 import { type Message, MessageActionRow, MessageButton, NewsChannel, TextChannel, ThreadChannel } from "discord.js";
-import { emojisEnabled, getConfig } from "../helpers/configHelpers";
+import { emojisEnabled, getConfig, includeBotsForAutothread } from "../helpers/configHelpers";
 import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel, getHelpButton, replaceMessageVariables, getThreadAuthor } from "../helpers/messageHelpers";
 import { getRequiredPermissions, getSafeDefaultAutoArchiveDuration } from "../helpers/permissionHelpers";
 
@@ -28,10 +28,14 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 	if (message.client.user === null) return;
 
 	if (message.system) return;
-	if (message.author.bot) return; // TODO: Make configurable, some users want this to be allowed (in certain channels) Also we probably need to check against ourselves if removed
 	if (!message.channel.isText()) return;
+	if (!message.inGuild()) return;
+	if (message.author == message.client.user) return;
 
-	if (message.channel.isThread()) {
+	const includeBots = includeBotsForAutothread(message.guild.id, message.channel.id);
+	if (!includeBots && message.author.bot) return;
+
+	if (!message.author.bot && message.channel.isThread()) {
 		await updateTitle(message.channel, message);
 		return;
 	}
