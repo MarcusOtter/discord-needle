@@ -19,7 +19,6 @@ import { Client, Intents } from "discord.js";
 import { getOrLoadAllCommands } from "./handlers/commandHandler";
 import { handleInteractionCreate } from "./handlers/interactionHandler";
 import { handleMessageCreate } from "./handlers/messageHandler";
-import { handleThreadUpdate } from "./handlers/threadHandler";
 import { deleteConfigsFromUnkownServers, getApiToken, resetConfigToDefault } from "./helpers/configHelpers";
 
 console.log(`Needle, a Discord bot that declutters your server by creating threads
@@ -66,7 +65,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 	CLIENT.on("interactionCreate", interaction => handleInteractionCreate(interaction).catch(e => console.log(e)));
 	CLIENT.on("messageCreate", message => handleMessageCreate(message).catch(e => console.log(e)));
 	CLIENT.on("guildDelete", guild => { resetConfigToDefault(guild.id); });
-	CLIENT.on("threadUpdate", (oldThread, newThread) => handleThreadUpdate(oldThread, newThread));
 
 	CLIENT.login(getApiToken());
 })();
