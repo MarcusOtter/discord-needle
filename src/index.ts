@@ -62,8 +62,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 		deleteConfigsFromUnkownServers(CLIENT);
 	});
 
-	CLIENT.on("interactionCreate", interaction => handleInteractionCreate(interaction).catch(e => console.log(e)));
-	CLIENT.on("messageCreate", message => handleMessageCreate(message).catch(e => console.log(e)));
+	CLIENT.on("interactionCreate", async interaction => await handleInteractionCreate(interaction).catch(console.error));
+	CLIENT.on("messageCreate", async message => await handleMessageCreate(message).catch(console.error));
 	CLIENT.on("guildDelete", guild => { resetConfigToDefault(guild.id); });
 
 	CLIENT.login(getApiToken());
