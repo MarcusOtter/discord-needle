@@ -127,19 +127,16 @@ export function deleteConfigsFromUnkownServers(client: Client): void {
 		return;
 	}
 
-	try {
-		const configFiles = fs.readdirSync(CONFIGS_PATH);
-		configFiles.forEach(file => {
-			const guildId = file.split(".")[0];
-			if (!client.guilds.cache.has(guildId)) {
-				resetConfigToDefault(guildId);
-			}
-		});
-	}
-	catch {
-		// Configs directory not present
-		return;
-	}
+	if (!fs.existsSync(CONFIGS_PATH)) return;
+
+	const configFiles = fs.readdirSync(CONFIGS_PATH);
+	configFiles.forEach(file => {
+		const guildId = file.split(".")[0];
+		if (!client.guilds.cache.has(guildId)) {
+			resetConfigToDefault(guildId);
+		}
+	});
+}
 }
 
 function readConfigFromFile(guildId: string): NeedleConfig | undefined {
