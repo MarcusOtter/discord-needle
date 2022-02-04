@@ -121,7 +121,7 @@ export function resetConfigToDefault(guildId: string): boolean {
 	return true;
 }
 
-export function deleteConfigsFromUnkownServers(client: Client): void {
+export function deleteConfigsFromUnknownServers(client: Client): void {
 	if (!client.guilds.cache.size) {
 		console.warn("No guilds available; skipping config deletion.");
 		return;
