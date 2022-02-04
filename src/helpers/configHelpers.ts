@@ -22,7 +22,7 @@ import * as fs from "fs";
 import type { NeedleConfig } from "../types/needleConfig";
 import { MessageKey } from "./messageHelpers";
 
-const CONFIGS_PATH = pathResolve(__dirname, "../../configs");
+const CONFIGS_PATH = pathResolve(__dirname, "../../", process.env.CONFIGS_PATH || "configs");
 const guildConfigsCache = new Map<string, NeedleConfig>();
 
 export function getConfig(guildId = ""): NeedleConfig {
@@ -126,6 +126,8 @@ export function deleteConfigsFromUnkownServers(client: Client): void {
 		console.warn("No guilds available; skipping config deletion.");
 		return;
 	}
+
+	if (!fs.existsSync(CONFIGS_PATH)) return;
 
 	const configFiles = fs.readdirSync(CONFIGS_PATH);
 	configFiles.forEach(file => {
