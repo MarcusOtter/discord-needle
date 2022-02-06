@@ -1,0 +1,21 @@
+name: "💡 Improvement"
+description: Suggest an improvement for Needle
+title: "💡 "
+labels: ["improvement 💡"]
+    - type: textarea
+      id: description
+      attributes:
+          label: Describe the improvement
+          description: What improvement do you want added to Needle? Use as much detail as possible.
+          validations:
+              required: true
+    - type: textarea
+      id: fixes
+      attributes:
+        label: Problems this improvement solves
+        description: Is this improvement related to a problem? How does it solve that?
+    - type: textarea
+      id: alternatives
+      attributes:
+          label: Alternative solutions
+          description: Describe any alternative solutions or features you've considered.

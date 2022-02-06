@@ -1,0 +1,29 @@
+name: "🐛 Bug report"
+description: File a bug report
+title: "🐛 "
+labels: ["potential bug 🐛"]
+body:
+    - type: textarea
+      id: description
+      attributes:
+          label: Describe the bug
+          description: Describe the issue in as much detail as possible. Provide screenshots & recordings of the issue if possible.
+          validations:
+              required: true
+    - type: textarea
+      id: reproduce
+      attributes:
+          label: Steps to reproduce the bug
+          placeholder: |
+              1. Run command
+              2. Click on thing
+              3. Do something
+              4. Observe
+          validations:
+              required: true
+    - type: textarea
+      id: expected
+      attributes:
+          label: Expected behavior
+          validations:
+              required: true
