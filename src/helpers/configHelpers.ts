@@ -1,11 +1,28 @@
-import type { Client, Guild } from "discord.js";
+// ________________________________________________________________________________________________
+//
+// This file is part of Needle.
+//
+// Needle is free software: you can redistribute it and/or modify it under the terms of the GNU
+// Affero General Public License as published by the Free Software Foundation, either version 3 of
+// the License, or (at your option) any later version.
+//
+// Needle is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+// the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+// General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License along with Needle.
+// If not, see <https://www.gnu.org/licenses/>.
+//
+// ________________________________________________________________________________________________
+
+import type { Client, Guild, ThreadChannel } from "discord.js";
 import * as defaultConfig from "../config.json";
 import { resolve as pathResolve } from "path";
 import * as fs from "fs";
 import type { NeedleConfig } from "../types/needleConfig";
 import { MessageKey } from "./messageHelpers";
 
-const CONFIGS_PATH = pathResolve(__dirname, "../../configs");
+const CONFIGS_PATH = pathResolve(__dirname, "../../", process.env.CONFIGS_PATH || "configs");
 const guildConfigsCache = new Map<string, NeedleConfig>();
 
 export function getConfig(guildId = ""): NeedleConfig {
@@ -18,6 +35,8 @@ export function getConfig(guildId = ""): NeedleConfig {
 
 	return Object.assign({}, defaultConfigCopy, guildConfig);
 }
+
+// Can probably remove the three methods below :)
 
 // Used by deploy-commands.js (!)
 export function getApiToken(): string | undefined {
@@ -34,6 +53,27 @@ export function getGuildId(): string | undefined {
 	return process.env.GUILD_ID;
 }
 
+export function shouldArchiveImmediately(thread: ThreadChannel) {
+	const config = getConfig(thread.guildId);
+	return config?.threadChannels?.find(x => x.channelId === thread.parentId)?.archiveImmediately ?? true;
+}
+
+export function includeBotsForAutothread(guildId: string, channelId: string) {
+	const config = getConfig(guildId);
+	return config?.threadChannels?.find(x => x.channelId === channelId)?.includeBots ?? false;
+}
+
+export function setEmojisEnabled(guild: Guild, enabled: boolean): boolean {
+	const config = getConfig(guild.id);
+	config.emojisEnabled = enabled;
+	return setConfig(guild, config);
+}
+
+export function emojisEnabled(guild: Guild): boolean {
+	const config = getConfig(guild.id);
+	return config.emojisEnabled ?? true;
+}
+
 export function setMessage(guild: Guild, messageKey: MessageKey, value: string): boolean {
 	const config = getConfig(guild.id);
 	if (!config || !config.messages) { return false; }
@@ -43,19 +83,20 @@ export function setMessage(guild: Guild, messageKey: MessageKey, value: string):
 	return setConfig(guild, config);
 }
 
-export function enableAutothreading(guild: Guild, channelId: string, message = ""): boolean {
+export function enableAutothreading(guild: Guild, channelId: string, includeBots?: boolean, archiveImmediately?: boolean, messageContent?: string): boolean {
 	const config = getConfig(guild.id);
 	if (!config || !config.threadChannels) { return false; }
-	if (message.length > 2000) { return false; }
+	if ((messageContent?.length ?? 0) > 2000) { return false; }
 
 	const index = config.threadChannels.findIndex(x => x?.channelId === channelId);
 	if (index > -1) {
-		config.threadChannels[index].messageContent = message;
+		if (includeBots !== undefined) config.threadChannels[index].includeBots = includeBots;
+		if (archiveImmediately !== undefined) config.threadChannels[index].archiveImmediately = archiveImmediately;
+		if (messageContent !== undefined) config.threadChannels[index].messageContent = messageContent;
 	}
 	else {
-		config.threadChannels.push({ channelId: channelId, messageContent: message });
+		config.threadChannels.push({ channelId, includeBots, archiveImmediately, messageContent });
 	}
-
 	return setConfig(guild, config);
 }
 
@@ -80,11 +121,13 @@ export function resetConfigToDefault(guildId: string): boolean {
 	return true;
 }
 
-export function deleteConfigsFromUnkownServers(client: Client): void {
+export function deleteConfigsFromUnknownServers(client: Client): void {
 	if (!client.guilds.cache.size) {
 		console.warn("No guilds available; skipping config deletion.");
 		return;
 	}
+
+	if (!fs.existsSync(CONFIGS_PATH)) return;
 
 	const configFiles = fs.readdirSync(CONFIGS_PATH);
 	configFiles.forEach(file => {

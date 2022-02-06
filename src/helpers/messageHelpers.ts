@@ -1,9 +1,28 @@
+// ________________________________________________________________________________________________
+//
+// This file is part of Needle.
+//
+// Needle is free software: you can redistribute it and/or modify it under the terms of the GNU
+// Affero General Public License as published by the Free Software Foundation, either version 3 of
+// the License, or (at your option) any later version.
+//
+// Needle is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+// the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+// General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License along with Needle.
+// If not, see <https://www.gnu.org/licenses/>.
+//
+// ________________________________________________________________________________________________
+
 import {
-	BaseCommandInteraction,
+	type BaseCommandInteraction,
 	type Message,
 	MessageButton,
-	MessageComponentInteraction,
+	type MessageComponentInteraction,
 	type TextBasedChannel,
+	type ThreadChannel,
+	type User,
 } from "discord.js";
 
 import type { MessageContext } from "../types/messageContext";
@@ -27,34 +46,23 @@ export function isAutoThreadChannel(channelId: string, guildId: string): boolean
 	return config?.threadChannels?.some(x => x?.channelId === channelId) ?? false;
 }
 
-export async function getThreadStartMessage(threadChannel: TextBasedChannel | null): Promise<Message | null> {
-	if (!threadChannel?.isThread()) { return null; }
-	if (!threadChannel.parentId) { return null; }
+export async function getThreadAuthor(channel: ThreadChannel): Promise<User | undefined> {
+	const parentMessage = await getThreadStartMessage(channel);
 
-	const parentChannel = await threadChannel.guild?.channels.fetch(threadChannel.parentId);
-	if (!parentChannel?.isText()) { return null; }
+	if (parentMessage) return parentMessage.author;
 
-	// The thread's channel ID is the same as the start message's ID,
-	// but if the start message has been deleted this will throw an exception
-	return parentChannel.messages
-		.fetch(threadChannel.id)
-		.catch(() => {
-			console.error(`Start message is missing in thread "${threadChannel.name}"`);
-			return null;
-		});
+	// https://github.com/MarcusOtter/discord-needle/issues/49
+	const firstMessage = await getFirstMessageInChannel(channel);
+	const author = firstMessage?.mentions.users.first();
+
+	if (!author) console.log(`Could not determine author of thread "${channel.name}"`);
+	return author;
 }
 
-export function getCodeFromCodeBlock(codeBlock: string): string {
-	const codeBlockStart = codeBlock.match(/^```(\w*)/ig);
-
-	// If it has no code block
-	if (codeBlockStart?.length === 0) {
-		return codeBlock;
-	}
-
-	// Replace start and end tags
-	const codeWithoutTags = codeBlock.replaceAll(/^```(\w*)/ig, "").replaceAll(/```$/ig, "");
-	return codeWithoutTags.trim();
+export async function getFirstMessageInChannel(channel: TextBasedChannel): Promise<Message | undefined> {
+	const amount = channel.isThread() ? 2 : 1; // threads have an empty message as the first message
+	const messages = await channel.messages.fetch({ after: "0", limit: amount });
+	return messages.first();
 }
 
 export function interactionReply(
@@ -75,24 +83,29 @@ export function interactionReply(
 }
 
 export function getMessage(messageKey: MessageKey, replaceVariables = true): string | undefined {
-	const config = getConfig(context?.interaction?.guildId!);
+	const config = getConfig(context?.interaction?.guildId ?? undefined);
 	if (!config.messages) { return ""; }
 
 	const message = config.messages[messageKey];
 	if (!context || !message) { return message; }
 
+	return replaceVariables
+		? replaceMessageVariables(message)
+		: message;
+}
+
+export function replaceMessageVariables(message: string): string {
 	const user = context.user ? `<@${context.user.id}>` : "";
 	const channel = context.channel ? `<#${context.channel.id}>` : "";
 	const timeAgo = context.timeAgo || (context.message
 		? `<t:${Math.round(context.message.createdTimestamp / 1000)}:R>`
 		: "");
 
-	return !replaceVariables
-		? message
-		: message
-			.replaceAll("$USER", user)
-			.replaceAll("$CHANNEL", channel)
-			.replaceAll("$TIME_AGO", timeAgo);
+	return message
+		.replaceAll("$USER", user)
+		.replaceAll("$CHANNEL", channel)
+		.replaceAll("$TIME_AGO", timeAgo)
+		.replaceAll("\\n", "\n");
 }
 
 export function getDiscordInviteButton(buttonText = "Join the support server"): MessageButton {
@@ -127,9 +140,24 @@ export function getFeatureRequestButton(buttonText = "Suggest an improvement"): 
 		.setEmoji("💡");
 }
 
-export function getCloseConfigChannelButton(): MessageButton {
+export function getHelpButton(): MessageButton {
 	return new MessageButton()
-		.setCustomId("close-config-channel")
-		.setLabel("Close channel")
-		.setStyle("DANGER");
+		.setCustomId("help")
+		.setLabel("Commands")
+		.setStyle("SECONDARY")
+		.setEmoji("937931337942306877"); // :slash_commands:
+}
+
+async function getThreadStartMessage(threadChannel: TextBasedChannel | null): Promise<Message | null> {
+	if (!threadChannel?.isThread()) { return null; }
+	if (!threadChannel.parentId) { return null; }
+
+	const parentChannel = await threadChannel.guild?.channels.fetch(threadChannel.parentId);
+	if (!parentChannel?.isText()) { return null; }
+
+	// The thread's channel ID is the same as the start message's ID,
+	// but if the start message has been deleted this will throw an exception
+	return parentChannel.messages
+		.fetch(threadChannel.id)
+		.catch(() => null);
 }

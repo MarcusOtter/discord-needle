@@ -1,25 +1,71 @@
+// ________________________________________________________________________________________________
+//
+// This file is part of Needle.
+//
+// Needle is free software: you can redistribute it and/or modify it under the terms of the GNU
+// Affero General Public License as published by the Free Software Foundation, either version 3 of
+// the License, or (at your option) any later version.
+//
+// Needle is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+// the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+// General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License along with Needle.
+// If not, see <https://www.gnu.org/licenses/>.
+//
+// ________________________________________________________________________________________________
+import { config } from "dotenv";
+config();
+
 import { Client, Intents } from "discord.js";
 import { getOrLoadAllCommands } from "./handlers/commandHandler";
 import { handleInteractionCreate } from "./handlers/interactionHandler";
 import { handleMessageCreate } from "./handlers/messageHandler";
-import { deleteConfigsFromUnkownServers, getApiToken, resetConfigToDefault } from "./helpers/configHelpers";
+import { deleteConfigsFromUnknownServers, getApiToken, resetConfigToDefault } from "./helpers/configHelpers";
+
+console.log(`Needle, a Discord bot that declutters your server by creating threads
+Copyright (C) 2022  Marcus Otterström
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+`);
 
 (async () => {
-	(await import("dotenv")).config();
-
 	// Initial load of all commands
 	await getOrLoadAllCommands(false);
 
-	const CLIENT = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
-	CLIENT.once("ready", () => {
-		console.log("Ready!");
-		deleteConfigsFromUnkownServers(CLIENT);
+	const CLIENT = new Client({
+		intents: [
+			Intents.FLAGS.GUILDS,
+			Intents.FLAGS.GUILD_MESSAGES,
+		],
+		presence: {
+			activities: [{
+				type: "LISTENING",
+				name: "/help",
+			}],
+		},
 	});
 
-	CLIENT.on("interactionCreate", interaction => handleInteractionCreate(interaction).catch(e => console.log(e)));
-	CLIENT.on("messageCreate", message => handleMessageCreate(message).catch(e => console.log(e)));
+	CLIENT.once("ready", () => {
+		console.log("Ready!");
+		deleteConfigsFromUnknownServers(CLIENT);
+	});
+
+	CLIENT.on("interactionCreate", async interaction => await handleInteractionCreate(interaction).catch(console.error));
+	CLIENT.on("messageCreate", async message => await handleMessageCreate(message).catch(console.error));
 	CLIENT.on("guildDelete", guild => { resetConfigToDefault(guild.id); });
 
-	CLIENT.login(getApiToken() ?? undefined);
+	CLIENT.login(getApiToken());
 })();
 

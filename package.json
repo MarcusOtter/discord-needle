@@ -16,7 +16,7 @@
     "url": "git+https://github.com/MarcusOtter/discord-needle.git"
   },
   "author": "Marcus Otterström",
-  "license": "GPL-3.0",
+  "license": "AGPL-3.0-or-later",
   "bugs": {
     "url": "https://github.com/MarcusOtter/discord-needle/issues"
   },
@@ -26,7 +26,7 @@
     "@discordjs/rest": "^0.3.0",
     "discord-api-types": "^0.26.1",
     "discord.js": "^13.6.0",
-    "dotenv": "^15.0.0"
+    "dotenv": "^16.0.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.10.2",
