@@ -1,10 +1,9 @@
 ---
 name: "\U0001F4A1 Improvement"
 about: Suggest an improvement for this project
-title: "\U0001F4A1 Improvement: "
+title: "\U0001F4A1 "
 labels: "improvement \U0001F4A1"
-assignees: ''
-
+assignees: ""
 ---
 
 **Is your request for improvement related to a problem? Please describe.**
