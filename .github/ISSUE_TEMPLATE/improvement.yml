@@ -2,6 +2,7 @@ name: "💡 Improvement"
 description: Suggest an improvement for Needle
 title: "💡 "
 labels: ["improvement 💡"]
+body:
     - type: textarea
       id: description
       attributes:
