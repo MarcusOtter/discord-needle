@@ -7,8 +7,8 @@ labels: ["improvement 💡"]
       attributes:
           label: Describe the improvement
           description: What improvement do you want added to Needle? Use as much detail as possible.
-          validations:
-              required: true
+      validations:
+          required: true
     - type: textarea
       id: fixes
       attributes:
