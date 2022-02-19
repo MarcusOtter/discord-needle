@@ -69,9 +69,11 @@ async function autoCreateThread(message: Message) {
 	if (message.hasThread) return;
 	if (!isAutoThreadChannel(channel.id, guild.id)) return;
 
+	const slowmode = getSlowmodeSeconds(guild.id, channel.id);
+
 	const botMember = await guild.members.fetch(message.client.user);
 	const botPermissions = botMember.permissionsIn(message.channel.id);
-	const requiredPermissions = getRequiredPermissions();
+	const requiredPermissions = getRequiredPermissions(slowmode);
 	if (!botPermissions.has(requiredPermissions)) {
 		try {
 			const missing = botPermissions.missing(requiredPermissions);
@@ -98,8 +100,6 @@ async function autoCreateThread(message: Message) {
 	const name = emojisEnabled(guild)
 		? `🆕 ${authorName} (${creationDate})`
 		: `${authorName} (${creationDate})`;
-
-	const slowmode = getSlowmodeSeconds(guild.id, channel.id);
 
 	const thread = await message.startThread({
 		name,

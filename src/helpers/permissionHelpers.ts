@@ -17,7 +17,7 @@
 
 import { type GuildMember, type NewsChannel, Permissions, type TextChannel, type ThreadAutoArchiveDuration } from "discord.js";
 
-export function getRequiredPermissions(): bigint[] {
+export function getRequiredPermissions(slowmode?: number): bigint[] {
 	const output = [
 		Permissions.FLAGS.VIEW_CHANNEL,
 		Permissions.FLAGS.SEND_MESSAGES,
@@ -25,6 +25,10 @@ export function getRequiredPermissions(): bigint[] {
 		Permissions.FLAGS.CREATE_PUBLIC_THREADS,
 		Permissions.FLAGS.READ_MESSAGE_HISTORY,
 	];
+
+	if (slowmode && slowmode > 0) {
+		output.push(Permissions.FLAGS.MANAGE_THREADS);
+	}
 
 	return output;
 }

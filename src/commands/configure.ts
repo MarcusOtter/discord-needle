@@ -212,9 +212,16 @@ async function configureAutothreading(interaction: CommandInteraction): Promise<
 	if (!clientUser) return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
 
 	const botMember = await interaction.guild.members.fetch(clientUser);
-	if (!botMember.permissionsIn(channel.id).has(Permissions.FLAGS.VIEW_CHANNEL)) {
-		addMessageContext({ channel: channel });
+	const botPermissions = botMember.permissionsIn(channel.id);
+
+	if (!botPermissions.has(Permissions.FLAGS.VIEW_CHANNEL)) {
+		addMessageContext({ channel });
 		return interactionReply(interaction, getMessage("ERR_CHANNEL_VISIBILITY"));
+	}
+
+	if (!botPermissions.has(Permissions.FLAGS.MANAGE_THREADS)) {
+		addMessageContext({ channel });
+		return interactionReply(interaction, getMessage("ERR_CHANNEL_SLOWMODE"));
 	}
 
 	if (enabled) {
