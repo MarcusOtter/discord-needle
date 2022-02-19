@@ -95,6 +95,18 @@ export const command: NeedleCommand = {
 					})
 					.addStringOption(option => {
 						return option
+							.setName("slowmode")
+							.setDescription("The default slowmode option for new threads")
+							.addChoice("Off (DEFAULT)", "0")
+							.addChoice("30 seconds", "30")
+							.addChoice("1 minute", "60")
+							.addChoice("5 minutes", "300")
+							.addChoice("15 minutes", "900")
+							.addChoice("1 hour", "3600")
+							.addChoice("6 hours", "21600");
+					})
+					.addStringOption(option => {
+						return option
 							.setName("custom-message")
 							.setDescription("The message to send when a thread is created (\"\\n\" for new line)");
 					});
@@ -186,6 +198,7 @@ async function configureAutothreading(interaction: CommandInteraction): Promise<
 	const customMessage = interaction.options.getString("custom-message") ?? "";
 	const archiveImmediately = interaction.options.getString("archive-behavior") !== "slow";
 	const includeBots = interaction.options.getBoolean("include-bots") ?? false;
+	const slowmode = parseInt(interaction.options.getString("slowmode") ?? "0");
 
 	if (!interaction.guild || !interaction.guildId) {
 		return interactionReply(interaction, getMessage("ERR_ONLY_IN_SERVER"));
@@ -205,7 +218,7 @@ async function configureAutothreading(interaction: CommandInteraction): Promise<
 	}
 
 	if (enabled) {
-		const success = enableAutothreading(interaction.guild, channel.id, includeBots, archiveImmediately, customMessage);
+		const success = enableAutothreading(interaction.guild, channel.id, includeBots, archiveImmediately, customMessage, slowmode);
 		return success
 			? interactionReply(interaction, `Updated auto-threading settings for <#${channel.id}>`, false)
 			: interactionReply(interaction, getMessage("ERR_UNKNOWN"));

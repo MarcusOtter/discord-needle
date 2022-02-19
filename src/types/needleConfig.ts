@@ -40,4 +40,5 @@ export interface AutothreadChannelConfig {
     archiveImmediately?: boolean,
     messageContent?: string,
     includeBots?: boolean,
+	slowmode?: number,
 }
