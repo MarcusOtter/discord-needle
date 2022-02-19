@@ -14,4 +14,6 @@ ENV CONFIGS_PATH=/configs
 
 VOLUME [ "/configs" ]
 
+USER node
+
 CMD ["node", "./dist/index.js"]
