@@ -1,0 +1,14 @@
+.git/
+node_modules/
+dist/
+.github/
+configs/
+branding/
+scripts/
+PRIVACY_POLICY.md
+README.md
+docker-compose.yml
+.gitignore
+.eslintrc.json
+.env.example
+.env
