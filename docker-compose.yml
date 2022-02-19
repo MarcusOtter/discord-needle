@@ -1,6 +1,6 @@
 services:
   needle:
-    image: ghcr.io/MarcusOtter/discord-needle
+    image: ghcr.io/MarcusOtter/discord-needle:2.0.0
     restart: unless-stopped
     environment:
       - DISCORD_API_TOKEN=
