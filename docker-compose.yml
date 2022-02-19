@@ -1,0 +1,14 @@
+services:
+  needle:
+    image: ghcr.io/MarcusOtter/discord-needle
+    restart: unless-stopped
+    environment:
+      - DISCORD_API_TOKEN=
+
+    # OPTIONAL: Pass in a .env file rather than specifying it here
+    # env_file:
+    #   - .env
+
+    # OPTIONAL: Use a named volume instead of an anonymous one
+    # volumes:
+    #   - /some/configs/directory:/configs

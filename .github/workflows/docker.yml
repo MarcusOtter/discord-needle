@@ -1,0 +1,24 @@
+name: Build and publish a Docker image to ghcr.io
+on:
+    # publish on releases, e.g. v2.1.13 (image tagged as "2.1.13" - "v" prefix is removed)
+    release:
+        types: [published]
+
+    # publish on pushes to the main branch (image tagged as "latest")
+    push:
+        branches:
+            - main
+
+jobs:
+    docker_publish:
+        runs-on: "ubuntu-20.04"
+
+        steps:
+            - uses: actions/checkout@230611dbd0eb52da1e1f4f7bc8bb0c3a339fc8b7
+
+            # https://github.com/marketplace/actions/push-to-ghcr
+            - name: Build and publish a Docker image for ${{ github.repository }}
+              uses: macbre/push-to-ghcr@d45c4b8f5a72d7fe21f6b832c42d05c29356c840
+              with:
+                  image_name: ${{ github.repository }}
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
