@@ -67,5 +67,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 	CLIENT.on("guildDelete", guild => { resetConfigToDefault(guild.id); });
 
 	CLIENT.login(getApiToken());
+
+	process.on("SIGINT", () => {
+		CLIENT.destroy();
+		console.log("Destroyed client");
+		process.exit(0);
+	});
 })();
 
