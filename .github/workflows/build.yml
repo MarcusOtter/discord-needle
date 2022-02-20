@@ -16,7 +16,7 @@ jobs:
               id: meta
               uses: docker/metadata-action@v3
               with:
-                  images: MarcusOtter/discord-needle
+                  images: ${{ github.action_repository }}
                   tags: |
                       type=ref,event=branch
                       type=ref,event=pr
