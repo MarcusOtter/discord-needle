@@ -23,4 +23,4 @@ VOLUME [ "/configs" ]
 
 USER node
 
-CMD ["node", "./dist/index.js"]
+CMD ["node", "--enable-source-maps", "./dist/index.js"]
