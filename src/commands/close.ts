@@ -71,7 +71,7 @@ export const command: NeedleCommand = {
 		async function archiveThread(thread: ThreadChannel): Promise<void> {
 			if (shouldArchiveImmediately(thread)) {
 				if (interaction.isButton()) {
-					await interaction.update({ components: [] });
+					await interaction.update({ content: interaction.message.content });
 					const message = getMessage("SUCCESS_THREAD_ARCHIVE_IMMEDIATE");
 					if (message) {
 						await thread.send(message);
