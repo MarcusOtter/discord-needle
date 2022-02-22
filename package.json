@@ -5,8 +5,8 @@
   "main": "./dist/index.js",
   "scripts": {
     "build": "tsup",
-    "start": "npm run build && node ./dist/index.js",
-    "dev": "npm run deploy:dev && tsup --watch --onSuccess \"node ./dist/index.js\"",
+    "start": "npm run build && node --enable-source-maps .",
+    "dev": "npm run deploy:dev && tsup --watch --onSuccess \"node --enable-source-maps .",
     "deploy:global": "npm run undeploy && node ./scripts/deploy-commands.js --global",
     "deploy:dev": "npm run undeploy && node ./scripts/deploy-commands.js",
     "undeploy": "node ./scripts/deploy-commands.js --undeploy"
