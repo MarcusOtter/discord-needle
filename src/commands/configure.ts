@@ -219,7 +219,7 @@ async function configureAutothreading(interaction: CommandInteraction): Promise<
 		return interactionReply(interaction, getMessage("ERR_CHANNEL_VISIBILITY"));
 	}
 
-	if (!botPermissions.has(Permissions.FLAGS.MANAGE_THREADS)) {
+	if (slowmode && slowmode > 0 && !botPermissions.has(Permissions.FLAGS.MANAGE_THREADS)) {
 		addMessageContext({ channel });
 		return interactionReply(interaction, getMessage("ERR_CHANNEL_SLOWMODE"));
 	}
