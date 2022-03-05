@@ -16,7 +16,7 @@
 // ________________________________________________________________________________________________
 
 import { type Message, MessageActionRow, MessageButton, NewsChannel, TextChannel, ThreadChannel } from "discord.js";
-import { emojisEnabled, getConfig, includeBotsForAutothread } from "../helpers/configHelpers";
+import { emojisEnabled, getConfig, includeBotsForAutothread, getSlowmodeSeconds } from "../helpers/configHelpers";
 import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel, getHelpButton, replaceMessageVariables, getThreadAuthor } from "../helpers/messageHelpers";
 import { getRequiredPermissions, getSafeDefaultAutoArchiveDuration } from "../helpers/permissionHelpers";
 
@@ -69,9 +69,11 @@ async function autoCreateThread(message: Message) {
 	if (message.hasThread) return;
 	if (!isAutoThreadChannel(channel.id, guild.id)) return;
 
+	const slowmode = getSlowmodeSeconds(guild.id, channel.id);
+
 	const botMember = await guild.members.fetch(message.client.user);
 	const botPermissions = botMember.permissionsIn(message.channel.id);
-	const requiredPermissions = getRequiredPermissions();
+	const requiredPermissions = getRequiredPermissions(slowmode);
 	if (!botPermissions.has(requiredPermissions)) {
 		try {
 			const missing = botPermissions.missing(requiredPermissions);
@@ -101,6 +103,7 @@ async function autoCreateThread(message: Message) {
 
 	const thread = await message.startThread({
 		name,
+		rateLimitPerUser: slowmode,
 		autoArchiveDuration: getSafeDefaultAutoArchiveDuration(channel),
 	});
 
