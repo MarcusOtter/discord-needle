@@ -8,7 +8,7 @@ export default defineConfig({
 	format: ["cjs"],
 	minify: false,
 	tsconfig: "tsconfig.json",
-	target: "esnext",
+	target: "node16.14",
 	splitting: false,
 	skipNodeModulesBundle: true,
 	sourcemap: true,
