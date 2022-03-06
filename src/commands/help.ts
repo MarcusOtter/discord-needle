@@ -71,10 +71,11 @@ async function getCommandDetailsEmbed(
 	const cmdOptionString = await getCommandOptionString(cmd);
 	const cmdOptions = await getCommandOptions(cmd);
 	let cmdOptionExplanations = "";
-	for (const option of cmdOptions ?? [])
+	for (const option of cmdOptions ?? []) {
 		cmdOptionExplanations += `\`${option.name}\` - ${
 			option.required ? "" : "(optional)"
 		} ${option.description}\n`;
+	}
 
 	const commandInfoEmbed = new MessageEmbed()
 		.setTitle(`Information about \`/${cmd.name}\``)

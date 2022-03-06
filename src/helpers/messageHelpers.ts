@@ -87,11 +87,12 @@ export function interactionReply(
 	message?: string,
 	ephemeral = true
 ): Promise<void> {
-	if (!message || message.length == 0)
+	if (!message || message.length == 0) {
 		return interaction.reply({
 			content: getMessage("ERR_UNKNOWN", interaction.id),
 			ephemeral: true,
 		});
+	}
 
 	return interaction.reply({
 		content: message,

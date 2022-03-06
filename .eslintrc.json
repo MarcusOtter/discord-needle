@@ -28,7 +28,7 @@
 		"quotes": ["error", "double", { "avoidEscape": true }],
 		"spaced-comment": "error",
 		"yoda": "error",
-		"curly": ["error", "multi"],
+		"curly": ["error", "multi-or-nest"],
 		"comma-dangle": [
 			"error",
 			{
