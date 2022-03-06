@@ -87,12 +87,11 @@ export function interactionReply(
 	message?: string,
 	ephemeral = true
 ): Promise<void> {
-	if (!message || message.length == 0) {
+	if (!message || message.length == 0)
 		return interaction.reply({
 			content: getMessage("ERR_UNKNOWN", interaction.id),
 			ephemeral: true,
 		});
-	}
 
 	return interaction.reply({
 		content: message,
@@ -107,14 +106,10 @@ export function getMessage(
 ): string | undefined {
 	const context = contexts.get(requestId ?? "");
 	const config = getConfig(context?.interaction?.guildId ?? undefined);
-	if (!config.messages) {
-		return "";
-	}
+	if (!config.messages) return "";
 
 	const message = config.messages[messageKey];
-	if (!context || !message) {
-		return message;
-	}
+	if (!context || !message) return message;
 
 	return replaceVariables
 		? replaceMessageVariables(message, requestId ?? "")
@@ -194,19 +189,14 @@ export function getHelpButton(): MessageButton {
 async function getThreadStartMessage(
 	threadChannel: TextBasedChannel | null
 ): Promise<Message | null> {
-	if (!threadChannel?.isThread()) {
-		return null;
-	}
-	if (!threadChannel.parentId) {
-		return null;
-	}
+	if (!threadChannel?.isThread()) return null;
+
+	if (!threadChannel.parentId) return null;
 
 	const parentChannel = await threadChannel.guild?.channels.fetch(
 		threadChannel.parentId
 	);
-	if (!parentChannel?.isText()) {
-		return null;
-	}
+	if (!parentChannel?.isText()) return null;
 
 	// The thread's channel ID is the same as the start message's ID,
 	// but if the start message has been deleted this will throw an exception

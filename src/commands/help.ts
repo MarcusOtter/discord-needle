@@ -66,27 +66,23 @@ async function getCommandDetailsEmbed(
 	commandName: string
 ): Promise<MessageEmbed[]> {
 	const cmd = getCommand(commandName);
-	if (!cmd) {
-		return [];
-	}
+	if (!cmd) return [];
 
 	const cmdOptionString = await getCommandOptionString(cmd);
 	const cmdOptions = await getCommandOptions(cmd);
 	let cmdOptionExplanations = "";
-	for (const option of cmdOptions ?? []) {
+	for (const option of cmdOptions ?? [])
 		cmdOptionExplanations += `\`${option.name}\` - ${
 			option.required ? "" : "(optional)"
 		} ${option.description}\n`;
-	}
 
 	const commandInfoEmbed = new MessageEmbed()
 		.setTitle(`Information about \`/${cmd.name}\``)
 		.setDescription(cmd.longHelpDescription ?? cmd.shortHelpDescription)
 		.addField("Usage", `/${cmd.name}${cmdOptionString}`, false);
 
-	if (cmdOptionExplanations && cmdOptionExplanations.length > 0) {
+	if (cmdOptionExplanations && cmdOptionExplanations.length > 0)
 		commandInfoEmbed.addField("Options", cmdOptionExplanations, false);
-	}
 
 	return [commandInfoEmbed];
 }
@@ -121,14 +117,12 @@ async function getAllCommandsEmbed(): Promise<MessageEmbed> {
 
 async function getCommandOptionString(cmd: NeedleCommand): Promise<string> {
 	const commandInfo = await cmd.getSlashCommandBuilder();
-	if (!commandInfo.options) {
-		return "";
-	}
+	if (!commandInfo.options) return "";
 
 	let output = "";
-	for (const option of commandInfo.options) {
+	for (const option of commandInfo.options)
 		output += `  \`${option.name}${option.required ? "" : "?"}\``;
-	}
+
 	return output;
 }
 
@@ -152,9 +146,7 @@ async function getHelpSlashCommandBuilder() {
 				)
 				.setRequired(false);
 
-			for (const cmd of commands) {
-				option.addChoice(cmd.name, cmd.name);
-			}
+			for (const cmd of commands) option.addChoice(cmd.name, cmd.name);
 
 			return option;
 		});

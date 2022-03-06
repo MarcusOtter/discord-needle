@@ -32,11 +32,9 @@ export async function handleInteractionCreate(
 		channel: interaction.channel ?? undefined,
 	});
 
-	if (interaction.isCommand()) {
-		await handleCommandInteraction(interaction);
-	} else if (interaction.isButton()) {
+	if (interaction.isCommand()) await handleCommandInteraction(interaction);
+	else if (interaction.isButton())
 		await handleButtonClickedInteraction(interaction);
-	}
 
 	resetMessageContext(interaction.id);
 }

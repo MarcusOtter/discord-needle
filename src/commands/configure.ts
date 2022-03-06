@@ -66,9 +66,8 @@ export const command: NeedleCommand = {
 
 						for (const messageKey of Object.keys(
 							getConfig().messages ?? []
-						)) {
+						))
 							opt.addChoice(messageKey, messageKey);
-						}
 
 						return opt;
 					})
@@ -172,19 +171,17 @@ export const command: NeedleCommand = {
 	},
 
 	async execute(interaction: CommandInteraction): Promise<void> {
-		if (!interaction.guildId || !interaction.guild) {
+		if (!interaction.guildId || !interaction.guild)
 			return interactionReply(
 				interaction,
 				getMessage("ERR_ONLY_IN_SERVER", interaction.id)
 			);
-		}
 
-		if (!memberIsModerator(interaction.member as GuildMember)) {
+		if (!memberIsModerator(interaction.member as GuildMember))
 			return interactionReply(
 				interaction,
 				getMessage("ERR_INSUFFICIENT_PERMS", interaction.id)
 			);
-		}
 
 		if (interaction.options.getSubcommand() === "default") {
 			const success = resetConfigToDefault(interaction.guild.id);
@@ -197,17 +194,14 @@ export const command: NeedleCommand = {
 			);
 		}
 
-		if (interaction.options.getSubcommand() === "emojis") {
+		if (interaction.options.getSubcommand() === "emojis")
 			return configureEmojis(interaction);
-		}
 
-		if (interaction.options.getSubcommand() === "message") {
+		if (interaction.options.getSubcommand() === "message")
 			return configureMessage(interaction);
-		}
 
-		if (interaction.options.getSubcommand() === "auto-threading") {
+		if (interaction.options.getSubcommand() === "auto-threading")
 			return configureAutothreading(interaction);
-		}
 
 		return interactionReply(
 			interaction,
@@ -218,19 +212,17 @@ export const command: NeedleCommand = {
 
 function configureEmojis(interaction: CommandInteraction): Promise<void> {
 	const enable = interaction.options.getBoolean("enabled");
-	if (enable === null || interaction.guild === null) {
+	if (enable === null || interaction.guild === null)
 		return interactionReply(
 			interaction,
 			getMessage("ERR_PARAMETER_MISSING", interaction.id)
 		);
-	}
 
-	if (enable === emojisEnabled(interaction.guild)) {
+	if (enable === emojisEnabled(interaction.guild))
 		return interactionReply(
 			interaction,
 			getMessage("ERR_NO_EFFECT", interaction.id)
 		);
-	}
 
 	const success = setEmojisEnabled(interaction.guild, enable);
 	if (!success)
@@ -251,14 +243,13 @@ function configureMessage(interaction: CommandInteraction): Promise<void> {
 	const key = interaction.options.getString("key") as MessageKey;
 	const value = interaction.options.getString("value");
 
-	if (!interaction.guild) {
+	if (!interaction.guild)
 		return interactionReply(
 			interaction,
 			getMessage("ERR_ONLY_IN_SERVER", interaction.id)
 		);
-	}
 
-	if (!value || value.length === 0) {
+	if (!value || value.length === 0)
 		return interactionReply(
 			interaction,
 			`**${key}** message:\n\n>>> ${getMessage(
@@ -267,7 +258,6 @@ function configureMessage(interaction: CommandInteraction): Promise<void> {
 				false
 			)}`
 		);
-	}
 
 	const oldValue = getMessage(key, interaction.id, false);
 	return setMessage(interaction.guild, key, value)
@@ -298,19 +288,17 @@ async function configureAutothreading(
 	const includeBots = interaction.options.getBoolean("include-bots") ?? false;
 	const slowmode = parseInt(interaction.options.getString("slowmode") ?? "0");
 
-	if (!interaction.guild || !interaction.guildId) {
+	if (!interaction.guild || !interaction.guildId)
 		return interactionReply(
 			interaction,
 			getMessage("ERR_ONLY_IN_SERVER", interaction.id)
 		);
-	}
 
-	if (!channel || enabled == null) {
+	if (!channel || enabled == null)
 		return interactionReply(
 			interaction,
 			getMessage("ERR_PARAMETER_MISSING", interaction.id)
 		);
-	}
 
 	const clientUser = interaction.client.user;
 	if (!clientUser)
@@ -363,12 +351,11 @@ async function configureAutothreading(
 			  );
 	}
 
-	if (!isAutoThreadChannel(channel.id, interaction.guildId)) {
+	if (!isAutoThreadChannel(channel.id, interaction.guildId))
 		return interactionReply(
 			interaction,
 			getMessage("ERR_NO_EFFECT", interaction.id)
 		);
-	}
 
 	const success = disableAutothreading(interaction.guild, channel.id);
 	return success

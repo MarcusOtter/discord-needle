@@ -22,7 +22,7 @@ import {
 	ThreadChannel,
 	SnowflakeUtil,
 	Snowflake,
-  Permissions,
+	Permissions,
 } from "discord.js";
 import {
 	emojisEnabled,
@@ -166,7 +166,11 @@ async function autoCreateThread(message: Message, requestId: Snowflake) {
 			components: [buttonRow],
 		});
 
-		if (botMember.permissionsIn(thread.id).has(Permissions.FLAGS.MANAGE_MESSAGES)) {
+		if (
+			botMember
+				.permissionsIn(thread.id)
+				.has(Permissions.FLAGS.MANAGE_MESSAGES)
+		) {
 			await msg.pin();
 			await thread.lastMessage?.delete();
 		}

@@ -34,13 +34,12 @@ export function getConfig(guildId = ""): NeedleConfig {
 	const defaultConfigCopy = JSON.parse(
 		JSON.stringify(defaultConfig)
 	) as NeedleConfig;
-	if (guildConfig) {
+	if (guildConfig)
 		guildConfig.messages = Object.assign(
 			{},
 			defaultConfigCopy.messages,
 			guildConfig?.messages
 		);
-	}
 
 	return Object.assign({}, defaultConfigCopy, guildConfig);
 }
@@ -95,12 +94,9 @@ export function setMessage(
 	value: string
 ): boolean {
 	const config = getConfig(guild.id);
-	if (!config || !config.messages) {
-		return false;
-	}
-	if (value.length > 2000) {
-		return false;
-	}
+	if (!config || !config.messages) return false;
+
+	if (value.length > 2000) return false;
 
 	config.messages[messageKey] = value;
 	return setConfig(guild, config);
@@ -123,12 +119,9 @@ export function enableAutothreading(
 	slowmode?: number
 ): boolean {
 	const config = getConfig(guild.id);
-	if (!config || !config.threadChannels) {
-		return false;
-	}
-	if ((messageContent?.length ?? 0) > 2000) {
-		return false;
-	}
+	if (!config || !config.threadChannels) return false;
+
+	if ((messageContent?.length ?? 0) > 2000) return false;
 
 	const index = config.threadChannels.findIndex(
 		(x) => x?.channelId === channelId
@@ -143,7 +136,7 @@ export function enableAutothreading(
 			config.threadChannels[index].messageContent = messageContent;
 		if (slowmode !== undefined)
 			config.threadChannels[index].slowmode = slowmode;
-	} else {
+	} else
 		config.threadChannels.push({
 			channelId,
 			includeBots,
@@ -151,22 +144,18 @@ export function enableAutothreading(
 			messageContent,
 			slowmode,
 		});
-	}
+
 	return setConfig(guild, config);
 }
 
 export function disableAutothreading(guild: Guild, channelId: string): boolean {
 	const config = getConfig(guild.id);
-	if (!config || !config.threadChannels) {
-		return false;
-	}
+	if (!config || !config.threadChannels) return false;
 
 	const index = config.threadChannels.findIndex(
 		(x) => x?.channelId === channelId
 	);
-	if (index > -1) {
-		delete config.threadChannels[index];
-	}
+	if (index > -1) delete config.threadChannels[index];
 
 	return setConfig(guild, config);
 }
@@ -191,9 +180,7 @@ export function deleteConfigsFromUnknownServers(client: Client): void {
 	const configFiles = fs.readdirSync(CONFIGS_PATH);
 	configFiles.forEach((file) => {
 		const guildId = file.split(".")[0];
-		if (!client.guilds.cache.has(guildId)) {
-			resetConfigToDefault(guildId);
-		}
+		if (!client.guilds.cache.has(guildId)) resetConfigToDefault(guildId);
 	});
 }
 
@@ -216,9 +203,8 @@ function setConfig(
 	if (!guild || !config) return false;
 
 	const path = getGuildConfigPath(guild.id);
-	if (!fs.existsSync(CONFIGS_PATH)) {
-		fs.mkdirSync(CONFIGS_PATH);
-	}
+	if (!fs.existsSync(CONFIGS_PATH)) fs.mkdirSync(CONFIGS_PATH);
+
 	config.threadChannels = config.threadChannels?.filter(
 		(val) => val != null && val != undefined
 	);
@@ -227,13 +213,12 @@ function setConfig(
 	const defaultConfigCopy = JSON.parse(
 		JSON.stringify(defaultConfig)
 	) as NeedleConfig;
-	if (defaultConfigCopy.messages && config.messages) {
+	if (defaultConfigCopy.messages && config.messages)
 		for (const [key, message] of Object.entries(config.messages)) {
 			if (message !== defaultConfigCopy.messages[key as MessageKey])
 				continue;
 			delete config.messages[key as MessageKey];
 		}
-	}
 
 	fs.writeFileSync(path, JSON.stringify(config), { encoding: "utf-8" });
 	guildConfigsCache.set(guild.id, config);

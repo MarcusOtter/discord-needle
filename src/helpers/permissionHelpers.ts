@@ -30,9 +30,7 @@ export function getRequiredPermissions(slowmode?: number): bigint[] {
 		Permissions.FLAGS.READ_MESSAGE_HISTORY,
 	];
 
-	if (slowmode && slowmode > 0) {
-		output.push(Permissions.FLAGS.MANAGE_THREADS);
-	}
+	if (slowmode && slowmode > 0) output.push(Permissions.FLAGS.MANAGE_THREADS);
 
 	return output;
 }
