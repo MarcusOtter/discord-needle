@@ -20,7 +20,11 @@ import { Client, Intents } from "discord.js";
 import { getOrLoadAllCommands } from "./handlers/commandHandler";
 import { handleInteractionCreate } from "./handlers/interactionHandler";
 import { handleMessageCreate } from "./handlers/messageHandler";
-import { deleteConfigsFromUnknownServers, getApiToken, resetConfigToDefault } from "./helpers/configHelpers";
+import {
+	deleteConfigsFromUnknownServers,
+	getApiToken,
+	resetConfigToDefault,
+} from "./helpers/configHelpers";
 
 console.log(`Needle, a Discord bot that declutters your server by creating threads
 Copyright (C) 2022  Marcus Otterström
@@ -44,15 +48,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 	await getOrLoadAllCommands(false);
 
 	const CLIENT = new Client({
-		intents: [
-			Intents.FLAGS.GUILDS,
-			Intents.FLAGS.GUILD_MESSAGES,
-		],
+		intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
 		presence: {
-			activities: [{
-				type: "LISTENING",
-				name: "/help",
-			}],
+			activities: [
+				{
+					type: "LISTENING",
+					name: "/help",
+				},
+			],
 		},
 	});
 
@@ -61,9 +64,19 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 		deleteConfigsFromUnknownServers(CLIENT);
 	});
 
-	CLIENT.on("interactionCreate", async interaction => await handleInteractionCreate(interaction).catch(console.error));
-	CLIENT.on("messageCreate", async message => await handleMessageCreate(message).catch(console.error));
-	CLIENT.on("guildDelete", guild => { resetConfigToDefault(guild.id); });
+	CLIENT.on(
+		"interactionCreate",
+		async (interaction) =>
+			await handleInteractionCreate(interaction).catch(console.error)
+	);
+	CLIENT.on(
+		"messageCreate",
+		async (message) =>
+			await handleMessageCreate(message).catch(console.error)
+	);
+	CLIENT.on("guildDelete", (guild) => {
+		resetConfigToDefault(guild.id);
+	});
 
 	CLIENT.login(getApiToken());
 
@@ -73,4 +86,3 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 		process.exit(0);
 	});
 })();
-

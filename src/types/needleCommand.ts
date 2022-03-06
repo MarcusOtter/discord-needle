@@ -14,12 +14,19 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { SlashCommandBuilder } from "@discordjs/builders";
-import type { CommandInteraction, MessageComponentInteraction } from "discord.js";
+import type {
+	CommandInteraction,
+	MessageComponentInteraction,
+} from "discord.js";
 
 export interface NeedleCommand {
 	name: string;
 	shortHelpDescription: string;
 	longHelpDescription?: string;
-	getSlashCommandBuilder(): Promise<ReturnType<SlashCommandBuilder["toJSON"]>>;
-	execute(interaction: CommandInteraction | MessageComponentInteraction): Promise<void>;
+	getSlashCommandBuilder(): Promise<
+		ReturnType<SlashCommandBuilder["toJSON"]>
+	>;
+	execute(
+		interaction: CommandInteraction | MessageComponentInteraction
+	): Promise<void>;
 }

@@ -14,8 +14,12 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { type CommandInteraction, GuildMember, Permissions } from "discord.js";
-import { interactionReply, getMessage, getThreadAuthor } from "../helpers/messageHelpers";
+import { CommandInteraction, GuildMember, Permissions } from "discord.js";
+import {
+	interactionReply,
+	getMessage,
+	getThreadAuthor,
+} from "../helpers/messageHelpers";
 import { setThreadName } from "../helpers/threadHelpers";
 import type { NeedleCommand } from "../types/needleCommand";
 
@@ -28,7 +32,7 @@ export const command: NeedleCommand = {
 		return new SlashCommandBuilder()
 			.setName("title")
 			.setDescription("Sets the title of a thread")
-			.addStringOption(option => {
+			.addStringOption((option) => {
 				return option
 					.setName("value")
 					.setDescription("The new title of the thread")
@@ -40,22 +44,34 @@ export const command: NeedleCommand = {
 	async execute(interaction: CommandInteraction): Promise<void> {
 		const member = interaction.member;
 		if (!(member instanceof GuildMember)) {
-			return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
+			return interactionReply(
+				interaction,
+				getMessage("ERR_UNKNOWN", interaction.id)
+			);
 		}
 
 		const channel = interaction.channel;
 		if (!channel?.isThread()) {
-			return interactionReply(interaction, getMessage("ERR_ONLY_IN_THREAD", interaction.id));
+			return interactionReply(
+				interaction,
+				getMessage("ERR_ONLY_IN_THREAD", interaction.id)
+			);
 		}
 
 		const newThreadName = interaction.options.getString("value");
 		if (!newThreadName) {
-			return interactionReply(interaction, getMessage("ERR_PARAMETER_MISSING", interaction.id));
+			return interactionReply(
+				interaction,
+				getMessage("ERR_PARAMETER_MISSING", interaction.id)
+			);
 		}
 
 		const oldThreadName = channel.name;
 		if (oldThreadName === newThreadName) {
-			return interactionReply(interaction, getMessage("ERR_NO_EFFECT", interaction.id));
+			return interactionReply(
+				interaction,
+				getMessage("ERR_NO_EFFECT", interaction.id)
+			);
 		}
 
 		const hasChangeTitlePermissions = member
@@ -70,11 +86,17 @@ export const command: NeedleCommand = {
 
 		const threadAuthor = await getThreadAuthor(channel);
 		if (!threadAuthor) {
-			return interactionReply(interaction, getMessage("ERR_AMBIGUOUS_THREAD_AUTHOR", interaction.id));
+			return interactionReply(
+				interaction,
+				getMessage("ERR_AMBIGUOUS_THREAD_AUTHOR", interaction.id)
+			);
 		}
 
 		if (threadAuthor !== interaction.user) {
-			return interactionReply(interaction, getMessage("ERR_ONLY_THREAD_OWNER", interaction.id));
+			return interactionReply(
+				interaction,
+				getMessage("ERR_ONLY_THREAD_OWNER", interaction.id)
+			);
 		}
 
 		await setThreadName(channel, newThreadName);

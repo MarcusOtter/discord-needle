@@ -13,10 +13,35 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { type Message, MessageActionRow, MessageButton, NewsChannel, TextChannel, ThreadChannel, SnowflakeUtil, type Snowflake } from "discord.js";
-import { emojisEnabled, getConfig, includeBotsForAutothread, getSlowmodeSeconds } from "../helpers/configHelpers";
-import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel, getHelpButton, replaceMessageVariables, getThreadAuthor } from "../helpers/messageHelpers";
-import { getRequiredPermissions, getSafeDefaultAutoArchiveDuration } from "../helpers/permissionHelpers";
+import {
+	Message,
+	MessageActionRow,
+	MessageButton,
+	NewsChannel,
+	TextChannel,
+	ThreadChannel,
+	SnowflakeUtil,
+	Snowflake,
+} from "discord.js";
+import {
+	emojisEnabled,
+	getConfig,
+	includeBotsForAutothread,
+	getSlowmodeSeconds,
+} from "../helpers/configHelpers";
+import {
+	getMessage,
+	resetMessageContext,
+	addMessageContext,
+	isAutoThreadChannel,
+	getHelpButton,
+	replaceMessageVariables,
+	getThreadAuthor,
+} from "../helpers/messageHelpers";
+import {
+	getRequiredPermissions,
+	getSafeDefaultAutoArchiveDuration,
+} from "../helpers/permissionHelpers";
 
 export async function handleMessageCreate(message: Message): Promise<void> {
 	// Server outage
@@ -30,7 +55,10 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 	if (!message.inGuild()) return;
 	if (message.author.id === message.client.user.id) return;
 
-	const includeBots = includeBotsForAutothread(message.guild.id, message.channel.id);
+	const includeBots = includeBotsForAutothread(
+		message.guild.id,
+		message.channel.id
+	);
 	if (!includeBots && message.author.bot) return;
 
 	if (!message.author.bot && message.channel.isThread()) {
@@ -64,7 +92,8 @@ async function autoCreateThread(message: Message, requestId: Snowflake) {
 	const guild = message.guild;
 	const channel = message.channel;
 
-	if (!(channel instanceof TextChannel) && !(channel instanceof NewsChannel)) return;
+	if (!(channel instanceof TextChannel) && !(channel instanceof NewsChannel))
+		return;
 	if (message.hasThread) return;
 	if (!isAutoThreadChannel(channel.id, guild.id)) return;
 
@@ -76,10 +105,13 @@ async function autoCreateThread(message: Message, requestId: Snowflake) {
 	if (!botPermissions.has(requiredPermissions)) {
 		try {
 			const missing = botPermissions.missing(requiredPermissions);
-			const errorMessage = `Missing permission${missing.length > 1 ? "s" : ""}:`;
-			await message.channel.send(`${errorMessage}\n    - ${missing.join("\n    - ")}`);
-		}
-		catch (e) {
+			const errorMessage = `Missing permission${
+				missing.length > 1 ? "s" : ""
+			}:`;
+			await message.channel.send(
+				`${errorMessage}\n    - ${missing.join("\n    - ")}`
+			);
+		} catch (e) {
 			console.log(e);
 		}
 		return;
@@ -92,9 +124,10 @@ async function autoCreateThread(message: Message, requestId: Snowflake) {
 	});
 
 	const creationDate = message.createdAt.toISOString().slice(0, 10);
-	const authorName = authorMember === null || authorMember.nickname === null
-		? authorUser.username
-		: authorMember.nickname;
+	const authorName =
+		authorMember === null || authorMember.nickname === null
+			? authorUser.username
+			: authorMember.nickname;
 
 	const name = emojisEnabled(guild)
 		? `🆕 ${authorName} (${creationDate})`
@@ -114,9 +147,14 @@ async function autoCreateThread(message: Message, requestId: Snowflake) {
 
 	const helpButton = getHelpButton();
 
-	const buttonRow = new MessageActionRow().addComponents(closeButton, helpButton);
+	const buttonRow = new MessageActionRow().addComponents(
+		closeButton,
+		helpButton
+	);
 
-	const overrideMessageContent = getConfig(guild.id).threadChannels?.find(x => x?.channelId === channel.id)?.messageContent;
+	const overrideMessageContent = getConfig(guild.id).threadChannels?.find(
+		(x) => x?.channelId === channel.id
+	)?.messageContent;
 	const msgContent = overrideMessageContent
 		? replaceMessageVariables(overrideMessageContent, requestId)
 		: getMessage("SUCCESS_THREAD_CREATE", requestId);

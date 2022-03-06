@@ -13,16 +13,22 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CacheType, Interaction, Message, TextBasedChannel, User } from "discord.js";
+import {
+	CacheType,
+	Interaction,
+	Message,
+	TextBasedChannel,
+	User,
+} from "discord.js";
 
 export interface MessageContext {
-    interaction?: Interaction<CacheType>;
-    message?: Message;
+	interaction?: Interaction<CacheType>;
+	message?: Message;
 
-    // Variables that can be used in messages (if they exist at the time of invocation)
-    // To use in message configuration, prefix with $ and convert name to SCREAMING_SNAKE_CASE
-    // For example, $TIME_AGO and $USER
-    channel?: TextBasedChannel;
-    user?: User;
-    timeAgo?: string;
+	// Variables that can be used in messages (if they exist at the time of invocation)
+	// To use in message configuration, prefix with $ and convert name to SCREAMING_SNAKE_CASE
+	// For example, $TIME_AGO and $USER
+	channel?: TextBasedChannel;
+	user?: User;
+	timeAgo?: string;
 }
