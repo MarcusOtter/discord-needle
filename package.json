@@ -4,9 +4,9 @@
   "description": "Needle is a discord bot that helps you manage your discord threads.",
   "main": "./dist/index.js",
   "scripts": {
-    "build": "rd /s /q dist & tsc",
-    "start": "npm run build && node ./dist/index.js",
-    "dev": "npm run build && node ./scripts/deploy-commands.js && node ./dist/index.js",
+    "build": "rd /s /q dist & tsc --sourceMap",
+    "start": "npm run build && node --enable-source-maps ./dist/index.js",
+    "dev": "npm run build && node ./scripts/deploy-commands.js && node --enable-source-maps ./dist/index.js",
     "undeploy": "npm run build && node ./scripts/deploy-commands.js  --undeploy",
     "deploy": "npm run undeploy && node ./scripts/deploy-commands.js --global"
   },

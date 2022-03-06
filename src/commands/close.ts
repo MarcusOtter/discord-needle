@@ -37,18 +37,18 @@ export const command: NeedleCommand = {
 	async execute(interaction: CommandInteraction | MessageComponentInteraction): Promise<void> {
 		const member = interaction.member;
 		if (!(member instanceof GuildMember)) {
-			return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
+			return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
 		}
 
 		const channel = interaction.channel;
 		if (!channel?.isThread()) {
-			return interactionReply(interaction, getMessage("ERR_ONLY_IN_THREAD"));
+			return interactionReply(interaction, getMessage("ERR_ONLY_IN_THREAD", interaction.id));
 		}
 
 		// Invoking slash commands seem to unarchive the threads for now so ironically, this has no effect
 		// Leaving this in if Discord decides to change their API around this
 		if (channel.archived) {
-			return interactionReply(interaction, getMessage("ERR_NO_EFFECT"));
+			return interactionReply(interaction, getMessage("ERR_NO_EFFECT", interaction.id));
 		}
 
 		const hasManageThreadsPermissions = member.permissionsIn(channel).has(Permissions.FLAGS.MANAGE_THREADS, true);
@@ -59,11 +59,11 @@ export const command: NeedleCommand = {
 
 		const threadAuthor = await getThreadAuthor(channel);
 		if (!threadAuthor) {
-			return interactionReply(interaction, getMessage("ERR_AMBIGUOUS_THREAD_AUTHOR"));
+			return interactionReply(interaction, getMessage("ERR_AMBIGUOUS_THREAD_AUTHOR", interaction.id));
 		}
 
 		if (threadAuthor !== interaction.user) {
-			return interactionReply(interaction, getMessage("ERR_ONLY_THREAD_OWNER"));
+			return interactionReply(interaction, getMessage("ERR_ONLY_THREAD_OWNER", interaction.id));
 		}
 
 		await archiveThread(channel);
@@ -72,13 +72,13 @@ export const command: NeedleCommand = {
 			if (shouldArchiveImmediately(thread)) {
 				if (interaction.isButton()) {
 					await interaction.update({ content: interaction.message.content });
-					const message = getMessage("SUCCESS_THREAD_ARCHIVE_IMMEDIATE");
+					const message = getMessage("SUCCESS_THREAD_ARCHIVE_IMMEDIATE", interaction.id);
 					if (message) {
 						await thread.send(message);
 					}
 				}
 				else if (interaction.isCommand()) {
-					await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE_IMMEDIATE"), false);
+					await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE_IMMEDIATE", interaction.id), false);
 				}
 
 				await setEmojiForNewThread(thread, false);
@@ -87,7 +87,7 @@ export const command: NeedleCommand = {
 			}
 
 			if (thread.autoArchiveDuration === 60) {
-				return interactionReply(interaction, getMessage("ERR_NO_EFFECT"));
+				return interactionReply(interaction, getMessage("ERR_NO_EFFECT", interaction.id));
 			}
 
 			await setEmojiForNewThread(thread, false);
@@ -95,13 +95,13 @@ export const command: NeedleCommand = {
 
 			if (interaction.isButton()) {
 				await interaction.update({ content: interaction.message.content });
-				const message = getMessage("SUCCESS_THREAD_ARCHIVE_SLOW");
+				const message = getMessage("SUCCESS_THREAD_ARCHIVE_SLOW", interaction.id);
 				if (message) {
 					await thread.send(message);
 				}
 			}
 			else if (interaction.isCommand()) {
-				await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE_SLOW"), false);
+				await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE_SLOW", interaction.id), false);
 			}
 		}
 	},
