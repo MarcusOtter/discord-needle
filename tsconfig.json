@@ -11,7 +11,8 @@
         "allowUnusedLabels": false,
         "moduleResolution": "Node",
         "resolveJsonModule": true,
-        "outDir": "dist"
+        "outDir": "dist",
+        "sourceMap": true
     },
     "include": ["src/**/*"]
 }

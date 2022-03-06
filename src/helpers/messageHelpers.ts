@@ -23,22 +23,25 @@ import {
 	type TextBasedChannel,
 	type ThreadChannel,
 	type User,
+	type Snowflake,
 } from "discord.js";
 
 import type { MessageContext } from "../types/messageContext";
 import type { NeedleConfig } from "../types/needleConfig";
 import { getConfig } from "./configHelpers";
 
-let context: MessageContext = {};
+const contexts: Map<Snowflake, MessageContext> = new Map();
 
 export type MessageKey = keyof NonNullable<NeedleConfig["messages"]>;
 
-export function addMessageContext(additionalContext: Partial<MessageContext>): void {
-	context = Object.assign(context, additionalContext);
+export function addMessageContext(requestId: Snowflake, additionalContext: Partial<MessageContext>): void {
+	const currentContext = contexts.get(requestId);
+	const newContext = Object.assign(currentContext ?? {}, additionalContext);
+	contexts.set(requestId, newContext);
 }
 
-export function resetMessageContext(): void {
-	context = {};
+export function resetMessageContext(requestSnowflake: Snowflake): void {
+	contexts.delete(requestSnowflake);
 }
 
 export function isAutoThreadChannel(channelId: string, guildId: string): boolean {
@@ -71,7 +74,7 @@ export function interactionReply(
 	ephemeral = true): Promise<void> {
 	if (!message || message.length == 0) {
 		return interaction.reply({
-			content: getMessage("ERR_UNKNOWN"),
+			content: getMessage("ERR_UNKNOWN", interaction.id),
 			ephemeral: true,
 		});
 	}
@@ -82,7 +85,8 @@ export function interactionReply(
 	});
 }
 
-export function getMessage(messageKey: MessageKey, replaceVariables = true): string | undefined {
+export function getMessage(messageKey: MessageKey, requestId: Snowflake | undefined, replaceVariables = true): string | undefined {
+	const context = contexts.get(requestId ?? "");
 	const config = getConfig(context?.interaction?.guildId ?? undefined);
 	if (!config.messages) { return ""; }
 
@@ -90,11 +94,14 @@ export function getMessage(messageKey: MessageKey, replaceVariables = true): str
 	if (!context || !message) { return message; }
 
 	return replaceVariables
-		? replaceMessageVariables(message)
+		? replaceMessageVariables(message, requestId ?? "")
 		: message;
 }
 
-export function replaceMessageVariables(message: string): string {
+export function replaceMessageVariables(message: string, requestId: Snowflake): string {
+	const context = contexts.get(requestId);
+	if (!context) return message;
+
 	const user = context.user ? `<@${context.user.id}>` : "";
 	const channel = context.channel ? `<#${context.channel.id}>` : "";
 	const timeAgo = context.timeAgo || (context.message

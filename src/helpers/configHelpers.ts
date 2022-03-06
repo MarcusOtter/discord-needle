@@ -83,7 +83,12 @@ export function setMessage(guild: Guild, messageKey: MessageKey, value: string):
 	return setConfig(guild, config);
 }
 
-export function enableAutothreading(guild: Guild, channelId: string, includeBots?: boolean, archiveImmediately?: boolean, messageContent?: string): boolean {
+export function getSlowmodeSeconds(guildId: string, channelId: string) {
+	const config = getConfig(guildId);
+	return config?.threadChannels?.find(x => x.channelId === channelId)?.slowmode ?? 0;
+}
+
+export function enableAutothreading(guild: Guild, channelId: string, includeBots?: boolean, archiveImmediately?: boolean, messageContent?: string, slowmode?: number): boolean {
 	const config = getConfig(guild.id);
 	if (!config || !config.threadChannels) { return false; }
 	if ((messageContent?.length ?? 0) > 2000) { return false; }
@@ -93,9 +98,10 @@ export function enableAutothreading(guild: Guild, channelId: string, includeBots
 		if (includeBots !== undefined) config.threadChannels[index].includeBots = includeBots;
 		if (archiveImmediately !== undefined) config.threadChannels[index].archiveImmediately = archiveImmediately;
 		if (messageContent !== undefined) config.threadChannels[index].messageContent = messageContent;
+		if (slowmode !== undefined) config.threadChannels[index].slowmode = slowmode;
 	}
 	else {
-		config.threadChannels.push({ channelId, includeBots, archiveImmediately, messageContent });
+		config.threadChannels.push({ channelId, includeBots, archiveImmediately, messageContent, slowmode });
 	}
 	return setConfig(guild, config);
 }

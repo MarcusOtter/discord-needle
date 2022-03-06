@@ -1,28 +1,40 @@
-name: Build
+name: ci
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    push:
+    pull_request:
+    release:
+        types: [published]
 
 jobs:
-  build:
-    runs-on: ubuntu-20.04
+    docker:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
 
-    strategy:
-      matrix:
-        node-version: [16.x]
+            - name: Docker meta
+              id: meta
+              uses: docker/metadata-action@v3
+              with:
+                  images: ghcr.io/${{ github.repository }}
+                  tags: |
+                      type=ref,event=branch
+                      type=ref,event=pr
+                      type=semver,pattern={{version}}
+                      type=semver,pattern={{major}}.{{minor}}
 
-    steps:
-      - uses: actions/checkout@v2
+            - name: Login to GitHub Container Registry
+              uses: docker/login-action@v1
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: npm
-
-      - run: npm install
-
-      - run: npm run build
+            - name: Build and push
+              uses: docker/build-push-action@v2
+              with:
+                  context: .
+                  push: ${{ github.event_name != 'pull_request' }}
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}

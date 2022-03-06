@@ -27,6 +27,7 @@ export interface NeedleConfig {
         ERR_PARAMETER_MISSING?: string,
         ERR_INSUFFICIENT_PERMS?: string,
         ERR_CHANNEL_VISIBILITY?: string,
+		ERR_CHANNEL_SLOWMODE?: string,
         ERR_AMBIGUOUS_THREAD_AUTHOR?: string,
 
         SUCCESS_THREAD_CREATE?: string,
@@ -40,4 +41,5 @@ export interface AutothreadChannelConfig {
     archiveImmediately?: boolean,
     messageContent?: string,
     includeBots?: boolean,
+	slowmode?: number,
 }

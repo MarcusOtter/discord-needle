@@ -34,7 +34,7 @@ export function handleCommandInteraction(interaction: CommandInteraction): Promi
 	}
 	catch (error) {
 		console.error(error);
-		return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
+		return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
 	}
 }
 
@@ -47,7 +47,7 @@ export async function handleButtonClickedInteraction(interaction: MessageCompone
 	}
 	catch (error) {
 		console.error(error);
-		return interactionReply(interaction, getMessage("ERR_UNKNOWN"));
+		return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
 	}
 }
 
@@ -58,8 +58,8 @@ export async function getOrLoadAllCommands(allowCache = true): Promise<NeedleCom
 
 	console.log("Started reloading commands from disk.");
 
-	const commandFiles = await promises.readdir(COMMANDS_PATH);
-	commandFiles.filter(file => file.endsWith(".js"));
+	let commandFiles = await promises.readdir(COMMANDS_PATH);
+	commandFiles = commandFiles.filter(file => file.endsWith(".js"));
 	const output = [];
 	for (const file of commandFiles) {
 		const { command } = await import(`${COMMANDS_PATH}/${file}`);
