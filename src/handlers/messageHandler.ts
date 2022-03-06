@@ -15,7 +15,7 @@
 //
 // ________________________________________________________________________________________________
 
-import { type Message, MessageActionRow, MessageButton, NewsChannel, TextChannel, ThreadChannel, SnowflakeUtil, type Snowflake } from "discord.js";
+import { type Message, MessageActionRow, MessageButton, NewsChannel, TextChannel, ThreadChannel, SnowflakeUtil, type Snowflake, Permissions } from "discord.js";
 import { emojisEnabled, getConfig, includeBotsForAutothread, getSlowmodeSeconds } from "../helpers/configHelpers";
 import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel, getHelpButton, replaceMessageVariables, getThreadAuthor } from "../helpers/messageHelpers";
 import { getRequiredPermissions, getSafeDefaultAutoArchiveDuration } from "../helpers/permissionHelpers";
@@ -124,10 +124,15 @@ async function autoCreateThread(message: Message, requestId: Snowflake) {
 		: getMessage("SUCCESS_THREAD_CREATE", requestId);
 
 	if (msgContent && msgContent.length > 0) {
-		await thread.send({
+		const msg = await thread.send({
 			content: msgContent,
 			components: [buttonRow],
 		});
+
+		if (botMember.permissionsIn(thread.id).has(Permissions.FLAGS.MANAGE_MESSAGES)) {
+			await msg.pin();
+			await thread.lastMessage?.delete();
+		}
 	}
 
 	resetMessageContext(requestId);
