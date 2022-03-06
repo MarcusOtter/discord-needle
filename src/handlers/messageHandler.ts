@@ -15,7 +15,7 @@
 //
 // ________________________________________________________________________________________________
 
-import { type Message, MessageActionRow, MessageButton, NewsChannel, TextChannel, ThreadChannel, SnowflakeUtil, type Snowflake, MessageAttachment, Permissions } from "discord.js";
+import { type Message, MessageActionRow, MessageButton, NewsChannel, TextChannel, ThreadChannel, SnowflakeUtil, type Snowflake, Permissions } from "discord.js";
 import { emojisEnabled, getConfig, includeBotsForAutothread, getSlowmodeSeconds } from "../helpers/configHelpers";
 import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel, getHelpButton, replaceMessageVariables, getThreadAuthor } from "../helpers/messageHelpers";
 import { getRequiredPermissions, getSafeDefaultAutoArchiveDuration } from "../helpers/permissionHelpers";
