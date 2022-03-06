@@ -15,7 +15,7 @@
 //
 // ________________________________________________________________________________________________
 
-import { type Message, MessageActionRow, MessageButton, NewsChannel, TextChannel, ThreadChannel } from "discord.js";
+import { type Message, MessageActionRow, MessageButton, NewsChannel, TextChannel, ThreadChannel, SnowflakeUtil, type Snowflake } from "discord.js";
 import { emojisEnabled, getConfig, includeBotsForAutothread, getSlowmodeSeconds } from "../helpers/configHelpers";
 import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel, getHelpButton, replaceMessageVariables, getThreadAuthor } from "../helpers/messageHelpers";
 import { getRequiredPermissions, getSafeDefaultAutoArchiveDuration } from "../helpers/permissionHelpers";
@@ -40,8 +40,9 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 		return;
 	}
 
-	await autoCreateThread(message);
-	resetMessageContext();
+	const requestId = SnowflakeUtil.generate();
+	await autoCreateThread(message, requestId);
+	resetMessageContext(requestId);
 }
 
 async function updateTitle(thread: ThreadChannel, message: Message) {
@@ -53,7 +54,7 @@ async function updateTitle(thread: ThreadChannel, message: Message) {
 	await thread.setName(thread.name.replace("🆕", ""));
 }
 
-async function autoCreateThread(message: Message) {
+async function autoCreateThread(message: Message, requestId: Snowflake) {
 	// Server outage
 	if (!message.guild?.available) return;
 
@@ -86,7 +87,7 @@ async function autoCreateThread(message: Message) {
 		return;
 	}
 
-	addMessageContext({
+	addMessageContext(requestId, {
 		user: authorUser,
 		channel: channel,
 		message: message,
@@ -119,8 +120,8 @@ async function autoCreateThread(message: Message) {
 
 	const overrideMessageContent = getConfig(guild.id).threadChannels?.find(x => x?.channelId === channel.id)?.messageContent;
 	const msgContent = overrideMessageContent
-		? replaceMessageVariables(overrideMessageContent)
-		: getMessage("SUCCESS_THREAD_CREATE");
+		? replaceMessageVariables(overrideMessageContent, requestId)
+		: getMessage("SUCCESS_THREAD_CREATE", requestId);
 
 	if (msgContent && msgContent.length > 0) {
 		await thread.send({
@@ -129,5 +130,5 @@ async function autoCreateThread(message: Message) {
 		});
 	}
 
-	resetMessageContext();
+	resetMessageContext(requestId);
 }
