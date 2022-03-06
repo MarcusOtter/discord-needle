@@ -59,7 +59,7 @@ export async function getOrLoadAllCommands(allowCache = true): Promise<NeedleCom
 	console.log("Started reloading commands from disk.");
 
 	let commandFiles = await promises.readdir(COMMANDS_PATH);
-	commandFiles = commandFiles.filter(file => !file.includes(".map") && file.endsWith(".js"));
+	commandFiles = commandFiles.filter(file => file.endsWith(".js"));
 	const output = [];
 	for (const file of commandFiles) {
 		const { command } = await import(`${COMMANDS_PATH}/${file}`);
