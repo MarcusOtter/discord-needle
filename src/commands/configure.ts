@@ -16,7 +16,7 @@
 // ________________________________________________________________________________________________
 
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { ChannelType } from "discord-api-types";
+import { ChannelType } from "discord-api-types/v9";
 import { type CommandInteraction, type GuildMember, type GuildTextBasedChannel, Permissions } from "discord.js";
 import { disableAutothreading, emojisEnabled, enableAutothreading, getConfig, resetConfigToDefault, setEmojisEnabled, setMessage } from "../helpers/configHelpers";
 import { interactionReply, getMessage, MessageKey, isAutoThreadChannel, addMessageContext } from "../helpers/messageHelpers";
