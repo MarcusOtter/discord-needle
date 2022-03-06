@@ -36,20 +36,20 @@ const isUndeploy = process.argv.some(x => x === "--undeploy");
 if (!API_TOKEN || !CLIENT_ID) {
 	console.log("Aborting command deployment");
 	console.log("DISCORD_API_TOKEN or CLIENT_ID missing from the .env file.\n");
-	return;
+	process.exit(1);
 }
 
 if (isUndeploy && !GUILD_ID) {
 	console.log("Aborting undeployment of guild commands");
 	console.log("GUILD_ID is missing from the .env file, assuming no guild commands need to be undeployed.\n");
-	return;
+	process.exit(1);
 }
 
 if (!isGlobal && !GUILD_ID) {
 	console.log("Aborting guild command deployment");
 	console.log("GUILD_ID is missing from the .env file.");
 	console.log("Hint: If you just want to start the bot without developing new commands, type \"npm start\" instead\n");
-	return;
+	process.exit(1);
 }
 
 const route = isGlobal
