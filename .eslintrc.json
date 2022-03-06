@@ -28,6 +28,16 @@
 		"quotes": ["error", "double", { "avoidEscape": true }],
 		"spaced-comment": "error",
 		"yoda": "error",
-		"curly": ["error", "multi"]
+		"curly": ["error", "multi"],
+		"comma-dangle": [
+			"error",
+			{
+				"arrays": "always-multiline",
+				"objects": "always-multiline",
+				"imports": "always-multiline",
+				"exports": "always-multiline",
+				"functions": "never"
+			}
+		]
 	}
 }
