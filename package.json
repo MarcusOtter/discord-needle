@@ -5,7 +5,7 @@
   "main": "./dist/index.js",
   "scripts": {
     "build": "tsup",
-    "start": "npm run build && node --enable-source-maps .",
+    "start": "npm run build && npm run deploy:global && node --enable-source-maps .",
     "dev": "npm run deploy:dev && tsup --watch --onSuccess \"node --enable-source-maps .\"",
     "deploy:global": "npm run undeploy && node ./scripts/deploy-commands.js --global",
     "deploy:dev": "npm run undeploy && node ./scripts/deploy-commands.js",
