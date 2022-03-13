@@ -65,7 +65,7 @@ export async function getOrLoadAllCommands(
 	console.log("Started reloading commands from disk.");
 
 	let commandFiles = await promises.readdir(COMMANDS_PATH);
-	commandFiles = commandFiles.filter((file) => file.endsWith(".js"));
+	commandFiles = commandFiles.filter(file => file.endsWith(".js"));
 	const output = [];
 	for (const file of commandFiles) {
 		const { command } = await import(`${COMMANDS_PATH}/${file}`);
@@ -94,5 +94,5 @@ export function getCommand(commandName: string): NeedleCommand | undefined {
 		);
 	}
 
-	return loadedCommands.find((command) => command.name === commandName);
+	return loadedCommands.find(command => command.name === commandName);
 }

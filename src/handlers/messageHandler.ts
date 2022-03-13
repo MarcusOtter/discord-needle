@@ -154,7 +154,7 @@ async function autoCreateThread(message: Message, requestId: Snowflake) {
 	);
 
 	const overrideMessageContent = getConfig(guild.id).threadChannels?.find(
-		(x) => x?.channelId === channel.id
+		x => x?.channelId === channel.id
 	)?.messageContent;
 	const msgContent = overrideMessageContent
 		? replaceMessageVariables(overrideMessageContent, requestId)

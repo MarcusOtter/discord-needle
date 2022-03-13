@@ -32,7 +32,7 @@ export const command: NeedleCommand = {
 		return new SlashCommandBuilder()
 			.setName("title")
 			.setDescription("Sets the title of a thread")
-			.addStringOption((option) => {
+			.addStringOption(option => {
 				return option
 					.setName("value")
 					.setDescription("The new title of the thread")

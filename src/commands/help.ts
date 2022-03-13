@@ -139,7 +139,7 @@ async function getHelpSlashCommandBuilder() {
 	const builder = new SlashCommandBuilder()
 		.setName("help")
 		.setDescription("Shows a list of all available commands")
-		.addStringOption((option) => {
+		.addStringOption(option => {
 			option
 				.setName("command")
 				.setDescription(

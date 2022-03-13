@@ -51,7 +51,7 @@ export function isAutoThreadChannel(
 ): boolean {
 	const config = getConfig(guildId);
 	return (
-		config?.threadChannels?.some((x) => x?.channelId === channelId) ?? false
+		config?.threadChannels?.some(x => x?.channelId === channelId) ?? false
 	);
 }
 

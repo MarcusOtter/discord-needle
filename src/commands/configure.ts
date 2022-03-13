@@ -52,13 +52,13 @@ export const command: NeedleCommand = {
 		return new SlashCommandBuilder()
 			.setName("configure")
 			.setDescription("Modify the configuration of Needle")
-			.addSubcommand((subcommand) => {
+			.addSubcommand(subcommand => {
 				return subcommand
 					.setName("message")
 					.setDescription(
 						"Modify the content of a message that Needle replies with when a certain action happens"
 					)
-					.addStringOption((option) => {
+					.addStringOption(option => {
 						const opt = option
 							.setName("key")
 							.setDescription("The key of the message")
@@ -71,7 +71,7 @@ export const command: NeedleCommand = {
 
 						return opt;
 					})
-					.addStringOption((option) => {
+					.addStringOption(option => {
 						return option
 							.setName("value")
 							.setDescription(
@@ -80,20 +80,20 @@ export const command: NeedleCommand = {
 							.setRequired(false);
 					});
 			})
-			.addSubcommand((subcommand) => {
+			.addSubcommand(subcommand => {
 				return subcommand
 					.setName("default")
 					.setDescription(
 						"Reset the server's custom Needle configuration to the default"
 					);
 			})
-			.addSubcommand((subcommand) => {
+			.addSubcommand(subcommand => {
 				return subcommand
 					.setName("auto-threading")
 					.setDescription(
 						"Enable or disable automatic creation of threads on every new message in a channel"
 					)
-					.addChannelOption((option) => {
+					.addChannelOption(option => {
 						return option
 							.setName("channel")
 							.setDescription(
@@ -103,7 +103,7 @@ export const command: NeedleCommand = {
 							.addChannelType(ChannelType.GuildNews)
 							.setRequired(true);
 					})
-					.addBooleanOption((option) => {
+					.addBooleanOption(option => {
 						return option
 							.setName("enabled")
 							.setDescription(
@@ -111,14 +111,14 @@ export const command: NeedleCommand = {
 							)
 							.setRequired(true);
 					})
-					.addBooleanOption((option) => {
+					.addBooleanOption(option => {
 						return option
 							.setName("include-bots")
 							.setDescription(
 								"Whether or not threads should be created on messages by bots. Default: False"
 							);
 					})
-					.addStringOption((option) => {
+					.addStringOption(option => {
 						return option
 							.setName("archive-behavior")
 							.setDescription(
@@ -133,7 +133,7 @@ export const command: NeedleCommand = {
 								"slow"
 							);
 					})
-					.addStringOption((option) => {
+					.addStringOption(option => {
 						return option
 							.setName("slowmode")
 							.setDescription(
@@ -147,7 +147,7 @@ export const command: NeedleCommand = {
 							.addChoice("1 hour", "3600")
 							.addChoice("6 hours", "21600");
 					})
-					.addStringOption((option) => {
+					.addStringOption(option => {
 						return option
 							.setName("custom-message")
 							.setDescription(
@@ -155,11 +155,11 @@ export const command: NeedleCommand = {
 							);
 					});
 			})
-			.addSubcommand((subcommand) => {
+			.addSubcommand(subcommand => {
 				return subcommand
 					.setName("emojis")
 					.setDescription("Toggle thread name emojis on or off")
-					.addBooleanOption((option) => {
+					.addBooleanOption(option => {
 						return option
 							.setName("enabled")
 							.setDescription(

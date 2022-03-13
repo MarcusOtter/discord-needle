@@ -32,8 +32,8 @@ const API_TOKEN = getApiToken();
 const CLIENT_ID = getClientId();
 const GUILD_ID = getGuildId();
 
-const isGlobal = process.argv.some((x) => x === "--global");
-const isUndeploy = process.argv.some((x) => x === "--undeploy");
+const isGlobal = process.argv.some(x => x === "--global");
+const isUndeploy = process.argv.some(x => x === "--undeploy");
 
 if (!API_TOKEN || !CLIENT_ID) {
 	console.log("Aborting command deployment");

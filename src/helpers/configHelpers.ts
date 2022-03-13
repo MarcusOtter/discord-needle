@@ -65,7 +65,7 @@ export function getGuildId(): string | undefined {
 export function shouldArchiveImmediately(thread: ThreadChannel) {
 	const config = getConfig(thread.guildId);
 	return (
-		config?.threadChannels?.find((x) => x.channelId === thread.parentId)
+		config?.threadChannels?.find(x => x.channelId === thread.parentId)
 			?.archiveImmediately ?? true
 	);
 }
@@ -73,7 +73,7 @@ export function shouldArchiveImmediately(thread: ThreadChannel) {
 export function includeBotsForAutothread(guildId: string, channelId: string) {
 	const config = getConfig(guildId);
 	return (
-		config?.threadChannels?.find((x) => x.channelId === channelId)
+		config?.threadChannels?.find(x => x.channelId === channelId)
 			?.includeBots ?? false
 	);
 }
@@ -106,7 +106,7 @@ export function setMessage(
 export function getSlowmodeSeconds(guildId: string, channelId: string) {
 	const config = getConfig(guildId);
 	return (
-		config?.threadChannels?.find((x) => x.channelId === channelId)
+		config?.threadChannels?.find(x => x.channelId === channelId)
 			?.slowmode ?? 0
 	);
 }
@@ -125,7 +125,7 @@ export function enableAutothreading(
 	if ((messageContent?.length ?? 0) > 2000) return false;
 
 	const index = config.threadChannels.findIndex(
-		(x) => x?.channelId === channelId
+		x => x?.channelId === channelId
 	);
 	if (index > -1) {
 		if (includeBots !== undefined)
@@ -156,7 +156,7 @@ export function disableAutothreading(guild: Guild, channelId: string): boolean {
 	if (!config || !config.threadChannels) return false;
 
 	const index = config.threadChannels.findIndex(
-		(x) => x?.channelId === channelId
+		x => x?.channelId === channelId
 	);
 	if (index > -1) delete config.threadChannels[index];
 
@@ -181,7 +181,7 @@ export function deleteConfigsFromUnknownServers(client: Client): void {
 	if (!fs.existsSync(CONFIGS_PATH)) return;
 
 	const configFiles = fs.readdirSync(CONFIGS_PATH);
-	configFiles.forEach((file) => {
+	configFiles.forEach(file => {
 		const guildId = file.split(".")[0];
 		if (!client.guilds.cache.has(guildId)) resetConfigToDefault(guildId);
 	});
@@ -209,7 +209,7 @@ function setConfig(
 	if (!fs.existsSync(CONFIGS_PATH)) fs.mkdirSync(CONFIGS_PATH);
 
 	config.threadChannels = config.threadChannels?.filter(
-		(val) => val != null && val != undefined
+		val => val != null && val != undefined
 	);
 
 	// Only save messages that are different from the defaults
