@@ -22,11 +22,7 @@ const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 
 const { getOrLoadAllCommands } = require("../dist/handlers/commandHandler");
-const {
-	getApiToken,
-	getGuildId,
-	getClientId,
-} = require("../dist/helpers/configHelpers");
+const { getApiToken, getGuildId, getClientId } = require("../dist/helpers/configHelpers");
 
 const API_TOKEN = getApiToken();
 const CLIENT_ID = getClientId();
@@ -43,33 +39,25 @@ if (!API_TOKEN || !CLIENT_ID) {
 
 if (isUndeploy && !GUILD_ID) {
 	console.log("Aborting undeployment of guild commands");
-	console.log(
-		"GUILD_ID is missing from the .env file, assuming no guild commands need to be undeployed.\n"
-	);
+	console.log("GUILD_ID is missing from the .env file, assuming no guild commands need to be undeployed.\n");
 	process.exit(1);
 }
 
 if (!isGlobal && !GUILD_ID) {
 	console.log("Aborting guild command deployment");
 	console.log("GUILD_ID is missing from the .env file.");
-	console.log(
-		'Hint: If you just want to start the bot without developing new commands, type "npm start" instead\n'
-	);
+	console.log('Hint: If you just want to start the bot without developing new commands, type "npm start" instead\n');
 	process.exit(1);
 }
 
-const route = isGlobal
-	? Routes.applicationCommands(CLIENT_ID)
-	: Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID);
+const route = isGlobal ? Routes.applicationCommands(CLIENT_ID) : Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID);
 
 const rest = new REST({ version: "9" }).setToken(API_TOKEN);
 (async () => {
 	const builders = await getSlashCommandBuilders();
 
 	try {
-		console.log(
-			`Started deploying ${builders.length} application commands.`
-		);
+		console.log(`Started deploying ${builders.length} application commands.`);
 		await rest.put(route, { body: builders });
 		console.log("Successfully deployed application commands.\n");
 	} catch (error) {

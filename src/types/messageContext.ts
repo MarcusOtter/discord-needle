@@ -13,13 +13,7 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {
-	CacheType,
-	Interaction,
-	Message,
-	TextBasedChannel,
-	User,
-} from "discord.js";
+import { CacheType, Interaction, Message, TextBasedChannel, User } from "discord.js";
 
 export interface MessageContext {
 	interaction?: Interaction<CacheType>;

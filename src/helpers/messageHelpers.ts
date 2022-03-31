@@ -32,10 +32,7 @@ const contexts: Map<Snowflake, MessageContext> = new Map();
 
 export type MessageKey = keyof NonNullable<NeedleConfig["messages"]>;
 
-export function addMessageContext(
-	requestId: Snowflake,
-	additionalContext: Partial<MessageContext>
-): void {
+export function addMessageContext(requestId: Snowflake, additionalContext: Partial<MessageContext>): void {
 	const currentContext = contexts.get(requestId);
 	const newContext = Object.assign(currentContext ?? {}, additionalContext);
 	contexts.set(requestId, newContext);
@@ -45,19 +42,12 @@ export function resetMessageContext(requestSnowflake: Snowflake): void {
 	contexts.delete(requestSnowflake);
 }
 
-export function isAutoThreadChannel(
-	channelId: string,
-	guildId: string
-): boolean {
+export function isAutoThreadChannel(channelId: string, guildId: string): boolean {
 	const config = getConfig(guildId);
-	return (
-		config?.threadChannels?.some(x => x?.channelId === channelId) ?? false
-	);
+	return config?.threadChannels?.some(x => x?.channelId === channelId) ?? false;
 }
 
-export async function getThreadAuthor(
-	channel: ThreadChannel
-): Promise<User | undefined> {
+export async function getThreadAuthor(channel: ThreadChannel): Promise<User | undefined> {
 	const parentMessage = await getThreadStartMessage(channel);
 
 	if (parentMessage) return parentMessage.author;
@@ -66,14 +56,11 @@ export async function getThreadAuthor(
 	const firstMessage = await getFirstMessageInChannel(channel);
 	const author = firstMessage?.mentions.users.first();
 
-	if (!author)
-		console.log(`Could not determine author of thread "${channel.name}"`);
+	if (!author) console.log(`Could not determine author of thread "${channel.name}"`);
 	return author;
 }
 
-export async function getFirstMessageInChannel(
-	channel: TextBasedChannel
-): Promise<Message | undefined> {
+export async function getFirstMessageInChannel(channel: TextBasedChannel): Promise<Message | undefined> {
 	const amount = channel.isThread() ? 2 : 1; // threads have an empty message as the first message
 	const messages = await channel.messages.fetch({
 		after: "0",
@@ -112,25 +99,17 @@ export function getMessage(
 	const message = config.messages[messageKey];
 	if (!context || !message) return message;
 
-	return replaceVariables
-		? replaceMessageVariables(message, requestId ?? "")
-		: message;
+	return replaceVariables ? replaceMessageVariables(message, requestId ?? "") : message;
 }
 
-export function replaceMessageVariables(
-	message: string,
-	requestId: Snowflake
-): string {
+export function replaceMessageVariables(message: string, requestId: Snowflake): string {
 	const context = contexts.get(requestId);
 	if (!context) return message;
 
 	const user = context.user ? `<@${context.user.id}>` : "";
 	const channel = context.channel ? `<#${context.channel.id}>` : "";
 	const timeAgo =
-		context.timeAgo ||
-		(context.message
-			? `<t:${Math.round(context.message.createdTimestamp / 1000)}:R>`
-			: "");
+		context.timeAgo || (context.message ? `<t:${Math.round(context.message.createdTimestamp / 1000)}:R>` : "");
 
 	return message
 		.replaceAll("$USER", user)
@@ -139,9 +118,7 @@ export function replaceMessageVariables(
 		.replaceAll("\\n", "\n");
 }
 
-export function getDiscordInviteButton(
-	buttonText = "Join the support server"
-): MessageButton {
+export function getDiscordInviteButton(buttonText = "Join the support server"): MessageButton {
 	return new MessageButton()
 		.setLabel(buttonText)
 		.setStyle("LINK")
@@ -161,21 +138,15 @@ export function getBugReportButton(buttonText = "Report a bug"): MessageButton {
 	return new MessageButton()
 		.setLabel(buttonText)
 		.setStyle("LINK")
-		.setURL(
-			"https://github.com/MarcusOtter/discord-needle/issues/new/choose"
-		)
+		.setURL("https://github.com/MarcusOtter/discord-needle/issues/new/choose")
 		.setEmoji("🐛");
 }
 
-export function getFeatureRequestButton(
-	buttonText = "Suggest an improvement"
-): MessageButton {
+export function getFeatureRequestButton(buttonText = "Suggest an improvement"): MessageButton {
 	return new MessageButton()
 		.setLabel(buttonText)
 		.setStyle("LINK")
-		.setURL(
-			"https://github.com/MarcusOtter/discord-needle/issues/new/choose"
-		)
+		.setURL("https://github.com/MarcusOtter/discord-needle/issues/new/choose")
 		.setEmoji("💡");
 }
 
@@ -187,16 +158,12 @@ export function getHelpButton(): MessageButton {
 		.setEmoji("937931337942306877"); // :slash_commands:
 }
 
-async function getThreadStartMessage(
-	threadChannel: TextBasedChannel | null
-): Promise<Message | null> {
+async function getThreadStartMessage(threadChannel: TextBasedChannel | null): Promise<Message | null> {
 	if (!threadChannel?.isThread()) return null;
 
 	if (!threadChannel.parentId) return null;
 
-	const parentChannel = await threadChannel.guild?.channels.fetch(
-		threadChannel.parentId
-	);
+	const parentChannel = await threadChannel.guild?.channels.fetch(threadChannel.parentId);
 	if (!parentChannel?.isText()) return null;
 
 	// The thread's channel ID is the same as the start message's ID,

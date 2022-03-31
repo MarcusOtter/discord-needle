@@ -23,9 +23,7 @@ const COMMANDS_PATH = pathResolve(__dirname, "../commands");
 
 let loadedCommands: NeedleCommand[] = [];
 
-export function handleCommandInteraction(
-	interaction: CommandInteraction
-): Promise<void> {
+export function handleCommandInteraction(interaction: CommandInteraction): Promise<void> {
 	const command = getCommand(interaction.commandName);
 	if (!command) return Promise.reject();
 
@@ -33,16 +31,11 @@ export function handleCommandInteraction(
 		return command.execute(interaction);
 	} catch (error) {
 		console.error(error);
-		return interactionReply(
-			interaction,
-			getMessage("ERR_UNKNOWN", interaction.id)
-		);
+		return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
 	}
 }
 
-export async function handleButtonClickedInteraction(
-	interaction: MessageComponentInteraction
-): Promise<void> {
+export async function handleButtonClickedInteraction(interaction: MessageComponentInteraction): Promise<void> {
 	const command = getCommand(interaction.customId);
 	if (!command) return Promise.reject();
 
@@ -50,16 +43,11 @@ export async function handleButtonClickedInteraction(
 		return command.execute(interaction);
 	} catch (error) {
 		console.error(error);
-		return interactionReply(
-			interaction,
-			getMessage("ERR_UNKNOWN", interaction.id)
-		);
+		return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
 	}
 }
 
-export async function getOrLoadAllCommands(
-	allowCache = true
-): Promise<NeedleCommand[]> {
+export async function getOrLoadAllCommands(allowCache = true): Promise<NeedleCommand[]> {
 	if (loadedCommands.length > 0 && allowCache) return loadedCommands;
 
 	console.log("Started reloading commands from disk.");
@@ -78,21 +66,15 @@ export async function getOrLoadAllCommands(
 }
 
 export function getAllLoadedCommands(): NeedleCommand[] {
-	if (loadedCommands.length === 0) {
-		console.error(
-			'No commands found. Did you forget to invoke "getOrLoadAllCommands()"?'
-		);
-	}
+	if (loadedCommands.length === 0)
+		console.error('No commands found. Did you forget to invoke "getOrLoadAllCommands()"?');
 
 	return loadedCommands;
 }
 
 export function getCommand(commandName: string): NeedleCommand | undefined {
-	if (loadedCommands.length === 0) {
-		console.error(
-			'No commands found. Did you forget to invoke "getOrLoadAllCommands()"?'
-		);
-	}
+	if (loadedCommands.length === 0)
+		console.error('No commands found. Did you forget to invoke "getOrLoadAllCommands()"?');
 
 	return loadedCommands.find(command => command.name === commandName);
 }

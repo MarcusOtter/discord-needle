@@ -17,11 +17,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, MessageActionRow, MessageEmbed } from "discord.js";
 import type { APIApplicationCommandOption } from "discord-api-types";
 import { getCommand, getOrLoadAllCommands } from "../handlers/commandHandler";
-import {
-	getBugReportButton,
-	getDiscordInviteButton,
-	getFeatureRequestButton,
-} from "../helpers/messageHelpers";
+import { getBugReportButton, getDiscordInviteButton, getFeatureRequestButton } from "../helpers/messageHelpers";
 import type { NeedleCommand } from "../types/needleCommand";
 
 export const command: NeedleCommand = {
@@ -62,20 +58,15 @@ export const command: NeedleCommand = {
 	},
 };
 
-async function getCommandDetailsEmbed(
-	commandName: string
-): Promise<MessageEmbed[]> {
+async function getCommandDetailsEmbed(commandName: string): Promise<MessageEmbed[]> {
 	const cmd = getCommand(commandName);
 	if (!cmd) return [];
 
 	const cmdOptionString = await getCommandOptionString(cmd);
 	const cmdOptions = await getCommandOptions(cmd);
 	let cmdOptionExplanations = "";
-	for (const option of cmdOptions ?? []) {
-		cmdOptionExplanations += `\`${option.name}\` - ${
-			option.required ? "" : "(optional)"
-		} ${option.description}\n`;
-	}
+	for (const option of cmdOptions ?? [])
+		cmdOptionExplanations += `\`${option.name}\` - ${option.required ? "" : "(optional)"} ${option.description}\n`;
 
 	const commandInfoEmbed = new MessageEmbed()
 		.setTitle(`Information about \`/${cmd.name}\``)
@@ -94,11 +85,7 @@ async function getAllCommandsEmbed(): Promise<MessageEmbed> {
 	for (const cmd of commands) {
 		// Help command gets special treatment
 		if (cmd.name === "help") {
-			embed.addField(
-				"/help",
-				"Shows a list of all available commands",
-				false
-			);
+			embed.addField("/help", "Shows a list of all available commands", false);
 			embed.addField(
 				"/help  `command`",
 				"Shows more information and example usage of a specific `command`",
@@ -107,11 +94,7 @@ async function getAllCommandsEmbed(): Promise<MessageEmbed> {
 			continue;
 		}
 		const commandOptions = await getCommandOptionString(cmd);
-		embed.addField(
-			`/${cmd.name}${commandOptions}`,
-			cmd.shortHelpDescription,
-			false
-		);
+		embed.addField(`/${cmd.name}${commandOptions}`, cmd.shortHelpDescription, false);
 	}
 	return embed;
 }
@@ -121,15 +104,12 @@ async function getCommandOptionString(cmd: NeedleCommand): Promise<string> {
 	if (!commandInfo.options) return "";
 
 	let output = "";
-	for (const option of commandInfo.options)
-		output += `  \`${option.name}${option.required ? "" : "?"}\``;
+	for (const option of commandInfo.options) output += `  \`${option.name}${option.required ? "" : "?"}\``;
 
 	return output;
 }
 
-async function getCommandOptions(
-	cmd: NeedleCommand
-): Promise<APIApplicationCommandOption[] | undefined> {
+async function getCommandOptions(cmd: NeedleCommand): Promise<APIApplicationCommandOption[] | undefined> {
 	const commandInfo = await cmd.getSlashCommandBuilder();
 	return commandInfo.options;
 }

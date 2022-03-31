@@ -14,18 +14,10 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 import type { Interaction } from "discord.js";
-import {
-	resetMessageContext,
-	addMessageContext,
-} from "../helpers/messageHelpers";
-import {
-	handleButtonClickedInteraction,
-	handleCommandInteraction,
-} from "./commandHandler";
+import { resetMessageContext, addMessageContext } from "../helpers/messageHelpers";
+import { handleButtonClickedInteraction, handleCommandInteraction } from "./commandHandler";
 
-export async function handleInteractionCreate(
-	interaction: Interaction
-): Promise<void> {
+export async function handleInteractionCreate(interaction: Interaction): Promise<void> {
 	addMessageContext(interaction.id, {
 		user: interaction.user,
 		interaction: interaction,
@@ -33,8 +25,7 @@ export async function handleInteractionCreate(
 	});
 
 	if (interaction.isCommand()) await handleCommandInteraction(interaction);
-	else if (interaction.isButton())
-		await handleButtonClickedInteraction(interaction);
+	else if (interaction.isButton()) await handleButtonClickedInteraction(interaction);
 
 	resetMessageContext(interaction.id);
 }

@@ -20,27 +20,14 @@ import * as fs from "fs";
 import type { NeedleConfig } from "../types/needleConfig";
 import { MessageKey } from "./messageHelpers";
 
-const CONFIGS_PATH = pathResolve(
-	__dirname,
-	"../../",
-	process.env.CONFIGS_PATH || "configs"
-);
+const CONFIGS_PATH = pathResolve(__dirname, "../../", process.env.CONFIGS_PATH || "configs");
 const guildConfigsCache = new Map<string, NeedleConfig>();
 
 export function getConfig(guildId = ""): NeedleConfig {
-	const guildConfig =
-		guildConfigsCache.get(guildId) ?? readConfigFromFile(guildId);
+	const guildConfig = guildConfigsCache.get(guildId) ?? readConfigFromFile(guildId);
 
-	const defaultConfigCopy = JSON.parse(
-		JSON.stringify(defaultConfig)
-	) as NeedleConfig;
-	if (guildConfig) {
-		guildConfig.messages = Object.assign(
-			{},
-			defaultConfigCopy.messages,
-			guildConfig?.messages
-		);
-	}
+	const defaultConfigCopy = JSON.parse(JSON.stringify(defaultConfig)) as NeedleConfig;
+	if (guildConfig) guildConfig.messages = Object.assign({}, defaultConfigCopy.messages, guildConfig?.messages);
 
 	return Object.assign({}, defaultConfigCopy, guildConfig);
 }
@@ -64,18 +51,12 @@ export function getGuildId(): string | undefined {
 
 export function shouldArchiveImmediately(thread: ThreadChannel) {
 	const config = getConfig(thread.guildId);
-	return (
-		config?.threadChannels?.find(x => x.channelId === thread.parentId)
-			?.archiveImmediately ?? true
-	);
+	return config?.threadChannels?.find(x => x.channelId === thread.parentId)?.archiveImmediately ?? true;
 }
 
 export function includeBotsForAutothread(guildId: string, channelId: string) {
 	const config = getConfig(guildId);
-	return (
-		config?.threadChannels?.find(x => x.channelId === channelId)
-			?.includeBots ?? false
-	);
+	return config?.threadChannels?.find(x => x.channelId === channelId)?.includeBots ?? false;
 }
 
 export function setEmojisEnabled(guild: Guild, enabled: boolean): boolean {
@@ -89,11 +70,7 @@ export function emojisEnabled(guild: Guild): boolean {
 	return config.emojisEnabled ?? true;
 }
 
-export function setMessage(
-	guild: Guild,
-	messageKey: MessageKey,
-	value: string
-): boolean {
+export function setMessage(guild: Guild, messageKey: MessageKey, value: string): boolean {
 	const config = getConfig(guild.id);
 	if (!config || !config.messages) return false;
 
@@ -105,10 +82,7 @@ export function setMessage(
 
 export function getSlowmodeSeconds(guildId: string, channelId: string) {
 	const config = getConfig(guildId);
-	return (
-		config?.threadChannels?.find(x => x.channelId === channelId)
-			?.slowmode ?? 0
-	);
+	return config?.threadChannels?.find(x => x.channelId === channelId)?.slowmode ?? 0;
 }
 
 export function enableAutothreading(
@@ -124,20 +98,13 @@ export function enableAutothreading(
 
 	if ((messageContent?.length ?? 0) > 2000) return false;
 
-	const index = config.threadChannels.findIndex(
-		x => x?.channelId === channelId
-	);
+	const index = config.threadChannels.findIndex(x => x?.channelId === channelId);
 	if (index > -1) {
-		if (includeBots !== undefined)
-			config.threadChannels[index].includeBots = includeBots;
-		if (archiveImmediately !== undefined) {
-			config.threadChannels[index].archiveImmediately =
-				archiveImmediately;
-		}
-		if (messageContent !== undefined)
-			config.threadChannels[index].messageContent = messageContent;
-		if (slowmode !== undefined)
-			config.threadChannels[index].slowmode = slowmode;
+		if (includeBots !== undefined) config.threadChannels[index].includeBots = includeBots;
+		if (archiveImmediately !== undefined) config.threadChannels[index].archiveImmediately = archiveImmediately;
+
+		if (messageContent !== undefined) config.threadChannels[index].messageContent = messageContent;
+		if (slowmode !== undefined) config.threadChannels[index].slowmode = slowmode;
 	} else {
 		config.threadChannels.push({
 			channelId,
@@ -155,9 +122,7 @@ export function disableAutothreading(guild: Guild, channelId: string): boolean {
 	const config = getConfig(guild.id);
 	if (!config || !config.threadChannels) return false;
 
-	const index = config.threadChannels.findIndex(
-		x => x?.channelId === channelId
-	);
+	const index = config.threadChannels.findIndex(x => x?.channelId === channelId);
 	if (index > -1) delete config.threadChannels[index];
 
 	return setConfig(guild, config);
@@ -199,27 +164,19 @@ function getGuildConfigPath(guildId: string) {
 	return `${CONFIGS_PATH}/${guildId}.json`;
 }
 
-function setConfig(
-	guild: Guild | null | undefined,
-	config: NeedleConfig
-): boolean {
+function setConfig(guild: Guild | null | undefined, config: NeedleConfig): boolean {
 	if (!guild || !config) return false;
 
 	const path = getGuildConfigPath(guild.id);
 	if (!fs.existsSync(CONFIGS_PATH)) fs.mkdirSync(CONFIGS_PATH);
 
-	config.threadChannels = config.threadChannels?.filter(
-		val => val != null && val != undefined
-	);
+	config.threadChannels = config.threadChannels?.filter(val => val != null && val != undefined);
 
 	// Only save messages that are different from the defaults
-	const defaultConfigCopy = JSON.parse(
-		JSON.stringify(defaultConfig)
-	) as NeedleConfig;
+	const defaultConfigCopy = JSON.parse(JSON.stringify(defaultConfig)) as NeedleConfig;
 	if (defaultConfigCopy.messages && config.messages) {
 		for (const [key, message] of Object.entries(config.messages)) {
-			if (message !== defaultConfigCopy.messages[key as MessageKey])
-				continue;
+			if (message !== defaultConfigCopy.messages[key as MessageKey]) continue;
 			delete config.messages[key as MessageKey];
 		}
 	}
