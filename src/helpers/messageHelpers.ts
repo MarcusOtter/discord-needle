@@ -56,7 +56,6 @@ export async function getThreadAuthor(channel: ThreadChannel): Promise<User | un
 	const firstMessage = await getFirstMessageInChannel(channel);
 	const author = firstMessage?.mentions.users.first();
 
-	if (!author) console.log(`Could not determine author of thread "${channel.name}"`);
 	return author;
 }
 
