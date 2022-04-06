@@ -14,12 +14,14 @@
 // If not, see <https://www.gnu.org/licenses/>.
 //
 // ________________________________________________________________________________________________
+import { config } from "dotenv";
+config();
 
 import { Client, Intents } from "discord.js";
 import { getOrLoadAllCommands } from "./handlers/commandHandler";
 import { handleInteractionCreate } from "./handlers/interactionHandler";
 import { handleMessageCreate } from "./handlers/messageHandler";
-import { deleteConfigsFromUnkownServers, getApiToken, resetConfigToDefault } from "./helpers/configHelpers";
+import { deleteConfigsFromUnknownServers, getApiToken, resetConfigToDefault } from "./helpers/configHelpers";
 
 console.log(`Needle, a Discord bot that declutters your server by creating threads
 Copyright (C) 2022  Marcus Otterström
@@ -39,8 +41,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 `);
 
 (async () => {
-	(await import("dotenv")).config();
-
 	// Initial load of all commands
 	await getOrLoadAllCommands(false);
 
@@ -59,13 +59,19 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 	CLIENT.once("ready", () => {
 		console.log("Ready!");
-		deleteConfigsFromUnkownServers(CLIENT);
+		deleteConfigsFromUnknownServers(CLIENT);
 	});
 
-	CLIENT.on("interactionCreate", interaction => handleInteractionCreate(interaction).catch(e => console.log(e)));
-	CLIENT.on("messageCreate", message => handleMessageCreate(message).catch(e => console.log(e)));
+	CLIENT.on("interactionCreate", async interaction => await handleInteractionCreate(interaction).catch(console.error));
+	CLIENT.on("messageCreate", async message => await handleMessageCreate(message).catch(console.error));
 	CLIENT.on("guildDelete", guild => { resetConfigToDefault(guild.id); });
 
 	CLIENT.login(getApiToken());
+
+	process.on("SIGINT", () => {
+		CLIENT.destroy();
+		console.log("Destroyed client");
+		process.exit(0);
+	});
 })();
 

@@ -20,7 +20,7 @@ import { resetMessageContext, addMessageContext } from "../helpers/messageHelper
 import { handleButtonClickedInteraction, handleCommandInteraction } from "./commandHandler";
 
 export async function handleInteractionCreate(interaction: Interaction): Promise<void> {
-	addMessageContext({
+	addMessageContext(interaction.id, {
 		user: interaction.user,
 		interaction: interaction,
 		channel: interaction.channel ?? undefined,
@@ -33,5 +33,5 @@ export async function handleInteractionCreate(interaction: Interaction): Promise
 		await handleButtonClickedInteraction(interaction);
 	}
 
-	resetMessageContext();
+	resetMessageContext(interaction.id);
 }
