@@ -17,7 +17,7 @@
 
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { type CommandInteraction, MessageActionRow, MessageEmbed } from "discord.js";
-import type { APIApplicationCommandOption } from "discord-api-types";
+import type { APIApplicationCommandOption } from "discord-api-types/v9";
 import { getCommand, getOrLoadAllCommands } from "../handlers/commandHandler";
 import { getBugReportButton, getDiscordInviteButton, getFeatureRequestButton } from "../helpers/messageHelpers";
 import type { NeedleCommand } from "../types/needleCommand";
