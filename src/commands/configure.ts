@@ -14,7 +14,7 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { ChannelType } from "discord-api-types";
+import { ChannelType } from "discord-api-types/v9";
 import { CommandInteraction, GuildMember, GuildTextBasedChannel, Permissions } from "discord.js";
 import {
 	disableAutothreading,
