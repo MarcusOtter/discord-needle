@@ -15,7 +15,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { ChannelType } from "discord-api-types/v9";
-import { CommandInteraction, GuildMember, GuildTextBasedChannel, Permissions } from "discord.js";
+import { type CommandInteraction, type GuildMember, type GuildTextBasedChannel, Permissions } from "discord.js";
 import {
 	disableAutothreading,
 	emojisEnabled,
@@ -56,8 +56,9 @@ export const command: NeedleCommand = {
 					.addStringOption(option => {
 						const opt = option.setName("key").setDescription("The key of the message").setRequired(true);
 
-						for (const messageKey of Object.keys(getConfig().messages ?? []))
+						for (const messageKey of Object.keys(getConfig().messages ?? [])) {
 							opt.addChoice(messageKey, messageKey);
+						}
 
 						return opt;
 					})
@@ -141,27 +142,25 @@ export const command: NeedleCommand = {
 	},
 
 	async execute(interaction: CommandInteraction): Promise<void> {
-		if (!interaction.guildId || !interaction.guild)
+		if (!interaction.guildId || !interaction.guild) {
 			return interactionReply(interaction, getMessage("ERR_ONLY_IN_SERVER", interaction.id));
+		}
 
-		if (!memberIsModerator(interaction.member as GuildMember))
+		if (!memberIsModerator(interaction.member as GuildMember)) {
 			return interactionReply(interaction, getMessage("ERR_INSUFFICIENT_PERMS", interaction.id));
+		}
 
 		if (interaction.options.getSubcommand() === "default") {
 			const success = resetConfigToDefault(interaction.guild.id);
-			return interactionReply(
-				interaction,
-				success
-					? "Successfully reset the Needle configuration to the default."
-					: getMessage("ERR_NO_EFFECT", interaction.id),
-				!success
-			);
+			const message = success
+				? "Successfully reset the Needle configuration to the default."
+				: getMessage("ERR_NO_EFFECT", interaction.id);
+
+			return interactionReply(interaction, message, !success);
 		}
 
 		if (interaction.options.getSubcommand() === "emojis") return configureEmojis(interaction);
-
 		if (interaction.options.getSubcommand() === "message") return configureMessage(interaction);
-
 		if (interaction.options.getSubcommand() === "auto-threading") return configureAutothreading(interaction);
 
 		return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
@@ -170,26 +169,33 @@ export const command: NeedleCommand = {
 
 function configureEmojis(interaction: CommandInteraction): Promise<void> {
 	const enable = interaction.options.getBoolean("enabled");
-	if (enable === null || interaction.guild === null)
+	if (enable === null || interaction.guild === null) {
 		return interactionReply(interaction, getMessage("ERR_PARAMETER_MISSING", interaction.id));
+	}
 
-	if (enable === emojisEnabled(interaction.guild))
+	if (enable === emojisEnabled(interaction.guild)) {
 		return interactionReply(interaction, getMessage("ERR_NO_EFFECT", interaction.id));
+	}
 
 	const success = setEmojisEnabled(interaction.guild, enable);
-	if (!success) return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
+	if (!success) {
+		return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
+	}
 
-	return interactionReply(interaction, enable ? "Successfully enabled emojis." : "Successfully disabled emojis.");
+	return interactionReply(interaction, `Successfully ${enable ? "enabled" : "disabled"} emojis.`);
 }
 
 function configureMessage(interaction: CommandInteraction): Promise<void> {
 	const key = interaction.options.getString("key") as MessageKey;
 	const value = interaction.options.getString("value");
 
-	if (!interaction.guild) return interactionReply(interaction, getMessage("ERR_ONLY_IN_SERVER", interaction.id));
+	if (!interaction.guild) {
+		return interactionReply(interaction, getMessage("ERR_ONLY_IN_SERVER", interaction.id));
+	}
 
-	if (!value || value.length === 0)
+	if (!value || value.length === 0) {
 		return interactionReply(interaction, `**${key}** message:\n\n>>> ${getMessage(key, interaction.id, false)}`);
+	}
 
 	const oldValue = getMessage(key, interaction.id, false);
 	return setMessage(interaction.guild, key, value)
@@ -212,14 +218,18 @@ async function configureAutothreading(interaction: CommandInteraction): Promise<
 	const includeBots = interaction.options.getBoolean("include-bots") ?? false;
 	const slowmode = parseInt(interaction.options.getString("slowmode") ?? "0");
 
-	if (!interaction.guild || !interaction.guildId)
+	if (!interaction.guild || !interaction.guildId) {
 		return interactionReply(interaction, getMessage("ERR_ONLY_IN_SERVER", interaction.id));
+	}
 
-	if (!channel || enabled == null)
+	if (!channel || enabled === null) {
 		return interactionReply(interaction, getMessage("ERR_PARAMETER_MISSING", interaction.id));
+	}
 
 	const clientUser = interaction.client.user;
-	if (!clientUser) return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
+	if (!clientUser) {
+		return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
+	}
 
 	const botMember = await interaction.guild.members.fetch(clientUser);
 	const botPermissions = botMember.permissionsIn(channel.id);
@@ -248,8 +258,9 @@ async function configureAutothreading(interaction: CommandInteraction): Promise<
 			: interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
 	}
 
-	if (!isAutoThreadChannel(channel.id, interaction.guildId))
+	if (!isAutoThreadChannel(channel.id, interaction.guildId)) {
 		return interactionReply(interaction, getMessage("ERR_NO_EFFECT", interaction.id));
+	}
 
 	const success = disableAutothreading(interaction.guild, channel.id);
 	return success

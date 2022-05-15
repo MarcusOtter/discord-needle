@@ -10,7 +10,13 @@
    <a href="https://needle.gg">Website ✨</a> &emsp; <a href="https://needle.gg/invite">Invite Needle 🪡</a> &emsp; <a href="https://needle.gg/chat">Get support 💬</a>
 </div>
 
-## Self-hosting (advanced)
+## 👋 Getting started
+
+The easiest way to start using Needle in your server is to use the hosted instance. [Click here to invite Needle to your Discord server](https://needle.gg/invite)!
+
+## 🛠️ Self-hosting (advanced)
+
+The hosted instance of Needle is customizeable and should be enough for most users. However, if you have special requirements and want to modify the functionality of Needle, you will have to fork the repository and self-host your own instance. This requires programming knowledge and is only for advanced users - support for this will be limited.
 
 Needle requires an environment with Node.js version `16.9.0` or higher, along with persistent storage for per-server config files - shared hosts (like Replit and Heroku) will not work.
 
@@ -18,9 +24,9 @@ Needle requires an environment with Node.js version `16.9.0` or higher, along wi
 2. Copy `.env.example` to `.env` and fill in your bot's token and application ID.
 3. Run `npm install` to install Needle's dependencies.
 4. Run `npm run build` to compile Needle's code.
-5. Run `npm run deploy` to setup Slash Commands.
-    - Slash Commands can take up to one hour to fully roll out.
-6. Run `npm start` to start Needle :tada:.
+5. Run `npm run deploy` to setup slash commands.
+    - Slash commands can take **up to one hour** to show up in all servers.
+6. Run `npm start` to start Needle :tada:
 
 Needle requires the following permissions to function, along with the `applications.commands` and `bot` scopes.
 
@@ -30,33 +36,31 @@ Needle requires the following permissions to function, along with the `applicati
 -   [x] Create public threads
 -   [x] Read message history
 
-You can use this link to invite Needle, replacing `<APP ID>` with your bot's application ID.
-
-```
-https://discord.com/oauth2/authorize?client_id=<APP ID>&permissions=309237713920&scope=bot%20applications.commands
-```
+You can use this link to invite your self-hosted version of Needle, replacing `<APP ID>` with your bot's application ID: `https://discord.com/oauth2/authorize?client_id=<APP ID>&permissions=309237713920&scope=bot%20applications.commands`
 
 ### 🐳 Docker
 
-Needle has an [official Docker image](https://github.com/MarcusOtter/discord-needle/pkgs/container/discord-needle). Releases are tagged by their minor & patch version (eg. `2.0.0` & `2.0`), with the latest release tagged `latest`. Branches are tagged by their name.
+Needle has an [official Docker image](https://github.com/MarcusOtter/discord-needle/pkgs/container/discord-needle). Releases are tagged by their minor & patch version (e.g. `2.0.0` & `2.0`), with the latest release tagged `latest`. Branches are tagged by their name. To run the image, write the following command, replacing `token` with your bot's token:
 
 ```sh
 docker run -d --name Needle --env=DISCORD_API_TOKEN=token discord-needle ghcr.io/MarcusOtter/discord-needle:latest
 ```
 
-<sub>Replace `token` with your bot's token.</sub>
-
 By default, this will create an anonymous volume for `/configs`. To change the location, add `-v /path/to/configs:/configs` to the command.
 
-There is also an [example `docker-compose.yml` file](https://raw.githubusercontent.com/MarcusOtter/discord-needle/main/docker-compose.yml).
+There is also an [example `docker-compose.yml` file](https://github.com/MarcusOtter/discord-needle/blob/main/docker-compose.yml).
 
 You'll still need to deploy Needle's slash commands - follow the regular self-hosting instructions apart from step 6.
 
 ## 🤝 Contributing
 
-Coming soon :tm:
+Contribution guideliens coming soon :tm:
 
 [Join the Discord](https://needle.gg/chat) if interested!
+
+If you want to support Needle in other ways, consider [sponsoring](https://needle.gg/sponsor) the development of Needle.
+
+You can also [vote for and review the bot on top.gg](https://needle.gg/vote).
 
 ## 📜 License
 

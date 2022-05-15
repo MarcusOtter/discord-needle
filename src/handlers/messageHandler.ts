@@ -14,14 +14,14 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 import {
-	Message,
+	type Message,
 	MessageActionRow,
 	MessageButton,
 	NewsChannel,
 	TextChannel,
 	ThreadChannel,
 	SnowflakeUtil,
-	Snowflake,
+	type Snowflake,
 	Permissions,
 } from "discord.js";
 import { emojisEnabled, getConfig, includeBotsForAutothread, getSlowmodeSeconds } from "../helpers/configHelpers";
@@ -65,7 +65,8 @@ async function updateTitle(thread: ThreadChannel, message: Message) {
 	if (message.author.bot) return;
 
 	const threadAuthor = await getThreadAuthor(thread);
-	if (message.author == threadAuthor) return;
+	// this might have a bug? object equality
+	if (message.author === threadAuthor) return;
 
 	await thread.setName(thread.name.replace("🆕", ""));
 }

@@ -14,14 +14,14 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 import {
-	BaseCommandInteraction,
-	Message,
+	type BaseCommandInteraction,
+	type Message,
 	MessageButton,
-	MessageComponentInteraction,
-	TextBasedChannel,
-	ThreadChannel,
-	User,
-	Snowflake,
+	type MessageComponentInteraction,
+	type TextBasedChannel,
+	type ThreadChannel,
+	type User,
+	type Snowflake,
 } from "discord.js";
 
 import type { MessageContext } from "../types/messageContext";
@@ -61,10 +61,7 @@ export async function getThreadAuthor(channel: ThreadChannel): Promise<User | un
 
 export async function getFirstMessageInChannel(channel: TextBasedChannel): Promise<Message | undefined> {
 	const amount = channel.isThread() ? 2 : 1; // threads have an empty message as the first message
-	const messages = await channel.messages.fetch({
-		after: "0",
-		limit: amount,
-	});
+	const messages = await channel.messages.fetch({ after: "0", limit: amount });
 	return messages.first();
 }
 
@@ -73,7 +70,7 @@ export function interactionReply(
 	message?: string,
 	ephemeral = true
 ): Promise<void> {
-	if (!message || message.length == 0) {
+	if (!message || message.length === 0) {
 		return interaction.reply({
 			content: getMessage("ERR_UNKNOWN", interaction.id),
 			ephemeral: true,

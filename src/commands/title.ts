@@ -36,19 +36,24 @@ export const command: NeedleCommand = {
 
 	async execute(interaction: CommandInteraction): Promise<void> {
 		const member = interaction.member;
-		if (!(member instanceof GuildMember))
+		if (!(member instanceof GuildMember)) {
 			return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
+		}
 
 		const channel = interaction.channel;
-		if (!channel?.isThread())
+		if (!channel?.isThread()) {
 			return interactionReply(interaction, getMessage("ERR_ONLY_IN_THREAD", interaction.id));
+		}
 
 		const newThreadName = interaction.options.getString("value");
-		if (!newThreadName) return interactionReply(interaction, getMessage("ERR_PARAMETER_MISSING", interaction.id));
+		if (!newThreadName) {
+			return interactionReply(interaction, getMessage("ERR_PARAMETER_MISSING", interaction.id));
+		}
 
 		const oldThreadName = channel.name;
-		if (oldThreadName === newThreadName)
+		if (oldThreadName === newThreadName) {
 			return interactionReply(interaction, getMessage("ERR_NO_EFFECT", interaction.id));
+		}
 
 		const hasChangeTitlePermissions = member.permissionsIn(channel).has(Permissions.FLAGS.MANAGE_THREADS, true);
 
@@ -59,11 +64,13 @@ export const command: NeedleCommand = {
 		}
 
 		const threadAuthor = await getThreadAuthor(channel);
-		if (!threadAuthor)
+		if (!threadAuthor) {
 			return interactionReply(interaction, getMessage("ERR_AMBIGUOUS_THREAD_AUTHOR", interaction.id));
+		}
 
-		if (threadAuthor !== interaction.user)
+		if (threadAuthor !== interaction.user) {
 			return interactionReply(interaction, getMessage("ERR_ONLY_THREAD_OWNER", interaction.id));
+		}
 
 		await setThreadName(channel, newThreadName);
 		await interactionReply(interaction, "Success!");

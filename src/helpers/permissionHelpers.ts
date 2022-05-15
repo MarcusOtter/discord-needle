@@ -13,7 +13,13 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { GuildMember, NewsChannel, Permissions, TextChannel, ThreadAutoArchiveDuration } from "discord.js";
+import {
+	type GuildMember,
+	type NewsChannel,
+	Permissions,
+	type TextChannel,
+	type ThreadAutoArchiveDuration,
+} from "discord.js";
 
 export function getRequiredPermissions(slowmode?: number): bigint[] {
 	const output = [
@@ -24,7 +30,9 @@ export function getRequiredPermissions(slowmode?: number): bigint[] {
 		Permissions.FLAGS.READ_MESSAGE_HISTORY,
 	];
 
-	if (slowmode && slowmode > 0) output.push(Permissions.FLAGS.MANAGE_THREADS);
+	if (slowmode && slowmode > 0) {
+		output.push(Permissions.FLAGS.MANAGE_THREADS);
+	}
 
 	return output;
 }

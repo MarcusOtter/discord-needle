@@ -66,15 +66,17 @@ export async function getOrLoadAllCommands(allowCache = true): Promise<NeedleCom
 }
 
 export function getAllLoadedCommands(): NeedleCommand[] {
-	if (loadedCommands.length === 0)
+	if (loadedCommands.length === 0) {
 		console.error('No commands found. Did you forget to invoke "getOrLoadAllCommands()"?');
+	}
 
 	return loadedCommands;
 }
 
 export function getCommand(commandName: string): NeedleCommand | undefined {
-	if (loadedCommands.length === 0)
+	if (loadedCommands.length === 0) {
 		console.error('No commands found. Did you forget to invoke "getOrLoadAllCommands()"?');
+	}
 
 	return loadedCommands.find(command => command.name === commandName);
 }
