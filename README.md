@@ -43,7 +43,7 @@ You can use this link to invite your self-hosted version of Needle, replacing `<
 Needle has an [official Docker image](https://github.com/MarcusOtter/discord-needle/pkgs/container/discord-needle). Releases are tagged by their minor & patch version (e.g. `2.0.0` & `2.0`), with the latest release tagged `latest`. Branches are tagged by their name. To run the image, write the following command, replacing `token` with your bot's token:
 
 ```sh
-docker run -d --name Needle --env=DISCORD_API_TOKEN=token discord-needle ghcr.io/MarcusOtter/discord-needle:latest
+docker run -d --name Needle --env DISCORD_API_TOKEN=token discord-needle ghcr.io/MarcusOtter/discord-needle:latest
 ```
 
 By default, this will create an anonymous volume for `/configs`. To change the location, add `-v /path/to/configs:/configs` to the command.
