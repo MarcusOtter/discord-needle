@@ -54,7 +54,7 @@ You'll still need to deploy Needle's slash commands - follow the regular self-ho
 
 ## 🤝 Contributing
 
-Contribution guideliens coming soon :tm:
+Contribution guidelines coming soon :tm:
 
 [Join the Discord](https://needle.gg/chat) if interested!
 
