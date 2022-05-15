@@ -1,19 +1,18 @@
-// ________________________________________________________________________________________________
-//
-// This file is part of Needle.
-//
-// Needle is free software: you can redistribute it and/or modify it under the terms of the GNU
-// Affero General Public License as published by the Free Software Foundation, either version 3 of
-// the License, or (at your option) any later version.
-//
-// Needle is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
-// the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
-// General Public License for more details.
-//
-// You should have received a copy of the GNU Affero General Public License along with Needle.
-// If not, see <https://www.gnu.org/licenses/>.
-//
-// ________________________________________________________________________________________________
+/*
+This file is part of Needle.
+
+Needle is free software: you can redistribute it and/or modify it under the terms of the GNU
+Affero General Public License as published by the Free Software Foundation, either version 3 of
+the License, or (at your option) any later version.
+
+Needle is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with Needle.
+If not, see <https://www.gnu.org/licenses/>.
+*/
+
 import { config } from "dotenv";
 config();
 
@@ -45,15 +44,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 	await getOrLoadAllCommands(false);
 
 	const CLIENT = new Client({
-		intents: [
-			Intents.FLAGS.GUILDS,
-			Intents.FLAGS.GUILD_MESSAGES,
-		],
+		intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
 		presence: {
-			activities: [{
-				type: "LISTENING",
-				name: "/help",
-			}],
+			activities: [
+				{
+					type: "LISTENING",
+					name: "/help",
+				},
+			],
 		},
 	});
 
@@ -62,9 +60,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 		deleteConfigsFromUnknownServers(CLIENT);
 	});
 
-	CLIENT.on("interactionCreate", async interaction => await handleInteractionCreate(interaction).catch(console.error));
-	CLIENT.on("messageCreate", async message => await handleMessageCreate(message).catch(console.error));
-	CLIENT.on("guildDelete", guild => { resetConfigToDefault(guild.id); });
+	CLIENT.on("interactionCreate", interaction => handleInteractionCreate(interaction).catch(console.error));
+	CLIENT.on("messageCreate", message => handleMessageCreate(message).catch(console.error));
+	CLIENT.on("guildDelete", guild => {
+		resetConfigToDefault(guild.id);
+	});
 
 	CLIENT.login(getApiToken());
 
@@ -74,4 +74,3 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 		process.exit(0);
 	});
 })();
-

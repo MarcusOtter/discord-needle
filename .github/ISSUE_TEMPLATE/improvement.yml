@@ -13,8 +13,8 @@ body:
     - type: textarea
       id: fixes
       attributes:
-        label: Problems this improvement solves
-        description: Is this improvement related to a problem? How does it solve that?
+          label: Problems this improvement solves
+          description: Is this improvement related to a problem? How does it solve that?
     - type: textarea
       id: alternatives
       attributes:

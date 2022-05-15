@@ -1,23 +1,39 @@
-// ________________________________________________________________________________________________
-//
-// This file is part of Needle.
-//
-// Needle is free software: you can redistribute it and/or modify it under the terms of the GNU
-// Affero General Public License as published by the Free Software Foundation, either version 3 of
-// the License, or (at your option) any later version.
-//
-// Needle is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
-// the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
-// General Public License for more details.
-//
-// You should have received a copy of the GNU Affero General Public License along with Needle.
-// If not, see <https://www.gnu.org/licenses/>.
-//
-// ________________________________________________________________________________________________
+/*
+This file is part of Needle.
 
-import { type Message, MessageActionRow, MessageButton, NewsChannel, TextChannel, ThreadChannel, SnowflakeUtil, type Snowflake, Permissions } from "discord.js";
+Needle is free software: you can redistribute it and/or modify it under the terms of the GNU
+Affero General Public License as published by the Free Software Foundation, either version 3 of
+the License, or (at your option) any later version.
+
+Needle is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with Needle.
+If not, see <https://www.gnu.org/licenses/>.
+*/
+
+import {
+	type Message,
+	MessageActionRow,
+	MessageButton,
+	NewsChannel,
+	TextChannel,
+	ThreadChannel,
+	SnowflakeUtil,
+	type Snowflake,
+	Permissions,
+} from "discord.js";
 import { emojisEnabled, getConfig, includeBotsForAutothread, getSlowmodeSeconds } from "../helpers/configHelpers";
-import { getMessage, resetMessageContext, addMessageContext, isAutoThreadChannel, getHelpButton, replaceMessageVariables, getThreadAuthor } from "../helpers/messageHelpers";
+import {
+	getMessage,
+	resetMessageContext,
+	addMessageContext,
+	isAutoThreadChannel,
+	getHelpButton,
+	replaceMessageVariables,
+	getThreadAuthor,
+} from "../helpers/messageHelpers";
 import { getRequiredPermissions, getSafeDefaultAutoArchiveDuration } from "../helpers/permissionHelpers";
 
 export async function handleMessageCreate(message: Message): Promise<void> {
@@ -49,7 +65,8 @@ async function updateTitle(thread: ThreadChannel, message: Message) {
 	if (message.author.bot) return;
 
 	const threadAuthor = await getThreadAuthor(thread);
-	if (message.author == threadAuthor) return;
+	// this might have a bug? object equality
+	if (message.author === threadAuthor) return;
 
 	await thread.setName(thread.name.replace("🆕", ""));
 }
@@ -80,8 +97,7 @@ async function autoCreateThread(message: Message, requestId: Snowflake) {
 			const missing = botPermissions.missing(requiredPermissions);
 			const errorMessage = `Missing permission${missing.length > 1 ? "s" : ""}:`;
 			await message.channel.send(`${errorMessage}\n    - ${missing.join("\n    - ")}`);
-		}
-		catch (e) {
+		} catch (e) {
 			console.log(e);
 		}
 		return;
@@ -94,13 +110,10 @@ async function autoCreateThread(message: Message, requestId: Snowflake) {
 	});
 
 	const creationDate = message.createdAt.toISOString().slice(0, 10);
-	const authorName = authorMember === null || authorMember.nickname === null
-		? authorUser.username
-		: authorMember.nickname;
+	const authorName =
+		authorMember === null || authorMember.nickname === null ? authorUser.username : authorMember.nickname;
 
-	const name = emojisEnabled(guild)
-		? `🆕 ${authorName} (${creationDate})`
-		: `${authorName} (${creationDate})`;
+	const name = emojisEnabled(guild) ? `🆕 ${authorName} (${creationDate})` : `${authorName} (${creationDate})`;
 
 	const thread = await message.startThread({
 		name,
@@ -118,7 +131,9 @@ async function autoCreateThread(message: Message, requestId: Snowflake) {
 
 	const buttonRow = new MessageActionRow().addComponents(closeButton, helpButton);
 
-	const overrideMessageContent = getConfig(guild.id).threadChannels?.find(x => x?.channelId === channel.id)?.messageContent;
+	const overrideMessageContent = getConfig(guild.id).threadChannels?.find(
+		x => x?.channelId === channel.id
+	)?.messageContent;
 	const msgContent = overrideMessageContent
 		? replaceMessageVariables(overrideMessageContent, requestId)
 		: getMessage("SUCCESS_THREAD_CREATE", requestId);

@@ -1,25 +1,37 @@
-// ________________________________________________________________________________________________
-//
-// This file is part of Needle.
-//
-// Needle is free software: you can redistribute it and/or modify it under the terms of the GNU
-// Affero General Public License as published by the Free Software Foundation, either version 3 of
-// the License, or (at your option) any later version.
-//
-// Needle is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
-// the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
-// General Public License for more details.
-//
-// You should have received a copy of the GNU Affero General Public License along with Needle.
-// If not, see <https://www.gnu.org/licenses/>.
-//
-// ________________________________________________________________________________________________
+/*
+This file is part of Needle.
+
+Needle is free software: you can redistribute it and/or modify it under the terms of the GNU
+Affero General Public License as published by the Free Software Foundation, either version 3 of
+the License, or (at your option) any later version.
+
+Needle is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with Needle.
+If not, see <https://www.gnu.org/licenses/>.
+*/
 
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { ChannelType } from "discord-api-types/v9";
 import { type CommandInteraction, type GuildMember, type GuildTextBasedChannel, Permissions } from "discord.js";
-import { disableAutothreading, emojisEnabled, enableAutothreading, getConfig, resetConfigToDefault, setEmojisEnabled, setMessage } from "../helpers/configHelpers";
-import { interactionReply, getMessage, MessageKey, isAutoThreadChannel, addMessageContext } from "../helpers/messageHelpers";
+import {
+	disableAutothreading,
+	emojisEnabled,
+	enableAutothreading,
+	getConfig,
+	resetConfigToDefault,
+	setEmojisEnabled,
+	setMessage,
+} from "../helpers/configHelpers";
+import {
+	interactionReply,
+	getMessage,
+	MessageKey,
+	isAutoThreadChannel,
+	addMessageContext,
+} from "../helpers/messageHelpers";
 import type { NeedleCommand } from "../types/needleCommand";
 import { memberIsModerator } from "../helpers/permissionHelpers";
 
@@ -38,14 +50,13 @@ export const command: NeedleCommand = {
 			.addSubcommand(subcommand => {
 				return subcommand
 					.setName("message")
-					.setDescription("Modify the content of a message that Needle replies with when a certain action happens")
+					.setDescription(
+						"Modify the content of a message that Needle replies with when a certain action happens"
+					)
 					.addStringOption(option => {
-						const opt = option
-							.setName("key")
-							.setDescription("The key of the message")
-							.setRequired(true);
+						const opt = option.setName("key").setDescription("The key of the message").setRequired(true);
 
-						for(const messageKey of Object.keys(getConfig().messages ?? [])) {
+						for (const messageKey of Object.keys(getConfig().messages ?? [])) {
 							opt.addChoice(messageKey, messageKey);
 						}
 
@@ -54,7 +65,9 @@ export const command: NeedleCommand = {
 					.addStringOption(option => {
 						return option
 							.setName("value")
-							.setDescription("The new message for the selected key (shows the current value of this message key if left blank)")
+							.setDescription(
+								"The new message for the selected key (shows the current value of this message key if left blank)"
+							)
 							.setRequired(false);
 					});
 			})
@@ -78,13 +91,17 @@ export const command: NeedleCommand = {
 					.addBooleanOption(option => {
 						return option
 							.setName("enabled")
-							.setDescription("Whether or not threads should be automatically created from new messages in the selected channel")
+							.setDescription(
+								"Whether or not threads should be automatically created from new messages in the selected channel"
+							)
 							.setRequired(true);
 					})
 					.addBooleanOption(option => {
 						return option
 							.setName("include-bots")
-							.setDescription("Whether or not threads should be created on messages by bots. Default: False");
+							.setDescription(
+								"Whether or not threads should be created on messages by bots. Default: False"
+							);
 					})
 					.addStringOption(option => {
 						return option
@@ -108,7 +125,7 @@ export const command: NeedleCommand = {
 					.addStringOption(option => {
 						return option
 							.setName("custom-message")
-							.setDescription("The message to send when a thread is created (\"\\n\" for new line)");
+							.setDescription('The message to send when a thread is created ("\\n" for new line)');
 					});
 			})
 			.addSubcommand(subcommand => {
@@ -135,22 +152,16 @@ export const command: NeedleCommand = {
 
 		if (interaction.options.getSubcommand() === "default") {
 			const success = resetConfigToDefault(interaction.guild.id);
-			return interactionReply(interaction, success
+			const message = success
 				? "Successfully reset the Needle configuration to the default."
-				: getMessage("ERR_NO_EFFECT", interaction.id), !success);
+				: getMessage("ERR_NO_EFFECT", interaction.id);
+
+			return interactionReply(interaction, message, !success);
 		}
 
-		if (interaction.options.getSubcommand() === "emojis") {
-			return configureEmojis(interaction);
-		}
-
-		if (interaction.options.getSubcommand() === "message") {
-			return configureMessage(interaction);
-		}
-
-		if (interaction.options.getSubcommand() === "auto-threading") {
-			return configureAutothreading(interaction);
-		}
+		if (interaction.options.getSubcommand() === "emojis") return configureEmojis(interaction);
+		if (interaction.options.getSubcommand() === "message") return configureMessage(interaction);
+		if (interaction.options.getSubcommand() === "auto-threading") return configureAutothreading(interaction);
 
 		return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
 	},
@@ -167,11 +178,11 @@ function configureEmojis(interaction: CommandInteraction): Promise<void> {
 	}
 
 	const success = setEmojisEnabled(interaction.guild, enable);
-	if (!success) return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
+	if (!success) {
+		return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
+	}
 
-	return interactionReply(interaction, enable
-		? "Successfully enabled emojis."
-		: "Successfully disabled emojis.");
+	return interactionReply(interaction, `Successfully ${enable ? "enabled" : "disabled"} emojis.`);
 }
 
 function configureMessage(interaction: CommandInteraction): Promise<void> {
@@ -188,7 +199,14 @@ function configureMessage(interaction: CommandInteraction): Promise<void> {
 
 	const oldValue = getMessage(key, interaction.id, false);
 	return setMessage(interaction.guild, key, value)
-		? interactionReply(interaction, `Changed **${key}**\n\nOld message:\n> ${oldValue?.replaceAll("\n", "\n> ")}\n\nNew message:\n>>> ${value}`, false)
+		? interactionReply(
+				interaction,
+				`Changed **${key}**\n\nOld message:\n> ${oldValue?.replaceAll(
+					"\n",
+					"\n> "
+				)}\n\nNew message:\n>>> ${value}`,
+				false
+		  )
 		: interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
 }
 
@@ -204,12 +222,14 @@ async function configureAutothreading(interaction: CommandInteraction): Promise<
 		return interactionReply(interaction, getMessage("ERR_ONLY_IN_SERVER", interaction.id));
 	}
 
-	if (!channel || enabled == null) {
+	if (!channel || enabled === null) {
 		return interactionReply(interaction, getMessage("ERR_PARAMETER_MISSING", interaction.id));
 	}
 
 	const clientUser = interaction.client.user;
-	if (!clientUser) return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
+	if (!clientUser) {
+		return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
+	}
 
 	const botMember = await interaction.guild.members.fetch(clientUser);
 	const botPermissions = botMember.permissionsIn(channel.id);
@@ -225,7 +245,14 @@ async function configureAutothreading(interaction: CommandInteraction): Promise<
 	}
 
 	if (enabled) {
-		const success = enableAutothreading(interaction.guild, channel.id, includeBots, archiveImmediately, customMessage, slowmode);
+		const success = enableAutothreading(
+			interaction.guild,
+			channel.id,
+			includeBots,
+			archiveImmediately,
+			customMessage,
+			slowmode
+		);
 		return success
 			? interactionReply(interaction, `Updated auto-threading settings for <#${channel.id}>`, false)
 			: interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));

@@ -1,22 +1,26 @@
-// ________________________________________________________________________________________________
-//
-// This file is part of Needle.
-//
-// Needle is free software: you can redistribute it and/or modify it under the terms of the GNU
-// Affero General Public License as published by the Free Software Foundation, either version 3 of
-// the License, or (at your option) any later version.
-//
-// Needle is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
-// the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
-// General Public License for more details.
-//
-// You should have received a copy of the GNU Affero General Public License along with Needle.
-// If not, see <https://www.gnu.org/licenses/>.
-//
-// ________________________________________________________________________________________________
+/*
+This file is part of Needle.
+
+Needle is free software: you can redistribute it and/or modify it under the terms of the GNU
+Affero General Public License as published by the Free Software Foundation, either version 3 of
+the License, or (at your option) any later version.
+
+Needle is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with Needle.
+If not, see <https://www.gnu.org/licenses/>.
+*/
 
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { type CommandInteraction, GuildMember, type MessageComponentInteraction, Permissions, type ThreadChannel } from "discord.js";
+import {
+	type CommandInteraction,
+	GuildMember,
+	type MessageComponentInteraction,
+	Permissions,
+	type ThreadChannel,
+} from "discord.js";
 import { shouldArchiveImmediately } from "../helpers/configHelpers";
 import { interactionReply, getMessage, getThreadAuthor } from "../helpers/messageHelpers";
 import { setEmojiForNewThread } from "../helpers/threadHelpers";
@@ -25,7 +29,8 @@ import type { NeedleCommand } from "../types/needleCommand";
 export const command: NeedleCommand = {
 	name: "close",
 	shortHelpDescription: "Closes a thread by setting the auto-archive duration to 1 hour",
-	longHelpDescription: "The close command sets the auto-archive duration to 1 hour in a thread.\n\nWhen using auto-archive, the thread will automatically be archived when there have been no new messages in the thread for one hour. This can be undone by a server moderator by manually changing the auto-archive duration back to what it was previously, using Discord's own interface.",
+	longHelpDescription:
+		"The close command sets the auto-archive duration to 1 hour in a thread.\n\nWhen using auto-archive, the thread will automatically be archived when there have been no new messages in the thread for one hour. This can be undone by a server moderator by manually changing the auto-archive duration back to what it was previously, using Discord's own interface.",
 
 	async getSlashCommandBuilder() {
 		return new SlashCommandBuilder()
@@ -76,9 +81,12 @@ export const command: NeedleCommand = {
 					if (message) {
 						await thread.send(message);
 					}
-				}
-				else if (interaction.isCommand()) {
-					await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE_IMMEDIATE", interaction.id), false);
+				} else if (interaction.isCommand()) {
+					await interactionReply(
+						interaction,
+						getMessage("SUCCESS_THREAD_ARCHIVE_IMMEDIATE", interaction.id),
+						false
+					);
 				}
 
 				await setEmojiForNewThread(thread, false);
@@ -99,8 +107,7 @@ export const command: NeedleCommand = {
 				if (message) {
 					await thread.send(message);
 				}
-			}
-			else if (interaction.isCommand()) {
+			} else if (interaction.isCommand()) {
 				await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE_SLOW", interaction.id), false);
 			}
 		}

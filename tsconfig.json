@@ -1,19 +1,19 @@
 {
-    "compilerOptions": {
-        "module": "CommonJS",
-        "strict": true,
-        "skipLibCheck": true,
-        "strictNullChecks": true,
-        "forceConsistentCasingInFileNames": true,
-        "target": "ES2021",
-        "lib": ["ES2021"],
-        "allowUnreachableCode": false,
-        "allowUnusedLabels": false,
-        "moduleResolution": "Node",
-        "resolveJsonModule": true,
-        "rootDir": "src",
-        "outDir": "dist",
-        "sourceMap": true,
-    },
-    "include": ["src/**/*"]
+	"compilerOptions": {
+		"module": "CommonJS",
+		"strict": true,
+		"skipLibCheck": true,
+		"strictNullChecks": true,
+		"forceConsistentCasingInFileNames": true,
+		"target": "ES2021",
+		"lib": ["ES2021"],
+		"allowUnreachableCode": false,
+		"allowUnusedLabels": false,
+		"moduleResolution": "Node",
+		"resolveJsonModule": true,
+		"rootDir": "src",
+		"outDir": "dist",
+		"sourceMap": true
+	},
+	"include": ["src/**/*"]
 }

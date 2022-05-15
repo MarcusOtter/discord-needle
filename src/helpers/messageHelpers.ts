@@ -1,19 +1,17 @@
-// ________________________________________________________________________________________________
-//
-// This file is part of Needle.
-//
-// Needle is free software: you can redistribute it and/or modify it under the terms of the GNU
-// Affero General Public License as published by the Free Software Foundation, either version 3 of
-// the License, or (at your option) any later version.
-//
-// Needle is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
-// the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
-// General Public License for more details.
-//
-// You should have received a copy of the GNU Affero General Public License along with Needle.
-// If not, see <https://www.gnu.org/licenses/>.
-//
-// ________________________________________________________________________________________________
+/*
+This file is part of Needle.
+
+Needle is free software: you can redistribute it and/or modify it under the terms of the GNU
+Affero General Public License as published by the Free Software Foundation, either version 3 of
+the License, or (at your option) any later version.
+
+Needle is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with Needle.
+If not, see <https://www.gnu.org/licenses/>.
+*/
 
 import {
 	type BaseCommandInteraction,
@@ -58,7 +56,6 @@ export async function getThreadAuthor(channel: ThreadChannel): Promise<User | un
 	const firstMessage = await getFirstMessageInChannel(channel);
 	const author = firstMessage?.mentions.users.first();
 
-	if (!author) console.log(`Could not determine author of thread "${channel.name}"`);
 	return author;
 }
 
@@ -71,8 +68,9 @@ export async function getFirstMessageInChannel(channel: TextBasedChannel): Promi
 export function interactionReply(
 	interaction: BaseCommandInteraction | MessageComponentInteraction,
 	message?: string,
-	ephemeral = true): Promise<void> {
-	if (!message || message.length == 0) {
+	ephemeral = true
+): Promise<void> {
+	if (!message || message.length === 0) {
 		return interaction.reply({
 			content: getMessage("ERR_UNKNOWN", interaction.id),
 			ephemeral: true,
@@ -85,17 +83,19 @@ export function interactionReply(
 	});
 }
 
-export function getMessage(messageKey: MessageKey, requestId: Snowflake | undefined, replaceVariables = true): string | undefined {
+export function getMessage(
+	messageKey: MessageKey,
+	requestId: Snowflake | undefined,
+	replaceVariables = true
+): string | undefined {
 	const context = contexts.get(requestId ?? "");
 	const config = getConfig(context?.interaction?.guildId ?? undefined);
-	if (!config.messages) { return ""; }
+	if (!config.messages) return "";
 
 	const message = config.messages[messageKey];
-	if (!context || !message) { return message; }
+	if (!context || !message) return message;
 
-	return replaceVariables
-		? replaceMessageVariables(message, requestId ?? "")
-		: message;
+	return replaceVariables ? replaceMessageVariables(message, requestId ?? "") : message;
 }
 
 export function replaceMessageVariables(message: string, requestId: Snowflake): string {
@@ -104,9 +104,8 @@ export function replaceMessageVariables(message: string, requestId: Snowflake): 
 
 	const user = context.user ? `<@${context.user.id}>` : "";
 	const channel = context.channel ? `<#${context.channel.id}>` : "";
-	const timeAgo = context.timeAgo || (context.message
-		? `<t:${Math.round(context.message.createdTimestamp / 1000)}:R>`
-		: "");
+	const timeAgo =
+		context.timeAgo || (context.message ? `<t:${Math.round(context.message.createdTimestamp / 1000)}:R>` : "");
 
 	return message
 		.replaceAll("$USER", user)
@@ -156,15 +155,14 @@ export function getHelpButton(): MessageButton {
 }
 
 async function getThreadStartMessage(threadChannel: TextBasedChannel | null): Promise<Message | null> {
-	if (!threadChannel?.isThread()) { return null; }
-	if (!threadChannel.parentId) { return null; }
+	if (!threadChannel?.isThread()) return null;
+
+	if (!threadChannel.parentId) return null;
 
 	const parentChannel = await threadChannel.guild?.channels.fetch(threadChannel.parentId);
-	if (!parentChannel?.isText()) { return null; }
+	if (!parentChannel?.isText()) return null;
 
 	// The thread's channel ID is the same as the start message's ID,
 	// but if the start message has been deleted this will throw an exception
-	return parentChannel.messages
-		.fetch(threadChannel.id)
-		.catch(() => null);
+	return parentChannel.messages.fetch(threadChannel.id).catch(() => null);
 }
