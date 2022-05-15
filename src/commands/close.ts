@@ -104,7 +104,9 @@ export const command: NeedleCommand = {
 			if (interaction.isButton()) {
 				await interaction.update({ content: interaction.message.content });
 				const message = getMessage("SUCCESS_THREAD_ARCHIVE_SLOW", interaction.id);
-				if (message) await thread.send(message);
+				if (message) {
+					await thread.send(message);
+				}
 			} else if (interaction.isCommand()) {
 				await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE_SLOW", interaction.id), false);
 			}
