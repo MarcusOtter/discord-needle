@@ -1,11 +1,24 @@
+/*
+This file is part of Needle.
+
+Needle is free software: you can redistribute it and/or modify it under the terms of the GNU
+Affero General Public License as published by the Free Software Foundation, either version 3 of
+the License, or (at your option) any later version.
+
+Needle is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with Needle.
+If not, see <https://www.gnu.org/licenses/>.
+*/
+
 import type { ThreadChannel } from "discord.js";
 import { emojisEnabled } from "./configHelpers";
 
 export function setThreadName(thread: ThreadChannel, name: string): Promise<ThreadChannel> {
 	const emoji = getEmojiStatus(thread);
-	const newName = emoji
-		? `${emoji} ${name}`
-		: name;
+	const newName = emoji ? `${emoji} ${name}` : name;
 
 	// TODO: Permission check before this stuff!!
 	// If we don't own the thread we don't have perms for it
@@ -36,9 +49,7 @@ export function setEmojiForNewThread(thread: ThreadChannel, shouldBeNew: boolean
 
 	if (shouldBeNew && !emojisEnabled(thread.guild)) return Promise.resolve(thread);
 
-	return shouldBeNew
-		? thread.setName(`🆕 ${thread.name}`)
-		: thread.setName(thread.name.replaceAll("🆕", ""));
+	return shouldBeNew ? thread.setName(`🆕 ${thread.name}`) : thread.setName(thread.name.replaceAll("🆕", ""));
 }
 
 // Derived from https://stackoverflow.com/a/64007175/10615308

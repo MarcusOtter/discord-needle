@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: 🐇 Discord Chat
-    url: https://needle.gg/chat
-    about: Join the Discord server to get answers to your questions ASAP
-  - name: 🐌 GitHub Discussions
-    url: https://github.com/MarcusOtter/discord-needle/discussions
-    about: If you prefer, you can also open a discussion here on GitHub with questions
+    - name: 🐇 Discord Chat
+      url: https://needle.gg/chat
+      about: Join the Discord server to get answers to your questions ASAP
+    - name: 🐌 GitHub Discussions
+      url: https://github.com/MarcusOtter/discord-needle/discussions
+      about: If you prefer, you can also open a discussion here on GitHub with questions

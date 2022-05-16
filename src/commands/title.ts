@@ -1,19 +1,17 @@
-// ________________________________________________________________________________________________
-//
-// This file is part of Needle.
-//
-// Needle is free software: you can redistribute it and/or modify it under the terms of the GNU
-// Affero General Public License as published by the Free Software Foundation, either version 3 of
-// the License, or (at your option) any later version.
-//
-// Needle is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
-// the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
-// General Public License for more details.
-//
-// You should have received a copy of the GNU Affero General Public License along with Needle.
-// If not, see <https://www.gnu.org/licenses/>.
-//
-// ________________________________________________________________________________________________
+/*
+This file is part of Needle.
+
+Needle is free software: you can redistribute it and/or modify it under the terms of the GNU
+Affero General Public License as published by the Free Software Foundation, either version 3 of
+the License, or (at your option) any later version.
+
+Needle is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with Needle.
+If not, see <https://www.gnu.org/licenses/>.
+*/
 
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { type CommandInteraction, GuildMember, Permissions, Modal, TextInputComponent, MessageActionRow, ModalActionRowComponent, ModalSubmitInteraction } from "discord.js";
@@ -124,9 +122,7 @@ export const command: NeedleCommand = {
 			return interactionReply(interaction, getMessage("ERR_NO_EFFECT", interaction.id));
 		}
 
-		const hasChangeTitlePermissions = member
-			.permissionsIn(thread)
-			.has(Permissions.FLAGS.MANAGE_THREADS, true);
+		const hasChangeTitlePermissions = member.permissionsIn(thread).has(Permissions.FLAGS.MANAGE_THREADS, true);
 
 		if (hasChangeTitlePermissions) {
 			await setThreadName(thread, newThreadName);
