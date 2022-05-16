@@ -14,7 +14,16 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { type CommandInteraction, GuildMember, Permissions, Modal, TextInputComponent, MessageActionRow, ModalActionRowComponent, ModalSubmitInteraction } from "discord.js";
+import {
+	type CommandInteraction,
+	GuildMember,
+	Permissions,
+	Modal,
+	TextInputComponent,
+	MessageActionRow,
+	ModalActionRowComponent,
+	ModalSubmitInteraction,
+} from "discord.js";
 import { interactionReply, getMessage, getThreadAuthor } from "../helpers/messageHelpers";
 import { setThreadName } from "../helpers/threadHelpers";
 import type { NeedleCommand } from "../types/needleCommand";
@@ -25,18 +34,20 @@ export const command: NeedleCommand = {
 	longHelpDescription: "The title command changes the title of a thread.",
 
 	async getSlashCommandBuilder() {
-		return new SlashCommandBuilder()
-			.setName("title")
-			.setDescription("Sets the title of a thread")
-			// TODO: Maybe keep this but make it optional, and open modal if blank!
+		return (
+			new SlashCommandBuilder()
+				.setName("title")
+				.setDescription("Sets the title of a thread")
+				// TODO: Maybe keep this but make it optional, and open modal if blank!
 
-			// .addStringOption(option => {
-			// 	return option
-			// 		.setName("value")
-			// 		.setDescription("The new title of the thread")
-			// 		.setRequired(true);
-			// })
-			.toJSON();
+				// .addStringOption(option => {
+				// 	return option
+				// 		.setName("value")
+				// 		.setDescription("The new title of the thread")
+				// 		.setRequired(true);
+				// })
+				.toJSON()
+		);
 	},
 
 	async execute(interaction: CommandInteraction): Promise<void> {
@@ -55,9 +66,7 @@ export const command: NeedleCommand = {
 			titlePlaceholder = titlePlaceholder.slice(0, 42) + "...";
 		}
 
-		const modal = new Modal()
-			.setCustomId(this.name)
-			.setTitle("Set a new thread title");
+		const modal = new Modal().setCustomId(this.name).setTitle("Set a new thread title");
 
 		const titleInput = new TextInputComponent()
 			.setCustomId("title")
@@ -78,15 +87,12 @@ export const command: NeedleCommand = {
 			.setStyle("SHORT")
 			.setValue(interaction.channelId);
 
-
 		const row = new MessageActionRow<ModalActionRowComponent>().addComponents(titleInput);
 		const row2 = new MessageActionRow<ModalActionRowComponent>().addComponents(channelId);
 
 		modal.addComponents(row, row2);
 
 		return interaction.showModal(modal);
-
-
 	},
 	async handleModalSubmit(interaction: ModalSubmitInteraction): Promise<void> {
 		const member = interaction.member;
