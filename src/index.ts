@@ -43,6 +43,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 	// Initial load of all commands
 	await getOrLoadAllCommands(false);
 
+	const sweepSettings = {
+		interval: 14400, // 4h
+		lifetime: 3600, // 1h
+	};
+
 	const CLIENT = new Client({
 		intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
 		presence: {
@@ -52,6 +57,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 					name: "/help",
 				},
 			],
+		},
+		sweepers: {
+			messages: sweepSettings,
+			threads: sweepSettings,
 		},
 	});
 
