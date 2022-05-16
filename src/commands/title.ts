@@ -16,7 +16,7 @@
 // ________________________________________________________________________________________________
 
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { type CommandInteraction, GuildMember, Permissions } from "discord.js";
+import { type CommandInteraction, GuildMember, Permissions, Modal, TextInputComponent, MessageActionRow, ModalActionRowComponent, ModalSubmitInteraction } from "discord.js";
 import { interactionReply, getMessage, getThreadAuthor } from "../helpers/messageHelpers";
 import { setThreadName } from "../helpers/threadHelpers";
 import type { NeedleCommand } from "../types/needleCommand";
@@ -30,12 +30,14 @@ export const command: NeedleCommand = {
 		return new SlashCommandBuilder()
 			.setName("title")
 			.setDescription("Sets the title of a thread")
-			.addStringOption(option => {
-				return option
-					.setName("value")
-					.setDescription("The new title of the thread")
-					.setRequired(true);
-			})
+			// TODO: Maybe keep this but make it optional, and open modal if blank!
+
+			// .addStringOption(option => {
+			// 	return option
+			// 		.setName("value")
+			// 		.setDescription("The new title of the thread")
+			// 		.setRequired(true);
+			// })
 			.toJSON();
 	},
 
@@ -45,32 +47,94 @@ export const command: NeedleCommand = {
 			return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
 		}
 
-		const channel = interaction.channel;
-		if (!channel?.isThread()) {
+		const thread = interaction.channel;
+		if (!thread?.isThread()) {
 			return interactionReply(interaction, getMessage("ERR_ONLY_IN_THREAD", interaction.id));
 		}
 
-		const newThreadName = interaction.options.getString("value");
+		let titlePlaceholder = thread.name.replaceAll("🆕", "");
+		if (titlePlaceholder.length > 45) {
+			titlePlaceholder = titlePlaceholder.slice(0, 42) + "...";
+		}
+
+		const modal = new Modal()
+			.setCustomId(this.name)
+			.setTitle("Set a new thread title");
+
+		const titleInput = new TextInputComponent()
+			.setCustomId("title")
+			.setLabel("Thread title")
+			.setMinLength(1)
+			.setMaxLength(95)
+			.setRequired(true)
+			.setPlaceholder(titlePlaceholder)
+			.setStyle("SHORT");
+
+		const channelId = new TextInputComponent()
+			.setCustomId("threadId")
+			.setLabel("Thread ID (do not change)")
+			.setMinLength(18)
+			.setMaxLength(18)
+			.setRequired(true)
+			.setPlaceholder("Put it back! (Discord bug workaround)")
+			.setStyle("SHORT")
+			.setValue(interaction.channelId);
+
+
+		const row = new MessageActionRow<ModalActionRowComponent>().addComponents(titleInput);
+		const row2 = new MessageActionRow<ModalActionRowComponent>().addComponents(channelId);
+
+		modal.addComponents(row, row2);
+
+		return interaction.showModal(modal);
+
+
+	},
+	async handleModalSubmit(interaction: ModalSubmitInteraction): Promise<void> {
+		const member = interaction.member;
+		if (!(member instanceof GuildMember)) {
+			return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
+		}
+
+		let thread = interaction.channel;
+		if (!thread) {
+			return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
+		}
+
+		// Very ugly workaround because Discord's modals don't know where they were opened from
+		if (!thread?.isThread()) {
+			const threadId = interaction.fields.getTextInputValue("threadId");
+			const parent = await interaction.guild?.channels.fetch(thread.id);
+			if (!parent?.isText()) {
+				return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
+			}
+			thread = await parent.threads.fetch(threadId);
+			if (!thread) {
+				return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
+			}
+		}
+
+		const newThreadName = interaction.fields.getTextInputValue("title");
 		if (!newThreadName) {
 			return interactionReply(interaction, getMessage("ERR_PARAMETER_MISSING", interaction.id));
 		}
 
-		const oldThreadName = channel.name;
+		const oldThreadName = thread.name;
 		if (oldThreadName === newThreadName) {
 			return interactionReply(interaction, getMessage("ERR_NO_EFFECT", interaction.id));
 		}
 
 		const hasChangeTitlePermissions = member
-			.permissionsIn(channel)
+			.permissionsIn(thread)
 			.has(Permissions.FLAGS.MANAGE_THREADS, true);
 
 		if (hasChangeTitlePermissions) {
-			await setThreadName(channel, newThreadName);
+			await setThreadName(thread, newThreadName);
 			await interactionReply(interaction, "Success!");
 			return;
 		}
 
-		const threadAuthor = await getThreadAuthor(channel);
+		const threadAuthor = await getThreadAuthor(thread);
 		if (!threadAuthor) {
 			return interactionReply(interaction, getMessage("ERR_AMBIGUOUS_THREAD_AUTHOR", interaction.id));
 		}
@@ -79,7 +143,7 @@ export const command: NeedleCommand = {
 			return interactionReply(interaction, getMessage("ERR_ONLY_THREAD_OWNER", interaction.id));
 		}
 
-		await setThreadName(channel, newThreadName);
+		await setThreadName(thread, newThreadName);
 		await interactionReply(interaction, "Success!");
 	},
 };

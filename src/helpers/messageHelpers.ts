@@ -24,6 +24,7 @@ import {
 	type ThreadChannel,
 	type User,
 	type Snowflake,
+	ModalSubmitInteraction,
 } from "discord.js";
 
 import type { MessageContext } from "../types/messageContext";
@@ -69,7 +70,7 @@ export async function getFirstMessageInChannel(channel: TextBasedChannel): Promi
 }
 
 export function interactionReply(
-	interaction: BaseCommandInteraction | MessageComponentInteraction,
+	interaction: BaseCommandInteraction | MessageComponentInteraction | ModalSubmitInteraction,
 	message?: string,
 	ephemeral = true): Promise<void> {
 	if (!message || message.length == 0) {

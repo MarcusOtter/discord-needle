@@ -16,7 +16,7 @@
 // ________________________________________________________________________________________________
 
 import { SlashCommandBuilder } from "@discordjs/builders";
-import type { CommandInteraction, MessageComponentInteraction } from "discord.js";
+import type { CommandInteraction, MessageComponentInteraction, ModalSubmitInteraction } from "discord.js";
 
 export interface NeedleCommand {
 	name: string;
@@ -24,4 +24,5 @@ export interface NeedleCommand {
 	longHelpDescription?: string;
 	getSlashCommandBuilder(): Promise<ReturnType<SlashCommandBuilder["toJSON"]>>;
 	execute(interaction: CommandInteraction | MessageComponentInteraction): Promise<void>;
+	handleModalSubmit?(interaction: ModalSubmitInteraction): Promise<void>;
 }

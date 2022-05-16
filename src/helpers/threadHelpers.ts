@@ -1,18 +1,22 @@
 import type { ThreadChannel } from "discord.js";
 import { emojisEnabled } from "./configHelpers";
 
-// If that rate limit is hit, it will wait here until it is able to rename the thread.
 export function setThreadName(thread: ThreadChannel, name: string): Promise<ThreadChannel> {
 	const emoji = getEmojiStatus(thread);
 	const newName = emoji
 		? `${emoji} ${name}`
 		: name;
 
+	// TODO: Permission check before this stuff!!
+	// If we don't own the thread we don't have perms for it
+	// Same with archive
+
 	return thread.setName(newName);
 }
 
 // Preserves the prepended unicode emoji!
 // Current rate limit is 2 renames per thread per 10 minutes (2021-09-17).
+// If that rate limit is hit, it will wait here until it is able to rename the thread.
 export async function setEmojiStatus(thread: ThreadChannel, unicodeEmoji: string): Promise<boolean> {
 	if (!isOneUnicodeEmoji(unicodeEmoji)) return false;
 	const currentEmoji = thread.name.split(" ")[0];

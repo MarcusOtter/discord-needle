@@ -45,7 +45,7 @@ export function memberIsAdmin(member: GuildMember): boolean {
 // Should not be required, but Discord for some reason allows the default duration to be higher than the allowed value
 export function getSafeDefaultAutoArchiveDuration(channel: TextChannel | NewsChannel): ThreadAutoArchiveDuration {
 	const archiveDuration = channel.defaultAutoArchiveDuration;
-	if (!archiveDuration || archiveDuration === "MAX") return "MAX";
+	if (!archiveDuration) return 1440; // The UI shows 24h as default
 
 	const highest = getHighestAllowedArchiveDuration(channel);
 	return archiveDuration > highest

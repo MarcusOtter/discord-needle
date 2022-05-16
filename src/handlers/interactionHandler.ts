@@ -17,7 +17,7 @@
 
 import type { Interaction } from "discord.js";
 import { resetMessageContext, addMessageContext } from "../helpers/messageHelpers";
-import { handleButtonClickedInteraction, handleCommandInteraction } from "./commandHandler";
+import { handleButtonClickedInteraction, handleCommandInteraction, handleModalSubmitInteraction } from "./commandHandler";
 
 export async function handleInteractionCreate(interaction: Interaction): Promise<void> {
 	addMessageContext(interaction.id, {
@@ -28,6 +28,9 @@ export async function handleInteractionCreate(interaction: Interaction): Promise
 
 	if (interaction.isCommand()) {
 		await handleCommandInteraction(interaction);
+	}
+	else if (interaction.isModalSubmit()) {
+		await handleModalSubmitInteraction(interaction);
 	}
 	else if (interaction.isButton()) {
 		await handleButtonClickedInteraction(interaction);

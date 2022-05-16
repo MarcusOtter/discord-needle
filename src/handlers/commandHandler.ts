@@ -15,7 +15,7 @@
 //
 // ________________________________________________________________________________________________
 
-import { type CommandInteraction, type MessageComponentInteraction } from "discord.js";
+import { ModalSubmitInteraction, type CommandInteraction, type MessageComponentInteraction } from "discord.js";
 import { promises } from "fs";
 import { resolve as pathResolve } from "path";
 import { getMessage, interactionReply } from "../helpers/messageHelpers";
@@ -44,6 +44,20 @@ export async function handleButtonClickedInteraction(interaction: MessageCompone
 
 	try {
 		return command.execute(interaction);
+	}
+	catch (error) {
+		console.error(error);
+		return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
+	}
+}
+
+export async function handleModalSubmitInteraction(interaction: ModalSubmitInteraction): Promise<void> {
+	const command = getCommand(interaction.customId);
+	if (!command) return Promise.reject();
+	if (!command.handleModalSubmit) return Promise.reject();
+
+	try {
+		return command.handleModalSubmit(interaction);
 	}
 	catch (error) {
 		console.error(error);
