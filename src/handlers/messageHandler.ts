@@ -34,7 +34,7 @@ import {
 	replaceMessageVariables,
 	getThreadAuthor,
 } from "../helpers/messageHelpers";
-import { getRequiredPermissions, getSafeDefaultAutoArchiveDuration } from "../helpers/permissionHelpers";
+import { getRequiredPermissions } from "../helpers/permissionHelpers";
 
 export async function handleMessageCreate(message: Message): Promise<void> {
 	// Server outage
@@ -118,7 +118,7 @@ async function autoCreateThread(message: Message, requestId: Snowflake) {
 	const thread = await message.startThread({
 		name,
 		rateLimitPerUser: slowmode,
-		autoArchiveDuration: getSafeDefaultAutoArchiveDuration(channel),
+		autoArchiveDuration: channel.defaultAutoArchiveDuration ?? 1440, // 24h
 	});
 
 	const closeButton = new MessageButton()
@@ -134,6 +134,7 @@ async function autoCreateThread(message: Message, requestId: Snowflake) {
 	const overrideMessageContent = getConfig(guild.id).threadChannels?.find(
 		x => x?.channelId === channel.id
 	)?.messageContent;
+
 	const msgContent = overrideMessageContent
 		? replaceMessageVariables(overrideMessageContent, requestId)
 		: getMessage("SUCCESS_THREAD_CREATE", requestId);
