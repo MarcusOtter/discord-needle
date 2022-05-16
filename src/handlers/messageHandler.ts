@@ -35,6 +35,7 @@ import {
 	getThreadAuthor,
 } from "../helpers/messageHelpers";
 import { getRequiredPermissions } from "../helpers/permissionHelpers";
+import { wait } from "../helpers/promiseHelpers";
 
 export async function handleMessageCreate(message: Message): Promise<void> {
 	// Server outage
@@ -147,6 +148,7 @@ async function autoCreateThread(message: Message, requestId: Snowflake) {
 
 		if (botMember.permissionsIn(thread.id).has(Permissions.FLAGS.MANAGE_MESSAGES)) {
 			await msg.pin();
+			await wait(50); // Let's wait a few ms here to ensure the latest message is actually the pin message
 			await thread.lastMessage?.delete();
 		}
 	}
