@@ -13,13 +13,7 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {
-	type GuildMember,
-	type NewsChannel,
-	Permissions,
-	type TextChannel,
-	type ThreadAutoArchiveDuration,
-} from "discord.js";
+import { type GuildMember, Permissions } from "discord.js";
 
 export function getRequiredPermissions(slowmode?: number): bigint[] {
 	const output = [
@@ -43,21 +37,4 @@ export function memberIsModerator(member: GuildMember): boolean {
 
 export function memberIsAdmin(member: GuildMember): boolean {
 	return member.permissions.has(Permissions.FLAGS.ADMINISTRATOR);
-}
-
-// Fixes https://github.com/MarcusOtter/discord-needle/issues/23
-// Should not be required, but Discord for some reason allows the default duration to be higher than the allowed value
-export function getSafeDefaultAutoArchiveDuration(channel: TextChannel | NewsChannel): ThreadAutoArchiveDuration {
-	const archiveDuration = channel.defaultAutoArchiveDuration;
-	if (!archiveDuration || archiveDuration === "MAX") return "MAX";
-
-	const highest = getHighestAllowedArchiveDuration(channel);
-	return archiveDuration > highest ? highest : archiveDuration;
-}
-
-function getHighestAllowedArchiveDuration(channel: TextChannel | NewsChannel) {
-	if (channel.guild.features.includes("SEVEN_DAY_THREAD_ARCHIVE")) return 10080;
-	if (channel.guild.features.includes("THREE_DAY_THREAD_ARCHIVE")) return 4320;
-
-	return 1440; // 1d
 }

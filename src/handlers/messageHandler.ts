@@ -34,7 +34,8 @@ import {
 	replaceMessageVariables,
 	getThreadAuthor,
 } from "../helpers/messageHelpers";
-import { getRequiredPermissions, getSafeDefaultAutoArchiveDuration } from "../helpers/permissionHelpers";
+import { getRequiredPermissions } from "../helpers/permissionHelpers";
+import { wait } from "../helpers/promiseHelpers";
 
 export async function handleMessageCreate(message: Message): Promise<void> {
 	// Server outage
@@ -118,7 +119,7 @@ async function autoCreateThread(message: Message, requestId: Snowflake) {
 	const thread = await message.startThread({
 		name,
 		rateLimitPerUser: slowmode,
-		autoArchiveDuration: getSafeDefaultAutoArchiveDuration(channel),
+		autoArchiveDuration: channel.defaultAutoArchiveDuration ?? 1440, // 24h
 	});
 
 	const closeButton = new MessageButton()
@@ -134,6 +135,7 @@ async function autoCreateThread(message: Message, requestId: Snowflake) {
 	const overrideMessageContent = getConfig(guild.id).threadChannels?.find(
 		x => x?.channelId === channel.id
 	)?.messageContent;
+
 	const msgContent = overrideMessageContent
 		? replaceMessageVariables(overrideMessageContent, requestId)
 		: getMessage("SUCCESS_THREAD_CREATE", requestId);
@@ -146,6 +148,7 @@ async function autoCreateThread(message: Message, requestId: Snowflake) {
 
 		if (botMember.permissionsIn(thread.id).has(Permissions.FLAGS.MANAGE_MESSAGES)) {
 			await msg.pin();
+			await wait(50); // Let's wait a few ms here to ensure the latest message is actually the pin message
 			await thread.lastMessage?.delete();
 		}
 	}
