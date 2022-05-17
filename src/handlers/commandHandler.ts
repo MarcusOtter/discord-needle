@@ -13,7 +13,7 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, MessageComponentInteraction } from "discord.js";
+import type { ModalSubmitInteraction, CommandInteraction, MessageComponentInteraction } from "discord.js";
 import { promises } from "fs";
 import { resolve as pathResolve } from "path";
 import { getMessage, interactionReply } from "../helpers/messageHelpers";
@@ -42,6 +42,20 @@ export async function handleButtonClickedInteraction(interaction: MessageCompone
 	try {
 		return command.execute(interaction);
 	} catch (error) {
+		console.error(error);
+		return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
+	}
+}
+
+export async function handleModalSubmitInteraction(interaction: ModalSubmitInteraction): Promise<void> {
+	const command = getCommand(interaction.customId);
+	if (!command) return Promise.reject();
+	if (!command.handleModalSubmit) return Promise.reject();
+
+	try {
+		return command.handleModalSubmit(interaction);
+	}
+	catch (error) {
 		console.error(error);
 		return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
 	}
