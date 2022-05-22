@@ -1,13 +1,15 @@
 <div align="center">
 	<h1>
-		<a href="#">
-			<img
-				src="https://raw.githubusercontent.com/MarcusOtter/discord-needle/main/branding/logo-64x64.png"
-				height="39"
-				width="39"
-			/>
-		</a>
-		<sup>Needle</sup>
+		<sub>
+			<a href="#">
+				<img
+					src="https://raw.githubusercontent.com/MarcusOtter/discord-needle/main/branding/logo-64x64.png"
+					height="39"
+					width="39"
+				/>
+			</a>
+		</sub>
+		Needle
 	</h1>
 	Needle is a <b><a href="https://discord.com/">Discord</a> bot</b> that helps you declutter your server by creating <a href="https://support.discord.com/hc/en-us/articles/4403205878423-Threads-FAQ">Discord threads</a> automatically.
 	<br /><br />
