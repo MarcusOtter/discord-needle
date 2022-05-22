@@ -13,17 +13,17 @@
 	Needle is a <b><a href="https://discord.com/">Discord</a> bot</b> that helps you declutter your server by creating
 	<a href="https://support.discord.com/hc/en-us/articles/4403205878423-Threads-FAQ">Discord threads</a> automatically.
 	<br /><br />
-	<a href="needle.gg"
+	<a href="https://needle.gg"
 		><img src="https://img.shields.io/badge/Website-gray?style=for-the-badge" alt="Website"
 	/></a>
 	&emsp;
-	<a href="needle.gg/invite"
+	<a href="https://needle.gg/invite"
 		><img
 			src="https://img.shields.io/badge/Invite%20Needle-gray?style=for-the-badge&logo=discord&logoColor=white"
 			alt="Invite Needle"
 	/></a>
 	&emsp;
-	<a href="needle.gg/chat"
+	<a href="https://needle.gg/chat"
 		><img
 			src="https://img.shields.io/badge/Get%20Support-gray?style=for-the-badge"
 			alt="Get Support"
