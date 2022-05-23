@@ -46,7 +46,10 @@ Needle requires the following permissions to function, along with the `applicati
 -   [x] Create public threads
 -   [x] Read message history
 
-You can use this link to invite your self-hosted version of Needle, replacing `<APP ID>` with your bot's application ID: `https://discord.com/oauth2/authorize?client_id=<APP ID>&permissions=309237713920&scope=bot%20applications.commands`
+You can use this link to invite your self-hosted version of Needle, replacing `<APP ID>` with your bot's application ID:
+```
+https://discord.com/oauth2/authorize?client_id=<APP ID>&permissions=309237713920&scope=bot%20applications.commands
+```
 
 ### 🐳 Docker
 
