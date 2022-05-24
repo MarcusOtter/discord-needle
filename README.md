@@ -30,7 +30,7 @@ The hosted instance of Needle is customizeable and should be enough for most use
 
 Needle requires an environment with Node.js version `16.9.0` or higher, along with persistent storage for per-server config files - shared hosts (like Replit and Heroku) will not work.
 
-1. Download the [latest release](https://github.com/MarcusOtter/discord-needle/releases/latest) of Needle and extract the archive.
+1. Clone or download the [latest release](https://github.com/MarcusOtter/discord-needle/releases/latest) of Needle (branch: [`stable`](https://github.com/MarcusOtter/discord-needle/tree/stable)).
 2. Copy `.env.example` to `.env` and fill in your bot's token and application ID.
 3. Run `npm install` to install Needle's dependencies.
 4. Run `npm run build` to compile Needle's code.
