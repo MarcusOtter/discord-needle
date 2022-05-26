@@ -1,6 +1,6 @@
 {
 	"name": "discord-needle",
-	"version": "1.0.0",
+	"version": "2.2.0",
 	"description": "Needle is a discord bot that helps you manage your discord threads.",
 	"main": "./dist/index.js",
 	"scripts": {
