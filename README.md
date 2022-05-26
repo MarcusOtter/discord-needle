@@ -22,9 +22,7 @@
 
 ## 👋 Getting started
 
-The easiest way to start using Needle in your server is to use the hosted instance. [Click here to invite Needle](https://needle.gg/invite) to your Discord server!
-
-If you have any questions, feel free to join the [support server](https://needle.gg/chat) and check the [Frequently Asked Questions](https://needle.gg/faq).
+The easiest way to start using Needle in your server is to use the hosted instance. [Click here to invite Needle](https://needle.gg/invite) to your Discord server! If you have any questions, feel free to join the [support server](https://needle.gg/chat) and check the [Frequently Asked Questions](https://needle.gg/faq).
 
 ## 🛠️ Self-hosting (advanced)
 
