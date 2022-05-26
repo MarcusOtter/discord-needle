@@ -28,7 +28,7 @@ import type { NeedleCommand } from "../types/needleCommand";
 
 export const command: NeedleCommand = {
 	name: "close",
-	shortHelpDescription: "Closes a thread.",
+	shortHelpDescription: "Closes a thread",
 	longHelpDescription:
 		"The close command either archives the thread immediately or sets the auto-archive duration to 1 hour, depending on the configuration.\n\nAnyone can unarchive the thread by simply sending a message in it.",
 
