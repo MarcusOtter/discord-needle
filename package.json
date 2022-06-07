@@ -23,7 +23,7 @@
 	},
 	"homepage": "https://github.com/MarcusOtter/discord-needle",
 	"dependencies": {
-		"@discordjs/builders": "^0.12.0",
+		"@discordjs/builders": "^0.15.0",
 		"@discordjs/rest": "^0.4.1",
 		"discord-api-types": "^0.26.1",
 		"discord.js": "^13.6.0",
