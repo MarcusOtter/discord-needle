@@ -141,15 +141,22 @@ async function autoCreateThread(message: Message, requestId: Snowflake) {
 		: getMessage("SUCCESS_THREAD_CREATE", requestId);
 
 	if (msgContent && msgContent.length > 0) {
-		const msg = await thread.send({
+		const msgObject = { 
 			content: msgContent,
 			components: [buttonRow],
-		});
+		};
 
-		if (botMember.permissionsIn(thread.id).has(Permissions.FLAGS.MANAGE_MESSAGES)) {
-			await msg.pin();
-			await wait(50); // Let's wait a few ms here to ensure the latest message is actually the pin message
-			await thread.lastMessage?.delete();
+		if (msgObject.content != "$NONE") {
+			if (msgObject.content === "$BUTTONS")
+				msgObject.content = "\n";
+	
+			const msg = await thread.send(msgObject);
+
+			if (botMember.permissionsIn(thread.id).has(Permissions.FLAGS.MANAGE_MESSAGES)) {
+				await msg.pin();
+				await wait(50); // Let's wait a few ms here to ensure the latest message is actually the pin message
+				await thread.lastMessage?.delete();
+			}
 		}
 	}
 
