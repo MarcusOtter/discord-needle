@@ -35,7 +35,6 @@ Needle requires an environment with Node.js version `16.9.0` or higher, along wi
 3. Run `npm install` to install Needle's dependencies.
 4. Run `npm run build` to compile Needle's code.
 5. Run `npm run deploy` to setup slash commands.
-    - Slash commands can take **up to one hour** to show up in all servers.
 6. Run `npm start` to start Needle :tada:
 
 Needle requires the following permissions to function, along with the `applications.commands` and `bot` scopes.
