@@ -15,7 +15,8 @@
 		"ERR_INSUFFICIENT_PERMS": "You do not have permission to perform this action.",
 		"ERR_CHANNEL_VISIBILITY": "The $CHANNEL channel is not visible to the bot. Change the permissions and try again.",
 		"ERR_CHANNEL_SLOWMODE": "The bot does not have permissions to Manage Threads in $CHANNEL. Change the permissions and try again.",
-		"ERR_AMBIGUOUS_THREAD_AUTHOR": "Could not determine the author of this thread, because the initial message was missing.",
+		"ERR_AMBIGUOUS_THREAD_AUTHOR": "Could not determine the author of this thread, because the initial message was missing.", 
+		"ERR_THREAD_NAME_TOO_LONG": "The new thread name cannot exceed 100 characters!",
 
 		"SUCCESS_THREAD_CREATE": "Thread automatically created by $USER in $CHANNEL.",
 		"SUCCESS_THREAD_ARCHIVE_IMMEDIATE": "Thread was archived by $USER. Anyone can send a message to unarchive it.",

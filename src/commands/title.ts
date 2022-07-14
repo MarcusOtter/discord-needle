@@ -79,6 +79,10 @@ export const command: NeedleCommand = {
 			return interactionReply(interaction, getMessage("ERR_ONLY_THREAD_OWNER", interaction.id));
 		}
 
+		if (newThreadName.length > 100) {
+			return interactionReply(interaction, getMessage("ERR_THREAD_NAME_TOO_LONG", interaction.id));
+		}
+
 		await setThreadName(channel, newThreadName);
 		await interactionReply(interaction, "Success!");
 	},
