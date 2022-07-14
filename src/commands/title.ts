@@ -79,6 +79,7 @@ export const command: NeedleCommand = {
 			return interactionReply(interaction, getMessage("ERR_ONLY_THREAD_OWNER", interaction.id));
 		}
 
+		// TODO- djs 13.9 should support string builder max_lengths (as dapi does currently)
 		if (newThreadName.length > 100) {
 			return interactionReply(interaction, getMessage("ERR_THREAD_NAME_TOO_LONG", interaction.id));
 		}
