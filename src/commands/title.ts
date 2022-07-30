@@ -13,11 +13,16 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, GuildMember, Permissions } from "discord.js";
+import {
+	ChannelType,
+	ChatInputCommandInteraction,
+	GuildMember,
+	PermissionsBitField,
+	SlashCommandBuilder,
+} from "discord.js";
 import { interactionReply, getMessage, getThreadAuthor } from "../helpers/messageHelpers";
 import { setThreadName } from "../helpers/threadHelpers";
-import type { NeedleCommand } from "../types/needleCommand";
+import type { ExecuteResult, NeedleCommand } from "../types/needleCommand";
 
 export const command: NeedleCommand = {
 	name: "title",
@@ -34,14 +39,14 @@ export const command: NeedleCommand = {
 			.toJSON();
 	},
 
-	async execute(interaction: CommandInteraction): Promise<void> {
+	async execute(interaction: ChatInputCommandInteraction): ExecuteResult {
 		const member = interaction.member;
 		if (!(member instanceof GuildMember)) {
 			return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
 		}
 
 		const channel = interaction.channel;
-		if (!channel?.isThread()) {
+		if (channel?.type !== ChannelType.GuildPublicThread) {
 			return interactionReply(interaction, getMessage("ERR_ONLY_IN_THREAD", interaction.id));
 		}
 
@@ -55,7 +60,9 @@ export const command: NeedleCommand = {
 			return interactionReply(interaction, getMessage("ERR_NO_EFFECT", interaction.id));
 		}
 
-		const hasChangeTitlePermissions = member.permissionsIn(channel).has(Permissions.FLAGS.MANAGE_THREADS, true);
+		const hasChangeTitlePermissions = member
+			.permissionsIn(channel)
+			.has(PermissionsBitField.Flags.ManageThreads, true);
 
 		if (hasChangeTitlePermissions) {
 			await setThreadName(channel, newThreadName);

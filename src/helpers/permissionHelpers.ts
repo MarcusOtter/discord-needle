@@ -13,28 +13,28 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { type GuildMember, Permissions } from "discord.js";
+import { type GuildMember, PermissionsBitField } from "discord.js";
 
 export function getRequiredPermissions(slowmode?: number): bigint[] {
 	const output = [
-		Permissions.FLAGS.VIEW_CHANNEL,
-		Permissions.FLAGS.SEND_MESSAGES,
-		Permissions.FLAGS.SEND_MESSAGES_IN_THREADS,
-		Permissions.FLAGS.CREATE_PUBLIC_THREADS,
-		Permissions.FLAGS.READ_MESSAGE_HISTORY,
+		PermissionsBitField.Flags.ViewChannel,
+		PermissionsBitField.Flags.SendMessages,
+		PermissionsBitField.Flags.SendMessagesInThreads,
+		PermissionsBitField.Flags.CreatePublicThreads,
+		PermissionsBitField.Flags.ReadMessageHistory,
 	];
 
 	if (slowmode && slowmode > 0) {
-		output.push(Permissions.FLAGS.MANAGE_THREADS);
+		output.push(PermissionsBitField.Flags.ManageThreads);
 	}
 
 	return output;
 }
 
 export function memberIsModerator(member: GuildMember): boolean {
-	return member.permissions.has(Permissions.FLAGS.KICK_MEMBERS);
+	return member.permissions.has(PermissionsBitField.Flags.KickMembers);
 }
 
 export function memberIsAdmin(member: GuildMember): boolean {
-	return member.permissions.has(Permissions.FLAGS.ADMINISTRATOR);
+	return member.permissions.has(PermissionsBitField.Flags.Administrator);
 }

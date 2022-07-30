@@ -19,7 +19,7 @@ If not, see <https://www.gnu.org/licenses/>.
 require("dotenv").config();
 
 const { REST } = require("@discordjs/rest");
-const { Routes } = require("discord-api-types/v9");
+const { Routes } = require("discord.js");
 
 const { getOrLoadAllCommands } = require("../dist/handlers/commandHandler");
 const { getApiToken, getGuildId, getClientId } = require("../dist/helpers/configHelpers");

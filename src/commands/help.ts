@@ -13,12 +13,17 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { type CommandInteraction, MessageActionRow, MessageEmbed } from "discord.js";
-import type { APIApplicationCommandOption } from "discord-api-types/v9";
+import {
+	ActionRowBuilder,
+	type ButtonBuilder,
+	EmbedBuilder,
+	SlashCommandBuilder,
+	type APIApplicationCommandOption,
+	type ChatInputCommandInteraction,
+} from "discord.js";
 import { getCommand, getOrLoadAllCommands } from "../handlers/commandHandler";
 import { getBugReportButton, getDiscordInviteButton, getFeatureRequestButton } from "../helpers/messageHelpers";
-import type { NeedleCommand } from "../types/needleCommand";
+import type { ExecuteResult, NeedleCommand } from "../types/needleCommand";
 
 export const command: NeedleCommand = {
 	name: "help",
@@ -30,8 +35,8 @@ export const command: NeedleCommand = {
 		return getHelpSlashCommandBuilder();
 	},
 
-	async execute(interaction: CommandInteraction): Promise<void> {
-		const row = new MessageActionRow().addComponents(
+	async execute(interaction: ChatInputCommandInteraction): ExecuteResult {
+		const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
 			getDiscordInviteButton(),
 			getBugReportButton(),
 			getFeatureRequestButton()
@@ -58,7 +63,7 @@ export const command: NeedleCommand = {
 	},
 };
 
-async function getCommandDetailsEmbed(commandName: string): Promise<MessageEmbed[]> {
+async function getCommandDetailsEmbed(commandName: string): Promise<EmbedBuilder[]> {
 	const cmd = getCommand(commandName);
 	if (!cmd) return [];
 
@@ -69,34 +74,36 @@ async function getCommandDetailsEmbed(commandName: string): Promise<MessageEmbed
 		cmdOptionExplanations += `\`${option.name}\` - ${option.required ? "" : "(optional)"} ${option.description}\n`;
 	}
 
-	const commandInfoEmbed = new MessageEmbed()
+	const commandInfoEmbed = new EmbedBuilder()
 		.setTitle(`Information about \`/${cmd.name}\``)
 		.setDescription(cmd.longHelpDescription ?? cmd.shortHelpDescription)
-		.addField("Usage", `/${cmd.name}${cmdOptionString}`, false);
+		.addFields({ name: "Usage", value: `/${cmd.name}${cmdOptionString}`, inline: false });
 
 	if (cmdOptionExplanations && cmdOptionExplanations.length > 0) {
-		commandInfoEmbed.addField("Options", cmdOptionExplanations, false);
+		commandInfoEmbed.addFields({ name: "Options", value: cmdOptionExplanations, inline: false });
 	}
 
 	return [commandInfoEmbed];
 }
 
-async function getAllCommandsEmbed(): Promise<MessageEmbed> {
-	const embed = new MessageEmbed().setTitle("🪡  Needle Commands"); // :sewing_needle:
+async function getAllCommandsEmbed(): Promise<EmbedBuilder> {
+	const embed = new EmbedBuilder().setTitle("🪡  Needle Commands"); // :sewing_needle:
 	const commands = await getOrLoadAllCommands();
 	for (const cmd of commands) {
 		// Help command gets special treatment
 		if (cmd.name === "help") {
-			embed.addField("/help", "Shows a list of all available commands", false);
-			embed.addField(
-				"/help  `command`",
-				"Shows more information and example usage of a specific `command`",
-				false
+			embed.addFields(
+				{ name: "/help", value: "Shows a list of all available commands", inline: false },
+				{
+					name: "/help  `command`",
+					value: "Shows more information and example usage of a specific `command`",
+					inline: false,
+				}
 			);
 			continue;
 		}
 		const commandOptions = await getCommandOptionString(cmd);
-		embed.addField(`/${cmd.name}${commandOptions}`, cmd.shortHelpDescription, false);
+		embed.addFields({ name: `/${cmd.name}${commandOptions}`, value: cmd.shortHelpDescription, inline: false });
 	}
 	return embed;
 }
@@ -132,7 +139,7 @@ async function getHelpSlashCommandBuilder() {
 				.setRequired(false);
 
 			for (const cmd of commands) {
-				option.addChoice(cmd.name, cmd.name);
+				option.addChoices({ name: cmd.name, value: cmd.name });
 			}
 
 			return option;

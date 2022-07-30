@@ -15,16 +15,17 @@ If not, see <https://www.gnu.org/licenses/>.
 
 import type { Interaction } from "discord.js";
 import { resetMessageContext, addMessageContext } from "../helpers/messageHelpers";
+import { ExecuteResult } from "../types/needleCommand";
 import { handleButtonClickedInteraction, handleCommandInteraction } from "./commandHandler";
 
-export async function handleInteractionCreate(interaction: Interaction): Promise<void> {
+export async function handleInteractionCreate(interaction: Interaction): ExecuteResult {
 	addMessageContext(interaction.id, {
 		user: interaction.user,
 		interaction: interaction,
 		channel: interaction.channel ?? undefined,
 	});
 
-	if (interaction.isCommand()) await handleCommandInteraction(interaction);
+	if (interaction.isChatInputCommand()) await handleCommandInteraction(interaction);
 	else if (interaction.isButton()) await handleButtonClickedInteraction(interaction);
 
 	resetMessageContext(interaction.id);

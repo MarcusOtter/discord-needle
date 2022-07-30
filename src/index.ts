@@ -16,7 +16,7 @@ If not, see <https://www.gnu.org/licenses/>.
 import { config } from "dotenv";
 config();
 
-import { Client, Intents } from "discord.js";
+import { ActivityType, Client, GatewayIntentBits } from "discord.js";
 import { getOrLoadAllCommands } from "./handlers/commandHandler";
 import { handleInteractionCreate } from "./handlers/interactionHandler";
 import { handleMessageCreate } from "./handlers/messageHandler";
@@ -49,11 +49,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 	};
 
 	const CLIENT = new Client({
-		intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+		intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
 		presence: {
 			activities: [
 				{
-					type: "LISTENING",
+					type: ActivityType.Listening,
 					name: "/help",
 				},
 			],
@@ -69,8 +69,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 		deleteConfigsFromUnknownServers(CLIENT);
 	});
 
-	CLIENT.on("interactionCreate", interaction => handleInteractionCreate(interaction).catch(console.error));
 	CLIENT.on("messageCreate", message => handleMessageCreate(message).catch(console.error));
+	CLIENT.on("interactionCreate", interaction => {
+		handleInteractionCreate(interaction).catch(console.error);
+	});
 	CLIENT.on("guildDelete", guild => {
 		resetConfigToDefault(guild.id);
 	});

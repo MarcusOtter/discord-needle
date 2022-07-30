@@ -13,9 +13,14 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { ChannelType } from "discord-api-types/v9";
-import { type CommandInteraction, type GuildMember, type GuildTextBasedChannel, Permissions } from "discord.js";
+import {
+	type GuildMember,
+	type GuildTextBasedChannel,
+	PermissionsBitField,
+	ChannelType,
+	type ChatInputCommandInteraction,
+	SlashCommandBuilder,
+} from "discord.js";
 import {
 	disableAutothreading,
 	emojisEnabled,
@@ -32,7 +37,7 @@ import {
 	isAutoThreadChannel,
 	addMessageContext,
 } from "../helpers/messageHelpers";
-import type { NeedleCommand } from "../types/needleCommand";
+import type { ExecuteResult, NeedleCommand } from "../types/needleCommand";
 import { memberIsModerator } from "../helpers/permissionHelpers";
 
 // Note:
@@ -57,7 +62,7 @@ export const command: NeedleCommand = {
 						const opt = option.setName("key").setDescription("The key of the message").setRequired(true);
 
 						for (const messageKey of Object.keys(getConfig().messages ?? [])) {
-							opt.addChoice(messageKey, messageKey);
+							opt.addChoices({ name: messageKey, value: messageKey });
 						}
 
 						return opt;
@@ -84,8 +89,7 @@ export const command: NeedleCommand = {
 						return option
 							.setName("channel")
 							.setDescription("The channel to enable/disable automatic threading in")
-							.addChannelType(ChannelType.GuildText)
-							.addChannelType(ChannelType.GuildNews)
+							.addChannelTypes(ChannelType.GuildText, ChannelType.GuildNews)
 							.setRequired(true);
 					})
 					.addBooleanOption(option => {
@@ -107,20 +111,24 @@ export const command: NeedleCommand = {
 						return option
 							.setName("archive-behavior")
 							.setDescription("What should happen when users close a thread?")
-							.addChoice("✅ Archive immediately (DEFAULT)", "immediately")
-							.addChoice("⌛ Archive after 1 hour of inactivity", "slow");
+							.addChoices(
+								{ name: "✅ Archive immediately (DEFAULT)", value: "immediately" },
+								{ name: "⌛ Archive after 1 hour of inactivity", value: "slow" }
+							);
 					})
 					.addStringOption(option => {
 						return option
 							.setName("slowmode")
 							.setDescription("The default slowmode option for new threads")
-							.addChoice("Off (DEFAULT)", "0")
-							.addChoice("30 seconds", "30")
-							.addChoice("1 minute", "60")
-							.addChoice("5 minutes", "300")
-							.addChoice("15 minutes", "900")
-							.addChoice("1 hour", "3600")
-							.addChoice("6 hours", "21600");
+							.addChoices(
+								{ name: "Off (DEFAULT)", value: "0" },
+								{ name: "30 seconds", value: "30" },
+								{ name: "1 minute", value: "60" },
+								{ name: "5 minutes", value: "300" },
+								{ name: "15 minutes", value: "900" },
+								{ name: "1 hour", value: "3600" },
+								{ name: "6 hours", value: "21600" }
+							);
 					})
 					.addStringOption(option => {
 						return option
@@ -141,7 +149,7 @@ export const command: NeedleCommand = {
 			.toJSON();
 	},
 
-	async execute(interaction: CommandInteraction): Promise<void> {
+	async execute(interaction: ChatInputCommandInteraction): ExecuteResult {
 		if (!interaction.guildId || !interaction.guild) {
 			return interactionReply(interaction, getMessage("ERR_ONLY_IN_SERVER", interaction.id));
 		}
@@ -167,7 +175,7 @@ export const command: NeedleCommand = {
 	},
 };
 
-function configureEmojis(interaction: CommandInteraction): Promise<void> {
+function configureEmojis(interaction: ChatInputCommandInteraction): ExecuteResult {
 	const enable = interaction.options.getBoolean("enabled");
 	if (enable === null || interaction.guild === null) {
 		return interactionReply(interaction, getMessage("ERR_PARAMETER_MISSING", interaction.id));
@@ -185,7 +193,7 @@ function configureEmojis(interaction: CommandInteraction): Promise<void> {
 	return interactionReply(interaction, `Successfully ${enable ? "enabled" : "disabled"} emojis.`);
 }
 
-function configureMessage(interaction: CommandInteraction): Promise<void> {
+function configureMessage(interaction: ChatInputCommandInteraction): ExecuteResult {
 	const key = interaction.options.getString("key") as MessageKey;
 	const value = interaction.options.getString("value");
 
@@ -210,7 +218,7 @@ function configureMessage(interaction: CommandInteraction): Promise<void> {
 		: interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
 }
 
-async function configureAutothreading(interaction: CommandInteraction): Promise<void> {
+async function configureAutothreading(interaction: ChatInputCommandInteraction): ExecuteResult {
 	const channel = interaction.options.getChannel("channel") as GuildTextBasedChannel;
 	const enabled = interaction.options.getBoolean("enabled");
 	const customMessage = interaction.options.getString("custom-message") ?? "";
@@ -234,12 +242,12 @@ async function configureAutothreading(interaction: CommandInteraction): Promise<
 	const botMember = await interaction.guild.members.fetch(clientUser);
 	const botPermissions = botMember.permissionsIn(channel.id);
 
-	if (!botPermissions.has(Permissions.FLAGS.VIEW_CHANNEL)) {
+	if (!botPermissions.has(PermissionsBitField.Flags.ViewChannel)) {
 		addMessageContext(interaction.id, { channel });
 		return interactionReply(interaction, getMessage("ERR_CHANNEL_VISIBILITY", interaction.id));
 	}
 
-	if (slowmode && slowmode > 0 && !botPermissions.has(Permissions.FLAGS.MANAGE_THREADS)) {
+	if (slowmode && slowmode > 0 && !botPermissions.has(PermissionsBitField.Flags.ManageThreads)) {
 		addMessageContext(interaction.id, { channel });
 		return interactionReply(interaction, getMessage("ERR_CHANNEL_SLOWMODE", interaction.id));
 	}

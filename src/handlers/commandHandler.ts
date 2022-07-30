@@ -13,17 +13,17 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, MessageComponentInteraction } from "discord.js";
+import type { ChatInputCommandInteraction, MessageComponentInteraction } from "discord.js";
 import { promises } from "fs";
 import { resolve as pathResolve } from "path";
 import { getMessage, interactionReply } from "../helpers/messageHelpers";
-import type { NeedleCommand } from "../types/needleCommand";
+import type { ExecuteResult, NeedleCommand } from "../types/needleCommand";
 
 const COMMANDS_PATH = pathResolve(__dirname, "../commands");
 
 let loadedCommands: NeedleCommand[] = [];
 
-export function handleCommandInteraction(interaction: CommandInteraction): Promise<void> {
+export function handleCommandInteraction(interaction: ChatInputCommandInteraction): ExecuteResult {
 	const command = getCommand(interaction.commandName);
 	if (!command) return Promise.reject();
 
@@ -35,7 +35,7 @@ export function handleCommandInteraction(interaction: CommandInteraction): Promi
 	}
 }
 
-export async function handleButtonClickedInteraction(interaction: MessageComponentInteraction): Promise<void> {
+export async function handleButtonClickedInteraction(interaction: MessageComponentInteraction): ExecuteResult {
 	const command = getCommand(interaction.customId);
 	if (!command) return Promise.reject();
 
