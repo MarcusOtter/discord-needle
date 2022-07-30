@@ -221,13 +221,14 @@ function configureMessage(interaction: ChatInputCommandInteraction): ExecuteResu
 
 async function configureAutothreading(interaction: ChatInputCommandInteraction): ExecuteResult {
 	const guildCurrentConfiguration = readConfigFromFile(interaction.guildId!);
+
 	const channel = interaction.options.getChannel("channel") as TextBasedChannel;
 
 	const channelConfiguration = guildCurrentConfiguration?.threadChannels?.filter(c => c.channelId === channel?.id)[0];
 
 	const enabled = interaction.options.getBoolean("enabled") ?? channelConfiguration != null
-	const customMessage = interaction.options.getString("custom-message") ?? channelConfiguration?.messageContent;
-	const includeBots = interaction.options.getBoolean("include-bots") ?? channelConfiguration?.includeBots;
+	const customMessage = interaction.options.getString("custom-message") ?? channelConfiguration?.messageContent ?? "";
+	const includeBots = interaction.options.getBoolean("include-bots") ?? channelConfiguration?.includeBots ?? false;
 	const slowmode = parseInt(interaction.options.getString("slowmode") ?? "0");
 
 	const archiveImmediately = interaction.options.getString("archive-behavior") != null
