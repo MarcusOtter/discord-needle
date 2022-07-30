@@ -158,7 +158,7 @@ export function deleteConfigsFromUnknownServers(client: Client): void {
 	});
 }
 
-function readConfigFromFile(guildId: string): NeedleConfig | undefined {
+export function readConfigFromFile(guildId: string): NeedleConfig | undefined {
 	const path = getGuildConfigPath(guildId);
 	if (!fs.existsSync(path)) return undefined;
 

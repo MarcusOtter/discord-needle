@@ -15,17 +15,18 @@ If not, see <https://www.gnu.org/licenses/>.
 
 import {
 	type GuildMember,
-	type GuildTextBasedChannel,
 	PermissionsBitField,
 	ChannelType,
 	type ChatInputCommandInteraction,
 	SlashCommandBuilder,
+	type TextBasedChannel,
 } from "discord.js";
 import {
 	disableAutothreading,
 	emojisEnabled,
 	enableAutothreading,
 	getConfig,
+	readConfigFromFile,
 	resetConfigToDefault,
 	setEmojisEnabled,
 	setMessage,
@@ -208,23 +209,30 @@ function configureMessage(interaction: ChatInputCommandInteraction): ExecuteResu
 	const oldValue = getMessage(key, interaction.id, false);
 	return setMessage(interaction.guild, key, value)
 		? interactionReply(
-				interaction,
-				`Changed **${key}**\n\nOld message:\n> ${oldValue?.replaceAll(
-					"\n",
-					"\n> "
-				)}\n\nNew message:\n>>> ${value}`,
-				false
-		  )
+			interaction,
+			`Changed **${key}**\n\nOld message:\n> ${oldValue?.replaceAll(
+				"\n",
+				"\n> "
+			)}\n\nNew message:\n>>> ${value}`,
+			false
+		)
 		: interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
 }
 
 async function configureAutothreading(interaction: ChatInputCommandInteraction): ExecuteResult {
-	const channel = interaction.options.getChannel("channel") as GuildTextBasedChannel;
-	const enabled = interaction.options.getBoolean("enabled");
-	const customMessage = interaction.options.getString("custom-message") ?? "";
-	const archiveImmediately = interaction.options.getString("archive-behavior") !== "slow";
-	const includeBots = interaction.options.getBoolean("include-bots") ?? false;
+	const guildCurrentConfiguration = readConfigFromFile(interaction.guildId!);
+	const channel = interaction.options.getChannel("channel") as TextBasedChannel;
+
+	const channelConfiguration = guildCurrentConfiguration?.threadChannels?.filter(c => c.channelId === channel?.id)[0];
+
+	const enabled = interaction.options.getBoolean("enabled") ?? channelConfiguration != null
+	const customMessage = interaction.options.getString("custom-message") ?? channelConfiguration?.messageContent;
+	const includeBots = interaction.options.getBoolean("include-bots") ?? channelConfiguration?.includeBots;
 	const slowmode = parseInt(interaction.options.getString("slowmode") ?? "0");
+
+	const archiveImmediately = interaction.options.getString("archive-behavior") != null
+		? interaction.options.getString("archive-behavior") !== "slow"
+		: channelConfiguration?.archiveImmediately ?? false;
 
 	if (!interaction.guild || !interaction.guildId) {
 		return interactionReply(interaction, getMessage("ERR_ONLY_IN_SERVER", interaction.id));
