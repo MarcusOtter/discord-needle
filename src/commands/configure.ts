@@ -220,7 +220,7 @@ function configureMessage(interaction: ChatInputCommandInteraction): ExecuteResu
 }
 
 async function configureAutothreading(interaction: ChatInputCommandInteraction): ExecuteResult {
-	const guildCurrentConfiguration = readConfigFromFile(interaction.guildId!);
+	const guildCurrentConfiguration = getConfig(interaction.guildId!);
 
 	const channel = interaction.options.getChannel("channel") as TextBasedChannel;
 
