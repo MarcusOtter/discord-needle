@@ -27,6 +27,7 @@ export interface NeedleConfig {
 		ERR_CHANNEL_VISIBILITY?: string;
 		ERR_CHANNEL_SLOWMODE?: string;
 		ERR_AMBIGUOUS_THREAD_AUTHOR?: string;
+		ERR_THREAD_NAME_TOO_LONG?: string;
 
 		SUCCESS_THREAD_CREATE?: string;
 		SUCCESS_THREAD_ARCHIVE_IMMEDIATE?: string;
