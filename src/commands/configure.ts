@@ -117,18 +117,18 @@ export const command: NeedleCommand = {
 								{ name: "⌛ Archive after 1 hour of inactivity", value: "slow" }
 							);
 					})
-					.addStringOption(option => {
+					.addIntegerOption(option => {
 						return option
 							.setName("slowmode")
 							.setDescription("The default slowmode option for new threads")
 							.addChoices(
-								{ name: "Off (DEFAULT)", value: "0" },
-								{ name: "30 seconds", value: "30" },
-								{ name: "1 minute", value: "60" },
-								{ name: "5 minutes", value: "300" },
-								{ name: "15 minutes", value: "900" },
-								{ name: "1 hour", value: "3600" },
-								{ name: "6 hours", value: "21600" }
+								{ name: "Off (DEFAULT)", value: 0 },
+								{ name: "30 seconds", value: 30 },
+								{ name: "1 minute", value: 60 },
+								{ name: "5 minutes", value: 300 },
+								{ name: "15 minutes", value: 900 },
+								{ name: "1 hour", value: 3600 },
+								{ name: "6 hours", value: 21600 }
 							);
 					})
 					.addStringOption(option => {
@@ -229,7 +229,7 @@ async function configureAutothreading(interaction: ChatInputCommandInteraction):
 	const enabled = interaction.options.getBoolean("enabled") ?? channelConfiguration != null
 	const customMessage = interaction.options.getString("custom-message") ?? channelConfiguration?.messageContent ?? "";
 	const includeBots = interaction.options.getBoolean("include-bots") ?? channelConfiguration?.includeBots ?? false;
-	const slowmode = parseInt(interaction.options.getString("slowmode") ?? "0");
+	const slowmode = interaction.options.getInteger("slowmode") ?? channelConfiguration?.slowmode ?? 0;
 
 	const archiveImmediately = interaction.options.getString("archive-behavior") != null
 		? interaction.options.getString("archive-behavior") !== "slow"
