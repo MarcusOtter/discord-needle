@@ -26,7 +26,6 @@ import {
 	emojisEnabled,
 	enableAutothreading,
 	getConfig,
-	readConfigFromFile,
 	resetConfigToDefault,
 	setEmojisEnabled,
 	setMessage,
