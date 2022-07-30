@@ -50,6 +50,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 	const CLIENT = new Client({
 		intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
+		shards: "auto",
 		presence: {
 			activities: [
 				{
