@@ -15,14 +15,16 @@ If not, see <https://www.gnu.org/licenses/>.
 
 import {
 	type Message,
-	MessageActionRow,
-	MessageButton,
+	ActionRowBuilder,
+	ButtonBuilder,
 	NewsChannel,
 	TextChannel,
-	ThreadChannel,
 	SnowflakeUtil,
 	type Snowflake,
-	Permissions,
+	PermissionsBitField,
+	type PublicThreadChannel,
+	ChannelType,
+	ButtonStyle,
 } from "discord.js";
 import { emojisEnabled, getConfig, includeBotsForAutothread, getSlowmodeSeconds } from "../helpers/configHelpers";
 import {
@@ -45,24 +47,24 @@ export async function handleMessageCreate(message: Message): Promise<void> {
 	if (message.client.user === null) return;
 
 	if (message.system) return;
-	if (!message.channel.isText()) return;
+	if (!message.channel.isTextBased()) return;
 	if (!message.inGuild()) return;
 	if (message.author.id === message.client.user.id) return;
 
 	const includeBots = includeBotsForAutothread(message.guild.id, message.channel.id);
 	if (!includeBots && message.author.bot) return;
 
-	if (!message.author.bot && message.channel.isThread()) {
+	if (!message.author.bot && message.channel.type === ChannelType.GuildPublicThread) {
 		await updateTitle(message.channel, message);
 		return;
 	}
 
 	const requestId = SnowflakeUtil.generate();
-	await autoCreateThread(message, requestId);
-	resetMessageContext(requestId);
+	await autoCreateThread(message, requestId.toString());
+	resetMessageContext(requestId.toString());
 }
 
-async function updateTitle(thread: ThreadChannel, message: Message) {
+async function updateTitle(thread: PublicThreadChannel, message: Message) {
 	if (message.author.bot) return;
 
 	const threadAuthor = await getThreadAuthor(thread);
@@ -122,15 +124,15 @@ async function autoCreateThread(message: Message, requestId: Snowflake) {
 		autoArchiveDuration: channel.defaultAutoArchiveDuration ?? 1440, // 24h
 	});
 
-	const closeButton = new MessageButton()
+	const closeButton = new ButtonBuilder()
 		.setCustomId("close")
 		.setLabel("Archive thread")
-		.setStyle("SUCCESS")
+		.setStyle(ButtonStyle.Success)
 		.setEmoji("937932140014866492"); // :archive:
 
 	const helpButton = getHelpButton();
 
-	const buttonRow = new MessageActionRow().addComponents(closeButton, helpButton);
+	const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(closeButton, helpButton);
 
 	const overrideMessageContent = getConfig(guild.id).threadChannels?.find(
 		x => x?.channelId === channel.id
@@ -146,7 +148,7 @@ async function autoCreateThread(message: Message, requestId: Snowflake) {
 			components: [buttonRow],
 		});
 
-		if (botMember.permissionsIn(thread.id).has(Permissions.FLAGS.MANAGE_MESSAGES)) {
+		if (botMember.permissionsIn(thread.id).has(PermissionsBitField.Flags.ManageMessages)) {
 			await msg.pin();
 			await wait(50); // Let's wait a few ms here to ensure the latest message is actually the pin message
 			await thread.lastMessage?.delete();

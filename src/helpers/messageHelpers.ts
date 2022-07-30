@@ -14,17 +14,18 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 import {
-	type BaseCommandInteraction,
 	type Message,
-	MessageButton,
-	type MessageComponentInteraction,
+	ButtonBuilder,
 	type TextBasedChannel,
-	type ThreadChannel,
 	type User,
 	type Snowflake,
+	ButtonStyle,
+	type PublicThreadChannel,
+	type InteractionResponse,
 } from "discord.js";
 
 import type { MessageContext } from "../types/messageContext";
+import type { NeedleInteraction } from "../types/needleCommand";
 import type { NeedleConfig } from "../types/needleConfig";
 import { getConfig } from "./configHelpers";
 
@@ -47,7 +48,7 @@ export function isAutoThreadChannel(channelId: string, guildId: string): boolean
 	return config?.threadChannels?.some(x => x?.channelId === channelId) ?? false;
 }
 
-export async function getThreadAuthor(channel: ThreadChannel): Promise<User | undefined> {
+export async function getThreadAuthor(channel: PublicThreadChannel): Promise<User | undefined> {
 	const parentMessage = await getThreadStartMessage(channel);
 
 	if (parentMessage) return parentMessage.author;
@@ -66,10 +67,10 @@ export async function getFirstMessageInChannel(channel: TextBasedChannel): Promi
 }
 
 export function interactionReply(
-	interaction: BaseCommandInteraction | MessageComponentInteraction,
+	interaction: NeedleInteraction,
 	message?: string,
 	ephemeral = true
-): Promise<void> {
+): Promise<InteractionResponse> {
 	if (!message || message.length === 0) {
 		return interaction.reply({
 			content: getMessage("ERR_UNKNOWN", interaction.id),
@@ -114,43 +115,43 @@ export function replaceMessageVariables(message: string, requestId: Snowflake): 
 		.replaceAll("\\n", "\n");
 }
 
-export function getDiscordInviteButton(buttonText = "Join the support server"): MessageButton {
-	return new MessageButton()
+export function getDiscordInviteButton(buttonText = "Join the support server"): ButtonBuilder {
+	return new ButtonBuilder()
 		.setLabel(buttonText)
-		.setStyle("LINK")
+		.setStyle(ButtonStyle.Link)
 		.setURL("https://discord.gg/8BmnndXHp6")
 		.setEmoji("930584823473516564"); // :discord_light:
 }
 
-export function getGithubRepoButton(buttonText = "Source code"): MessageButton {
-	return new MessageButton()
+export function getGithubRepoButton(buttonText = "Source code"): ButtonBuilder {
+	return new ButtonBuilder()
 		.setLabel(buttonText)
-		.setStyle("LINK")
+		.setStyle(ButtonStyle.Link)
 		.setURL("https://github.com/MarcusOtter/discord-needle/")
 		.setEmoji("888980150077755412"); // :github_light:
 }
 
-export function getBugReportButton(buttonText = "Report a bug"): MessageButton {
-	return new MessageButton()
+export function getBugReportButton(buttonText = "Report a bug"): ButtonBuilder {
+	return new ButtonBuilder()
 		.setLabel(buttonText)
-		.setStyle("LINK")
+		.setStyle(ButtonStyle.Link)
 		.setURL("https://github.com/MarcusOtter/discord-needle/issues/new/choose")
 		.setEmoji("🐛");
 }
 
-export function getFeatureRequestButton(buttonText = "Suggest an improvement"): MessageButton {
-	return new MessageButton()
+export function getFeatureRequestButton(buttonText = "Suggest an improvement"): ButtonBuilder {
+	return new ButtonBuilder()
 		.setLabel(buttonText)
-		.setStyle("LINK")
+		.setStyle(ButtonStyle.Link)
 		.setURL("https://github.com/MarcusOtter/discord-needle/issues/new/choose")
 		.setEmoji("💡");
 }
 
-export function getHelpButton(): MessageButton {
-	return new MessageButton()
+export function getHelpButton(): ButtonBuilder {
+	return new ButtonBuilder()
 		.setCustomId("help")
 		.setLabel("Commands")
-		.setStyle("SECONDARY")
+		.setStyle(ButtonStyle.Secondary)
 		.setEmoji("937931337942306877"); // :slash_commands:
 }
 
@@ -160,7 +161,7 @@ async function getThreadStartMessage(threadChannel: TextBasedChannel | null): Pr
 	if (!threadChannel.parentId) return null;
 
 	const parentChannel = await threadChannel.guild?.channels.fetch(threadChannel.parentId);
-	if (!parentChannel?.isText()) return null;
+	if (!parentChannel?.isTextBased()) return null;
 
 	// The thread's channel ID is the same as the start message's ID,
 	// but if the start message has been deleted this will throw an exception

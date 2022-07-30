@@ -13,18 +13,11 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { SlashCommandBuilder } from "@discordjs/builders";
-import {
-	type CommandInteraction,
-	GuildMember,
-	type MessageComponentInteraction,
-	Permissions,
-	type ThreadChannel,
-} from "discord.js";
+import { ChannelType, GuildMember, PermissionsBitField, SlashCommandBuilder, type ThreadChannel } from "discord.js";
 import { shouldArchiveImmediately } from "../helpers/configHelpers";
 import { interactionReply, getMessage, getThreadAuthor } from "../helpers/messageHelpers";
 import { setEmojiForNewThread } from "../helpers/threadHelpers";
-import type { NeedleCommand } from "../types/needleCommand";
+import type { ExecuteResult, NeedleCommand, NeedleInteraction } from "../types/needleCommand";
 
 export const command: NeedleCommand = {
 	name: "close",
@@ -36,14 +29,14 @@ export const command: NeedleCommand = {
 		return new SlashCommandBuilder().setName("close").setDescription("Closes a thread.").toJSON();
 	},
 
-	async execute(interaction: CommandInteraction | MessageComponentInteraction): Promise<void> {
+	async execute(interaction: NeedleInteraction): ExecuteResult {
 		const member = interaction.member;
 		if (!(member instanceof GuildMember)) {
 			return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
 		}
 
 		const channel = interaction.channel;
-		if (!channel?.isThread()) {
+		if (channel?.type !== ChannelType.GuildPublicThread) {
 			return interactionReply(interaction, getMessage("ERR_ONLY_IN_THREAD", interaction.id));
 		}
 
@@ -53,7 +46,9 @@ export const command: NeedleCommand = {
 			return interactionReply(interaction, getMessage("ERR_NO_EFFECT", interaction.id));
 		}
 
-		const hasManageThreadsPermissions = member.permissionsIn(channel).has(Permissions.FLAGS.MANAGE_THREADS, true);
+		const hasManageThreadsPermissions = member
+			.permissionsIn(channel)
+			.has(PermissionsBitField.Flags.ManageThreads, true);
 		if (hasManageThreadsPermissions) {
 			await archiveThread(channel);
 			return;
@@ -70,7 +65,7 @@ export const command: NeedleCommand = {
 
 		await archiveThread(channel);
 
-		async function archiveThread(thread: ThreadChannel): Promise<void> {
+		async function archiveThread(thread: ThreadChannel): ExecuteResult {
 			if (shouldArchiveImmediately(thread)) {
 				if (interaction.isButton()) {
 					await interaction.update({ content: interaction.message.content });

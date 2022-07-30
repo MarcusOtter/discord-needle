@@ -13,13 +13,21 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { SlashCommandBuilder } from "@discordjs/builders";
-import type { CommandInteraction, MessageComponentInteraction } from "discord.js";
+import type {
+	ChatInputCommandInteraction,
+	CommandInteraction,
+	InteractionResponse,
+	MessageComponentInteraction,
+	RESTPostAPIApplicationCommandsJSONBody,
+} from "discord.js";
+
+export type NeedleInteraction = ChatInputCommandInteraction | MessageComponentInteraction;
+export type ExecuteResult = Promise<InteractionResponse | undefined | void>;
 
 export interface NeedleCommand {
 	name: string;
 	shortHelpDescription: string;
 	longHelpDescription?: string;
-	getSlashCommandBuilder(): Promise<ReturnType<SlashCommandBuilder["toJSON"]>>;
-	execute(interaction: CommandInteraction | MessageComponentInteraction): Promise<void>;
+	getSlashCommandBuilder(): Promise<RESTPostAPIApplicationCommandsJSONBody>;
+	execute(interaction: NeedleInteraction): ExecuteResult;
 }
