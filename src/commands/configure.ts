@@ -20,6 +20,11 @@ import {
 	ChannelType,
 	type ChatInputCommandInteraction,
 	SlashCommandBuilder,
+	ModalBuilder,
+	TextInputBuilder,
+	TextInputStyle,
+	ActionRowBuilder,
+	type ModalActionRowComponentBuilder,
 } from "discord.js";
 import {
 	disableAutothreading,
@@ -112,7 +117,7 @@ export const command: NeedleCommand = {
 							.setName("archive-behavior")
 							.setDescription("What should happen when users close a thread?")
 							.addChoices(
-								{ name: "✅ Archive immediately (DEFAULT)", value: "immediately" },
+								{ name: "✅ Archive immediately  ← DEFAULT", value: "immediately" },
 								{ name: "⌛ Archive after 1 hour of inactivity", value: "slow" }
 							);
 					})
@@ -121,13 +126,25 @@ export const command: NeedleCommand = {
 							.setName("slowmode")
 							.setDescription("The default slowmode option for new threads")
 							.addChoices(
-								{ name: "Off (DEFAULT)", value: "0" },
+								{ name: "Off  ← DEFAULT", value: "0" },
 								{ name: "30 seconds", value: "30" },
 								{ name: "1 minute", value: "60" },
 								{ name: "5 minutes", value: "300" },
 								{ name: "15 minutes", value: "900" },
 								{ name: "1 hour", value: "3600" },
 								{ name: "6 hours", value: "21600" }
+							);
+					})
+					.addStringOption(option => {
+						return option
+							.setName("title-format")
+							.setDescription("The format of the thread title")
+							.addChoices(
+								{ name: "Username (yyyy-MM-dd)  ← DEFAULT", value: "usernameDate" },
+								{ name: "First 30 characters of message", value: "firstThirtyChars" },
+								{ name: "None (use Discord default)", value: "discordDefault" },
+								{ name: "First line of message", value: "firstLine" },
+								{ name: "Custom", value: "custom" }
 							);
 					})
 					.addStringOption(option => {
@@ -158,7 +175,9 @@ export const command: NeedleCommand = {
 			return interactionReply(interaction, getMessage("ERR_INSUFFICIENT_PERMS", interaction.id));
 		}
 
-		if (interaction.options.getSubcommand() === "default") {
+		const subcommand = interaction.options.getSubcommand();
+
+		if (subcommand === "default") {
 			const success = resetConfigToDefault(interaction.guild.id);
 			const message = success
 				? "Successfully reset the Needle configuration to the default."
@@ -167,9 +186,9 @@ export const command: NeedleCommand = {
 			return interactionReply(interaction, message, !success);
 		}
 
-		if (interaction.options.getSubcommand() === "emojis") return configureEmojis(interaction);
-		if (interaction.options.getSubcommand() === "message") return configureMessage(interaction);
-		if (interaction.options.getSubcommand() === "auto-threading") return configureAutothreading(interaction);
+		if (subcommand === "emojis") return configureEmojis(interaction);
+		if (subcommand === "message") return configureMessage(interaction);
+		if (subcommand === "auto-threading") return configureAutothreading(interaction);
 
 		return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
 	},
@@ -225,6 +244,7 @@ async function configureAutothreading(interaction: ChatInputCommandInteraction):
 	const archiveImmediately = interaction.options.getString("archive-behavior") !== "slow";
 	const includeBots = interaction.options.getBoolean("include-bots") ?? false;
 	const slowmode = parseInt(interaction.options.getString("slowmode") ?? "0");
+	const titleFormat = interaction.options.getString("title-format") ?? undefined;
 
 	if (!interaction.guild || !interaction.guildId) {
 		return interactionReply(interaction, getMessage("ERR_ONLY_IN_SERVER", interaction.id));
@@ -253,13 +273,28 @@ async function configureAutothreading(interaction: ChatInputCommandInteraction):
 	}
 
 	if (enabled) {
+		if (titleFormat === "custom") {
+			const modal = new ModalBuilder().setCustomId(command.name).setTitle("Set a custom title format");
+			const titleInput = new TextInputBuilder()
+				.setCustomId("title")
+				.setLabel("Title format")
+				.setMinLength(1)
+				.setRequired(true)
+				.setPlaceholder("Help thread for $USER at ($DATE)")
+				.setStyle(TextInputStyle.Short);
+			const row = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(titleInput);
+			modal.addComponents(row);
+			return interaction.showModal(modal);
+		}
+
 		const success = enableAutothreading(
 			interaction.guild,
 			channel.id,
 			includeBots,
 			archiveImmediately,
 			customMessage,
-			slowmode
+			slowmode,
+			titleFormat
 		);
 		return success
 			? interactionReply(interaction, `Updated auto-threading settings for <#${channel.id}>`, false)

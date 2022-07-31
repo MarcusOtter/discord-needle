@@ -93,7 +93,8 @@ export function enableAutothreading(
 	includeBots?: boolean,
 	archiveImmediately?: boolean,
 	messageContent?: string,
-	slowmode?: number
+	slowmode?: number,
+	titleFormat?: string
 ): boolean {
 	const config = getConfig(guild.id);
 	if (!config || !config.threadChannels) return false;
@@ -107,6 +108,7 @@ export function enableAutothreading(
 
 		if (messageContent !== undefined) config.threadChannels[index].messageContent = messageContent;
 		if (slowmode !== undefined) config.threadChannels[index].slowmode = slowmode;
+		if (titleFormat !== undefined) config.threadChannels[index].titleFormat = titleFormat;
 	} else {
 		config.threadChannels.push({
 			channelId,

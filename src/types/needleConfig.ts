@@ -40,4 +40,5 @@ export interface AutothreadChannelConfig {
 	messageContent?: string;
 	includeBots?: boolean;
 	slowmode?: number;
+	titleFormat?: string;
 }
