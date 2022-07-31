@@ -77,20 +77,9 @@ export const command: NeedleCommand = {
 			.setPlaceholder(titlePlaceholder)
 			.setStyle("SHORT");
 
-		const channelId = new TextInputComponent()
-			.setCustomId("threadId")
-			.setLabel("Thread ID (do not change)")
-			.setMinLength(18)
-			.setMaxLength(18)
-			.setRequired(true)
-			.setPlaceholder("Put it back! (Discord bug workaround)")
-			.setStyle("SHORT")
-			.setValue(interaction.channelId);
-
 		const row = new MessageActionRow<ModalActionRowComponent>().addComponents(titleInput);
-		const row2 = new MessageActionRow<ModalActionRowComponent>().addComponents(channelId);
 
-		modal.addComponents(row, row2);
+		modal.addComponents(row);
 
 		return interaction.showModal(modal);
 	},
@@ -100,22 +89,9 @@ export const command: NeedleCommand = {
 			return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
 		}
 
-		let thread = interaction.channel;
-		if (!thread) {
+		const thread = interaction.channel;
+		if (!thread || !thread.isThread()) {
 			return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
-		}
-
-		// Very ugly workaround because Discord's modals don't know where they were opened from
-		if (!thread?.isThread()) {
-			const threadId = interaction.fields.getTextInputValue("threadId");
-			const parent = await interaction.guild?.channels.fetch(thread.id);
-			if (!parent?.isText()) {
-				return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
-			}
-			thread = await parent.threads.fetch(threadId);
-			if (!thread) {
-				return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
-			}
 		}
 
 		const newThreadName = interaction.fields.getTextInputValue("title");
