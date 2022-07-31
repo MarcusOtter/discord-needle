@@ -13,76 +13,20 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { config } from "dotenv";
-config();
+import "dotenv/config";
+import NeedleBot from "./domain/NeedleBot";
+import license from "./license";
 
-import { ActivityType, Client, GatewayIntentBits } from "discord.js";
-import { getOrLoadAllCommands } from "./handlers/commandHandler";
-import { handleInteractionCreate } from "./handlers/interactionHandler";
-import { handleMessageCreate } from "./handlers/messageHandler";
-import { deleteConfigsFromUnknownServers, getApiToken, resetConfigToDefault } from "./helpers/configHelpers";
+console.log(license);
 
-console.log(`Needle, a Discord bot that declutters your server by creating threads
-Copyright (C) 2022  Marcus Otterström
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as published
-by the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-`);
+const bot = NeedleBot.getInstance();
 
 (async () => {
-	// Initial load of all commands
-	await getOrLoadAllCommands(false);
-
-	const sweepSettings = {
-		interval: 14400, // 4h
-		lifetime: 3600, // 1h
-	};
-
-	const CLIENT = new Client({
-		intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
-		shards: "auto",
-		presence: {
-			activities: [
-				{
-					type: ActivityType.Listening,
-					name: "/help",
-				},
-			],
-		},
-		sweepers: {
-			messages: sweepSettings,
-			threads: sweepSettings,
-		},
-	});
-
-	CLIENT.once("ready", () => {
-		console.log("Ready!");
-		deleteConfigsFromUnknownServers(CLIENT);
-	});
-
-	CLIENT.on("messageCreate", message => handleMessageCreate(message).catch(console.error));
-	CLIENT.on("interactionCreate", interaction => {
-		handleInteractionCreate(interaction).catch(console.error);
-	});
-	CLIENT.on("guildDelete", guild => {
-		resetConfigToDefault(guild.id);
-	});
-
-	CLIENT.login(getApiToken());
-
-	process.on("SIGINT", () => {
-		CLIENT.destroy();
-		console.log("Destroyed client");
-		process.exit(0);
-	});
+	await bot.registerListerners();
+	await bot.connect();
 })();
+
+process.on("SIGINT", async () => {
+	await bot.disconnect();
+	process.exit(0);
+});
