@@ -22,7 +22,8 @@ console.log(license);
 const bot = NeedleBot.getInstance();
 
 (async () => {
-	await bot.registerListerners();
+	await bot.registerCommands();
+	bot.registerEventListerners();
 	await bot.connect();
 })();
 

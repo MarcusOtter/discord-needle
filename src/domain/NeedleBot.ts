@@ -3,14 +3,20 @@ import { ActivityType, Client, GatewayIntentBits } from "discord.js";
 import { deleteConfigsFromUnknownServers, getApiToken, resetConfigToDefault } from "../helpers/configHelpers";
 import { handleMessageCreate } from "../handlers/messageHandler";
 import { handleInteractionCreate } from "../handlers/interactionHandler";
+import ICommandLoader from "./abstractions/ICommandLoader";
+import CommandLoader from "../implementations/CommandLoader";
 
 export default class NeedleBot {
 	private static instance?: NeedleBot;
 
+	private commandLoader: ICommandLoader;
+
 	private discordClient: Client;
 	private isConnected = false;
 
-	private constructor() {
+	private constructor(commandLoader: ICommandLoader) {
+		this.commandLoader = commandLoader;
+
 		const sweepSettings = {
 			interval: 14400, // 4h
 			lifetime: 3600, // 1h
@@ -36,7 +42,7 @@ export default class NeedleBot {
 
 	public static getInstance(): NeedleBot {
 		if (NeedleBot.instance === undefined) {
-			NeedleBot.instance = new NeedleBot();
+			NeedleBot.instance = this.createBot();
 		}
 
 		return NeedleBot.instance;
@@ -55,10 +61,11 @@ export default class NeedleBot {
 		console.log("Destroyed client");
 	}
 
-	public async registerListerners(): Promise<void> {
-		// Initial load of all commands
-		await getOrLoadAllCommands(false);
+	public async registerCommands(): Promise<void> {
+		this.commandLoader.loadCommands();
+	}
 
+	public registerEventListerners(): void {
 		this.discordClient.once("ready", () => {
 			console.log("Ready!");
 			deleteConfigsFromUnknownServers(this.discordClient);
@@ -71,5 +78,12 @@ export default class NeedleBot {
 		this.discordClient.on("guildDelete", guild => {
 			resetConfigToDefault(guild.id);
 		});
+	}
+
+	// Composition root
+	private static createBot(): NeedleBot {
+		const commandLoader = new CommandLoader("../commands/");
+
+		return new NeedleBot(commandLoader);
 	}
 }
