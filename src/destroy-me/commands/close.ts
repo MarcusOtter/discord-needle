@@ -14,9 +14,9 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { ChannelType, GuildMember, PermissionsBitField, SlashCommandBuilder, type ThreadChannel } from "discord.js";
-import { shouldArchiveImmediately } from "../helpers/configHelpers";
-import { interactionReply, getMessage, getThreadAuthor } from "../helpers/messageHelpers";
-import { setEmojiForNewThread } from "../helpers/threadHelpers";
+import { shouldArchiveImmediately } from "../configHelpers";
+import { interactionReply, getMessage, getThreadAuthor } from "../messageHelpers";
+import { setEmojiForNewThread } from "../threadHelpers";
 import type { ExecuteResult, NeedleCommand, NeedleInteraction } from "../types/needleCommand";
 
 export const command: NeedleCommand = {

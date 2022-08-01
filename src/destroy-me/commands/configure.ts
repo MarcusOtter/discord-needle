@@ -34,16 +34,10 @@ import {
 	resetConfigToDefault,
 	setEmojisEnabled,
 	setMessage,
-} from "../helpers/configHelpers";
-import {
-	interactionReply,
-	getMessage,
-	MessageKey,
-	isAutoThreadChannel,
-	addMessageContext,
-} from "../helpers/messageHelpers";
+} from "../configHelpers";
+import { interactionReply, getMessage, MessageKey, isAutoThreadChannel, addMessageContext } from "../messageHelpers";
 import type { ExecuteResult, NeedleCommand } from "../types/needleCommand";
-import { memberIsModerator } from "../helpers/permissionHelpers";
+import { memberIsModerator } from "../permissionHelpers";
 
 // Note:
 // The important messages of these commands should not be configurable

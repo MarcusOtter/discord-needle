@@ -1,22 +1,16 @@
-import { getOrLoadAllCommands } from "../handlers/commandHandler";
 import { ActivityType, Client, GatewayIntentBits } from "discord.js";
-import { deleteConfigsFromUnknownServers, getApiToken, resetConfigToDefault } from "../helpers/configHelpers";
-import { handleMessageCreate } from "../handlers/messageHandler";
-import { handleInteractionCreate } from "../handlers/interactionHandler";
-import ICommandLoader from "./abstractions/ICommandLoader";
-import CommandLoader from "../implementations/CommandLoader";
+import { deleteConfigsFromUnknownServers, getApiToken, resetConfigToDefault } from "./destroy-me/configHelpers";
+import { handleMessageCreate } from "./destroy-me/handlers/messageHandler";
+import { handleInteractionCreate } from "./destroy-me/handlers/interactionHandler";
+import CommandLoader from "./services/CommandLoader";
 
 export default class NeedleBot {
 	private static instance?: NeedleBot;
 
-	private commandLoader: ICommandLoader;
-
 	private discordClient: Client;
 	private isConnected = false;
 
-	private constructor(commandLoader: ICommandLoader) {
-		this.commandLoader = commandLoader;
-
+	private constructor() {
 		const sweepSettings = {
 			interval: 14400, // 4h
 			lifetime: 3600, // 1h
@@ -42,7 +36,7 @@ export default class NeedleBot {
 
 	public static getInstance(): NeedleBot {
 		if (NeedleBot.instance === undefined) {
-			NeedleBot.instance = this.createBot();
+			NeedleBot.instance = new NeedleBot();
 		}
 
 		return NeedleBot.instance;
@@ -62,7 +56,7 @@ export default class NeedleBot {
 	}
 
 	public async registerCommands(): Promise<void> {
-		this.commandLoader.loadCommands();
+		await CommandLoader.loadCommands();
 	}
 
 	public registerEventListerners(): void {
@@ -78,12 +72,5 @@ export default class NeedleBot {
 		this.discordClient.on("guildDelete", guild => {
 			resetConfigToDefault(guild.id);
 		});
-	}
-
-	// Composition root
-	private static createBot(): NeedleBot {
-		const commandLoader = new CommandLoader("../commands/");
-
-		return new NeedleBot(commandLoader);
 	}
 }

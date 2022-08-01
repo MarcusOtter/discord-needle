@@ -16,36 +16,36 @@ If not, see <https://www.gnu.org/licenses/>.
 import type { ChatInputCommandInteraction, MessageComponentInteraction } from "discord.js";
 import { promises } from "fs";
 import { resolve as pathResolve } from "path";
-import { getMessage, interactionReply } from "../helpers/messageHelpers";
+import { getMessage, interactionReply } from "../messageHelpers";
 import type { ExecuteResult, NeedleCommand } from "../types/needleCommand";
 
 const COMMANDS_PATH = pathResolve(__dirname, "../commands");
 
 let loadedCommands: NeedleCommand[] = [];
 
-export function handleCommandInteraction(interaction: ChatInputCommandInteraction): ExecuteResult {
-	const command = getCommand(interaction.commandName);
-	if (!command) return Promise.reject();
+// export function handleCommandInteraction(interaction: ChatInputCommandInteraction): ExecuteResult {
+// 	const command = getCommand(interaction.commandName);
+// 	if (!command) return Promise.reject();
 
-	try {
-		return command.execute(interaction);
-	} catch (error) {
-		console.error(error);
-		return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
-	}
-}
+// 	try {
+// 		return command.execute(interaction);
+// 	} catch (error) {
+// 		console.error(error);
+// 		return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
+// 	}
+// }
 
-export async function handleButtonClickedInteraction(interaction: MessageComponentInteraction): ExecuteResult {
-	const command = getCommand(interaction.customId);
-	if (!command) return Promise.reject();
+// export async function handleButtonClickedInteraction(interaction: MessageComponentInteraction): ExecuteResult {
+// 	const command = getCommand(interaction.customId);
+// 	if (!command) return Promise.reject();
 
-	try {
-		return command.execute(interaction);
-	} catch (error) {
-		console.error(error);
-		return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
-	}
-}
+// 	try {
+// 		return command.execute(interaction);
+// 	} catch (error) {
+// 		console.error(error);
+// 		return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
+// 	}
+// }
 
 export async function getOrLoadAllCommands(allowCache = true): Promise<NeedleCommand[]> {
 	if (loadedCommands.length > 0 && allowCache) return loadedCommands;
@@ -65,18 +65,18 @@ export async function getOrLoadAllCommands(allowCache = true): Promise<NeedleCom
 	return output;
 }
 
-export function getAllLoadedCommands(): NeedleCommand[] {
-	if (loadedCommands.length === 0) {
-		console.error('No commands found. Did you forget to invoke "getOrLoadAllCommands()"?');
-	}
+// export function getAllLoadedCommands(): NeedleCommand[] {
+// 	if (loadedCommands.length === 0) {
+// 		console.error('No commands found. Did you forget to invoke "getOrLoadAllCommands()"?');
+// 	}
 
-	return loadedCommands;
-}
+// 	return loadedCommands;
+// }
 
-export function getCommand(commandName: string): NeedleCommand | undefined {
-	if (loadedCommands.length === 0) {
-		console.error('No commands found. Did you forget to invoke "getOrLoadAllCommands()"?');
-	}
+// export function getCommand(commandName: string): NeedleCommand | undefined {
+// 	if (loadedCommands.length === 0) {
+// 		console.error('No commands found. Did you forget to invoke "getOrLoadAllCommands()"?');
+// 	}
 
-	return loadedCommands.find(command => command.name === commandName);
-}
+// 	return loadedCommands.find(command => command.name === commandName);
+// }

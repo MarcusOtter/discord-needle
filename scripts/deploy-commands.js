@@ -21,8 +21,8 @@ require("dotenv").config();
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord.js");
 
-const { getOrLoadAllCommands } = require("../dist/handlers/commandHandler");
 const { getApiToken, getGuildId, getClientId } = require("../dist/helpers/configHelpers");
+const CommandLoader = require("../dist/implementations/CommandLoader").default;
 
 const API_TOKEN = getApiToken();
 const CLIENT_ID = getClientId();
@@ -71,7 +71,8 @@ async function getSlashCommandBuilders() {
 		return [];
 	}
 
-	const allNeedleCommands = await getOrLoadAllCommands();
+	const commandLoader = new CommandLoader();
+	const allNeedleCommands = await commandLoader.loadCommands();
 	const allSlashCommandBuilders = [];
 	for (const command of allNeedleCommands) {
 		const builder = await command.getSlashCommandBuilder();

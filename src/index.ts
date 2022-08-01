@@ -14,7 +14,7 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 import "dotenv/config";
-import NeedleBot from "./domain/NeedleBot";
+import NeedleBot from "./NeedleBot";
 import license from "./license";
 
 console.log(license);

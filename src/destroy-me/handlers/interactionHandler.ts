@@ -14,9 +14,9 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 import type { Interaction } from "discord.js";
-import { resetMessageContext, addMessageContext } from "../helpers/messageHelpers";
+import { resetMessageContext, addMessageContext } from "../messageHelpers";
+import CommandLoader from "../../services/CommandLoader";
 import { ExecuteResult } from "../types/needleCommand";
-import { handleButtonClickedInteraction, handleCommandInteraction } from "./commandHandler";
 
 export async function handleInteractionCreate(interaction: Interaction): ExecuteResult {
 	addMessageContext(interaction.id, {
@@ -25,8 +25,23 @@ export async function handleInteractionCreate(interaction: Interaction): Execute
 		channel: interaction.channel ?? undefined,
 	});
 
-	if (interaction.isChatInputCommand()) await handleCommandInteraction(interaction);
-	else if (interaction.isButton()) await handleButtonClickedInteraction(interaction);
+	// TODO: clean up
+	let command;
+	if (interaction.isChatInputCommand()) {
+		command = CommandLoader.getCommand(interaction.commandName);
+		try {
+			await command?.executeFromChatInput(interaction);
+		} catch (e) {
+			console.error(e);
+		}
+	} else if (interaction.isButton()) {
+		command = CommandLoader.getCommand(interaction.customId);
+		try {
+			await command?.executeFromButtonClick(interaction);
+		} catch (e) {
+			console.error(e);
+		}
+	}
 
 	resetMessageContext(interaction.id);
 }

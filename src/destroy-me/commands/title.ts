@@ -20,8 +20,8 @@ import {
 	PermissionsBitField,
 	SlashCommandBuilder,
 } from "discord.js";
-import { interactionReply, getMessage, getThreadAuthor } from "../helpers/messageHelpers";
-import { setThreadName } from "../helpers/threadHelpers";
+import { interactionReply, getMessage, getThreadAuthor } from "../messageHelpers";
+import { setThreadName } from "../threadHelpers";
 import type { ExecuteResult, NeedleCommand } from "../types/needleCommand";
 
 export const command: NeedleCommand = {

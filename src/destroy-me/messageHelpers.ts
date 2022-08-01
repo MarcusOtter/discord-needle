@@ -24,9 +24,9 @@ import {
 	type InteractionResponse,
 } from "discord.js";
 
-import type { MessageContext } from "../types/messageContext";
-import type { NeedleInteraction } from "../types/needleCommand";
-import type { NeedleConfig } from "../types/needleConfig";
+import type { MessageContext } from "./types/messageContext";
+import type { NeedleInteraction } from "./types/needleCommand";
+import type { NeedleConfig } from "./types/needleConfig";
 import { getConfig } from "./configHelpers";
 
 const contexts: Map<Snowflake, MessageContext> = new Map();
