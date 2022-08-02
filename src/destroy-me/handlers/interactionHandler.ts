@@ -30,18 +30,19 @@ export async function handleInteractionCreate(interaction: Interaction): Execute
 	if (interaction.isChatInputCommand()) {
 		command = CommandLoader.getCommand(interaction.commandName);
 		try {
-			await command?.executeFromChatInput(interaction);
-		} catch (e) {
-			console.error(e);
-		}
-	} else if (interaction.isButton()) {
-		command = CommandLoader.getCommand(interaction.customId);
-		try {
-			await command?.executeFromButtonClick(interaction);
+			await command?.execute(interaction);
 		} catch (e) {
 			console.error(e);
 		}
 	}
+	// } else if (interaction.isButton()) {
+	// 	command = CommandLoader.getCommand(interaction.customId);
+	// 	try {
+	// 		await command?.execute(interaction);
+	// 	} catch (e) {
+	// 		console.error(e);
+	// 	}
+	// }
 
 	resetMessageContext(interaction.id);
 }

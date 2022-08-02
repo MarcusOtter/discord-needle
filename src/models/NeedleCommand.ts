@@ -1,9 +1,4 @@
-import type {
-	ChatInputCommandInteraction,
-	MessageComponentInteraction,
-	ModalSubmitInteraction,
-	RESTPostAPIApplicationCommandsJSONBody,
-} from "discord.js";
+import type { ChatInputCommandInteraction, RESTPostAPIApplicationCommandsJSONBody } from "discord.js";
 
 export default abstract class NeedleCommand {
 	private name: string;
@@ -29,7 +24,5 @@ export default abstract class NeedleCommand {
 	}
 
 	public abstract getSlashCommandBuilder(): Promise<RESTPostAPIApplicationCommandsJSONBody>;
-	public abstract executeFromChatInput(interaction: ChatInputCommandInteraction): Promise<void>;
-	public abstract executeFromButtonClick(interaction: MessageComponentInteraction): Promise<void>;
-	public abstract executeFromModalSubmit(interaction: ModalSubmitInteraction): Promise<void>;
+	public abstract execute(interaction: ChatInputCommandInteraction): Promise<void>;
 }

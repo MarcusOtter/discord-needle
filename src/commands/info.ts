@@ -11,7 +11,7 @@ class InfoCommand extends NeedleCommand {
 		throw new Error("Not supported");
 	}
 
-	public async executeFromChatInput(interaction: ValidCommandInteraction): Promise<void> {
+	public async execute(interaction: ValidCommandInteraction): Promise<void> {
 		const info = await this.getInformationEmbed(interaction.client);
 		await interaction.reply({ content: info });
 		// return this.sendInformationEmbed(interaction.channel);
@@ -26,7 +26,7 @@ class InfoCommand extends NeedleCommand {
 	}
 
 	private async getInformationEmbed(client: Client): Promise<string> {
-		return "I am in " + client.guilds.cache.size + " servers";
+		return "I am in " + client.guilds.cache.size + " servers serving " + client.users.cache.size + " users.";
 	}
 }
 
