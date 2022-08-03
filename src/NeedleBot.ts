@@ -1,45 +1,20 @@
-import { ActivityType, Client, GatewayIntentBits } from "discord.js";
-import { deleteConfigsFromUnknownServers, getApiToken, resetConfigToDefault } from "./destroy-me/configHelpers";
-import { handleMessageCreate } from "./destroy-me/handlers/messageHandler";
-import { handleInteractionCreate } from "./destroy-me/handlers/interactionHandler";
-import CommandLoader from "./services/CommandLoader";
+import { Client } from "discord.js";
+import { getApiToken } from "./destroy-me/configHelpers";
+import CommandsService from "./services/CommandsService";
+import NeedleCommand from "./models/NeedleCommand";
+import EventListenersService from "./services/EventListenersService";
 
 export default class NeedleBot {
-	private static instance?: NeedleBot;
-
 	private discordClient: Client;
+	private commandsService: CommandsService;
+	private eventsService: EventListenersService;
+
 	private isConnected = false;
 
-	private constructor() {
-		const sweepSettings = {
-			interval: 14400, // 4h
-			lifetime: 3600, // 1h
-		};
-
-		this.discordClient = new Client({
-			intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
-			shards: "auto",
-			presence: {
-				activities: [
-					{
-						type: ActivityType.Listening,
-						name: "/help",
-					},
-				],
-			},
-			sweepers: {
-				messages: sweepSettings,
-				threads: sweepSettings,
-			},
-		});
-	}
-
-	public static getInstance(): NeedleBot {
-		if (NeedleBot.instance === undefined) {
-			NeedleBot.instance = new NeedleBot();
-		}
-
-		return NeedleBot.instance;
+	public constructor(discordClient: Client, commandsService: CommandsService, eventsService: EventListenersService) {
+		this.discordClient = discordClient;
+		this.commandsService = commandsService;
+		this.eventsService = eventsService;
 	}
 
 	public async connect(): Promise<void> {
@@ -56,21 +31,42 @@ export default class NeedleBot {
 	}
 
 	public async registerCommands(): Promise<void> {
-		await CommandLoader.loadCommands();
+		await this.commandsService.loadCommands(true, this);
 	}
 
-	public registerEventListerners(): void {
-		this.discordClient.once("ready", () => {
-			console.log("Ready!");
-			deleteConfigsFromUnknownServers(this.discordClient);
-		});
+	public getClient(): Client {
+		return this.discordClient;
+	}
 
-		this.discordClient.on("messageCreate", message => handleMessageCreate(message).catch(console.error));
-		this.discordClient.on("interactionCreate", interaction => {
-			handleInteractionCreate(interaction).catch(console.error);
-		});
-		this.discordClient.on("guildDelete", guild => {
-			resetConfigToDefault(guild.id);
-		});
+	public async getCommand(commandName: string): Promise<NeedleCommand | undefined> {
+		return this.commandsService.getCommand(commandName);
+	}
+
+	public async registerEventListerners(): Promise<void> {
+		const eventListeners = await this.eventsService.loadEventListeners(true, this);
+
+		for (const listener of eventListeners) {
+			const eventName = listener.getEventName();
+			const listenerType = listener.getListenerType();
+
+			if (listenerType === "on") {
+				this.discordClient.on(eventName, listener.handleEventEmitted);
+			} else if (listenerType === "once") {
+				this.discordClient.once(eventName, listener.handleEventEmitted);
+			}
+		}
+
+		// this.discordClient.once("ready", () => {
+		// 	console.log("Ready!");
+		// 	deleteConfigsFromUnknownServers(this.discordClient);
+		// });
+
+		// this.discordClient.on("messageCreate", message => handleMessageCreate(message).catch(console.error));
+		// this.discordClient.on("interactionCreate", interaction => {
+		// 	handleInteractionCreate(interaction).catch(console.error);
+		// });
+		// this.discordClient.on("guildDelete", guild => {
+		// 	resetConfigToDefault(guild.id);
+		// });
 	}
 }

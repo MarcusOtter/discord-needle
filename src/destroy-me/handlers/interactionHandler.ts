@@ -15,7 +15,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 import type { Interaction } from "discord.js";
 import { resetMessageContext, addMessageContext } from "../messageHelpers";
-import CommandLoader from "../../services/CommandLoader";
+import CommandsService from "../../services/CommandsService";
 import { ExecuteResult } from "../types/needleCommand";
 
 export async function handleInteractionCreate(interaction: Interaction): ExecuteResult {
@@ -26,15 +26,15 @@ export async function handleInteractionCreate(interaction: Interaction): Execute
 	});
 
 	// TODO: clean up
-	let command;
-	if (interaction.isChatInputCommand()) {
-		command = CommandLoader.getCommand(interaction.commandName);
-		try {
-			await command?.execute(interaction);
-		} catch (e) {
-			console.error(e);
-		}
-	}
+	// let command;
+	// if (interaction.isChatInputCommand()) {
+	// 	command = CommandsService.getCommand(interaction.commandName);
+	// 	try {
+	// 		await command?.execute(interaction);
+	// 	} catch (e) {
+	// 		console.error(e);
+	// 	}
+	// }
 	// } else if (interaction.isButton()) {
 	// 	command = CommandLoader.getCommand(interaction.customId);
 	// 	try {

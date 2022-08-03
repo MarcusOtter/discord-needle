@@ -14,16 +14,15 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 import "dotenv/config";
-import NeedleBot from "./NeedleBot";
 import license from "./license";
+import ObjectFactory from "./ObjectFactory";
 
 console.log(license);
-
-const bot = NeedleBot.getInstance();
+const bot = ObjectFactory.createNeedleBot();
 
 (async () => {
 	await bot.registerCommands();
-	bot.registerEventListerners();
+	await bot.registerEventListerners();
 	await bot.connect();
 })();
 

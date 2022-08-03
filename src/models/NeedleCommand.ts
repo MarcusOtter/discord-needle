@@ -1,28 +1,16 @@
-import type { ChatInputCommandInteraction, RESTPostAPIApplicationCommandsJSONBody } from "discord.js";
+import type { Client, RESTPostAPIApplicationCommandsJSONBody } from "discord.js";
+import type NeedleBot from "../NeedleBot";
+import type InteractionContext from "./InteractionContext";
 
 export default abstract class NeedleCommand {
-	private name: string;
-	private shortDescription: string;
-	private longDescription: string;
+	protected bot: NeedleBot;
+	protected client: Client;
 
-	constructor(name: string, shortDescription: string, longDescription: string) {
-		this.name = name;
-		this.shortDescription = shortDescription;
-		this.longDescription = longDescription;
-	}
-
-	public getName(): string {
-		return this.name;
-	}
-
-	public getShortDescription(): string {
-		return this.shortDescription;
-	}
-
-	public getLongDescription(): string {
-		return this.longDescription;
+	constructor(bot: NeedleBot) {
+		this.bot = bot;
+		this.client = bot.getClient();
 	}
 
 	public abstract getSlashCommandBuilder(): Promise<RESTPostAPIApplicationCommandsJSONBody>;
-	public abstract execute(interaction: ChatInputCommandInteraction): Promise<void>;
+	public abstract execute(context: InteractionContext): Promise<void>;
 }

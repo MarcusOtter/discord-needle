@@ -1,35 +1,38 @@
-import { Client, RESTPostAPIApplicationCommandsJSONBody, SlashCommandBuilder, TextBasedChannel } from "discord.js";
-import type { ValidCommandInteraction } from "../validators/InteractionValidator";
+import { type RESTPostAPIApplicationCommandsJSONBody, SlashCommandBuilder } from "discord.js";
 import NeedleCommand from "../models/NeedleCommand";
+import type InteractionContext from "../models/InteractionContext";
+import type NeedleBot from "../NeedleBot";
+import type InformationService from "../services/InformationService";
+import ObjectFactory from "../ObjectFactory";
 
-class InfoCommand extends NeedleCommand {
-	public executeFromModalSubmit(): Promise<void> {
-		throw new Error("Not supported");
+export default class InfoCommand extends NeedleCommand {
+	private infoService: InformationService;
+
+	constructor(bot: NeedleBot) {
+		super(bot);
+		this.infoService = ObjectFactory.createInformationService();
 	}
 
-	public executeFromButtonClick(): Promise<void> {
-		throw new Error("Not supported");
+	public async getSlashCommandBuilder(): Promise<RESTPostAPIApplicationCommandsJSONBody> {
+		return new SlashCommandBuilder()
+			.setName("info")
+			.setDescription("Get information about Needle")
+			.setDMPermission(true)
+			.toJSON();
 	}
 
-	public async execute(interaction: ValidCommandInteraction): Promise<void> {
-		const info = await this.getInformationEmbed(interaction.client);
+	public async execute({ interaction }: InteractionContext): Promise<void> {
+		const info = await this.getInformationEmbed();
 		await interaction.reply({ content: info });
 		// return this.sendInformationEmbed(interaction.channel);
 	}
 
-	public async getSlashCommandBuilder(): Promise<RESTPostAPIApplicationCommandsJSONBody> {
-		const builder = new SlashCommandBuilder()
-			.setName(this.getName())
-			.setDescription(this.getShortDescription())
-			.toJSON();
-		return builder;
-	}
+	// TODO: Make actual embed
+	private async getInformationEmbed(): Promise<string> {
+		const serverCount = this.infoService.getServerCount();
+		const userCount = this.infoService.getUserCount();
+		const ping = this.infoService.getWebSocketPing();
 
-	private async getInformationEmbed(client: Client): Promise<string> {
-		return "I am in " + client.guilds.cache.size + " servers serving " + client.users.cache.size + " users.";
+		return `I am serving ${userCount} users across ${serverCount} servers.\nPing: ${ping}ms`;
 	}
 }
-
-const command = new InfoCommand("info", "blabla", "blablabla");
-
-export default command;

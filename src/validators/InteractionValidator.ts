@@ -8,6 +8,8 @@ export class InteractionValidator {
 
 export interface ValidCommandInteraction extends ChatInputCommandInteraction {
 	channel: TextBasedChannel;
+
+	isChatInput(): this is ChatInputCommandInteraction;
 }
 
 // if (!InteractionValidator.isValidCommand(interaction)) return;
