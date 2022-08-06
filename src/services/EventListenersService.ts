@@ -1,4 +1,4 @@
-import { importJsFilesInDirectory } from "../helpers/fileHelpers";
+import { importClassesInDirectory } from "../helpers/fileHelpers";
 import { resolve as pathResolve } from "path";
 import type NeedleEventListener from "../models/NeedleEventListener";
 import type { ClientEvents } from "discord.js";
@@ -14,9 +14,13 @@ export default class EventListenersService {
 	): Promise<NeedleEventListener<keyof ClientEvents>[]> {
 		if (!skipCache && this.eventCache.length > 0) return this.eventCache;
 
-		const events = await importJsFilesInDirectory<NeedleEventListener<keyof ClientEvents>>(this.directoryPath, bot);
+		const events = await importClassesInDirectory<typeof NeedleEventListener<keyof ClientEvents>>(
+			this.directoryPath
+		);
 
-		this.eventCache = Array.from(events.values());
+		this.eventCache = Array.from(events.values()).map(
+			(x, i) => new x(bot, Array.from(events.keys())[i] as keyof ClientEvents)
+		);
 		return this.eventCache;
 	}
 }

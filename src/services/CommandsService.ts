@@ -1,4 +1,4 @@
-import { importJsFilesInDirectory } from "../helpers/fileHelpers";
+import { importClassesInDirectory } from "../helpers/fileHelpers";
 import { resolve as pathResolve } from "path";
 import type NeedleCommand from "../models/NeedleCommand";
 import NeedleBot from "../NeedleBot";
@@ -10,9 +10,8 @@ export default class CommandsService {
 	public async loadCommands(skipCache = false, bot: NeedleBot): Promise<NeedleCommand[]> {
 		if (!skipCache && this.commandCache.length > 0) return this.commandCache;
 
-		const commands = await importJsFilesInDirectory<NeedleCommand>(this.directoryPath, bot);
-
-		this.commandCache = Array.from(commands.values());
+		const commands = await importClassesInDirectory<typeof NeedleCommand>(this.directoryPath);
+		this.commandCache = Array.from(commands.values()).map(x => new x(bot));
 		return this.commandCache;
 	}
 
