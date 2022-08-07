@@ -22,7 +22,7 @@ const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord.js");
 
 const { getApiToken, getGuildId, getClientId } = require("../dist/helpers/configHelpers");
-const CommandLoader = require("../dist/implementations/CommandLoader").default;
+const CommandsService = require("../dist/services/CommandsService").default;
 
 const API_TOKEN = getApiToken();
 const CLIENT_ID = getClientId();
@@ -71,7 +71,7 @@ async function getSlashCommandBuilders() {
 		return [];
 	}
 
-	const commandLoader = new CommandLoader();
+	const commandLoader = new CommandsService();
 	const allNeedleCommands = await commandLoader.loadCommands();
 	const allSlashCommandBuilders = [];
 	for (const command of allNeedleCommands) {

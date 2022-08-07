@@ -1,4 +1,4 @@
-import { type RESTPostAPIApplicationCommandsJSONBody, SlashCommandBuilder, type ClientEvents } from "discord.js";
+import { type RESTPostAPIApplicationCommandsJSONBody, SlashCommandBuilder } from "discord.js";
 import NeedleCommand from "../models/NeedleCommand";
 import type InteractionContext from "../models/InteractionContext";
 import type NeedleBot from "../NeedleBot";
@@ -9,7 +9,7 @@ import { plural } from "../helpers/stringHelpers";
 export default class InfoCommand extends NeedleCommand {
 	private infoService: InformationService;
 
-	constructor(name: keyof ClientEvents, bot: NeedleBot) {
+	constructor(name: "info", bot: NeedleBot) {
 		super(name, bot);
 		this.infoService = ObjectFactory.createInformationService();
 	}
@@ -25,7 +25,6 @@ export default class InfoCommand extends NeedleCommand {
 	public async execute({ interaction }: InteractionContext): Promise<void> {
 		const info = await this.getInformationEmbed();
 		await interaction.reply({ content: info });
-		// return this.sendInformationEmbed(interaction.channel);
 	}
 
 	// TODO: Make actual embed

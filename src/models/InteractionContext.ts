@@ -1,5 +1,5 @@
+import { ValidChatInputCommandInteraction } from "../helpers/validationHelpers";
 import type NeedleBot from "../NeedleBot";
-import type { ValidChatInputCommandInteraction } from "../validators/InteractionValidator";
 
 export default class InteractionContext {
 	public bot: NeedleBot;
