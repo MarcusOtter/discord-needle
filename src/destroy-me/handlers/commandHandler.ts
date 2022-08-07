@@ -16,7 +16,7 @@ If not, see <https://www.gnu.org/licenses/>.
 import type { ChatInputCommandInteraction, MessageComponentInteraction } from "discord.js";
 import { promises } from "fs";
 import { resolve as pathResolve } from "path";
-import { getMessage, interactionReply } from "../messageHelpers";
+import { getMessage, interactionReply } from "../helpers/messageHelpers";
 import type { ExecuteResult, NeedleCommand } from "../types/needleCommand";
 
 const COMMANDS_PATH = pathResolve(__dirname, "../commands");

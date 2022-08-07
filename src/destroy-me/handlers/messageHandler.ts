@@ -26,7 +26,7 @@ import {
 	ChannelType,
 	ButtonStyle,
 } from "discord.js";
-import { emojisEnabled, getConfig, includeBotsForAutothread, getSlowmodeSeconds } from "../configHelpers";
+import { emojisEnabled, getConfig, includeBotsForAutothread, getSlowmodeSeconds } from "../helpers/configHelpers";
 import {
 	getMessage,
 	resetMessageContext,
@@ -35,8 +35,8 @@ import {
 	getHelpButton,
 	replaceMessageVariables,
 	getThreadAuthor,
-} from "../messageHelpers";
-import { getRequiredPermissions } from "../permissionHelpers";
+} from "../helpers/messageHelpers";
+import { getRequiredPermissions } from "../helpers/permissionHelpers";
 import { wait } from "../../helpers/promiseHelpers";
 
 export async function handleMessageCreate(message: Message): Promise<void> {

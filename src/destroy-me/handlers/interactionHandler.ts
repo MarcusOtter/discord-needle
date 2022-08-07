@@ -14,7 +14,7 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 import type { Interaction } from "discord.js";
-import { resetMessageContext, addMessageContext } from "../messageHelpers";
+import { resetMessageContext, addMessageContext } from "../helpers/messageHelpers";
 import CommandsService from "../../services/CommandsService";
 import { ExecuteResult } from "../types/needleCommand";
 
