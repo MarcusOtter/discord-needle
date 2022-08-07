@@ -2,31 +2,37 @@ import ListenerRunType from "../models/enums/ListenerRunType";
 import NeedleEventListener from "../models/NeedleEventListener";
 import type { ClientEvents } from "discord.js";
 import InteractionContext from "../models/InteractionContext";
-import { isValidChatInputCommand } from "../helpers/validationHelpers";
+import NeedleBot from "../NeedleBot";
+import CommandExecutorService from "../services/CommandExecutorService";
+import ObjectFactory from "../ObjectFactory";
 
-export default class ReadyEventListener extends NeedleEventListener {
-	public getListenerType(): ListenerRunType {
+export default class InteractionCreateListener extends NeedleEventListener {
+	private readonly commandExecutor: CommandExecutorService;
+
+	constructor(name: keyof ClientEvents, bot: NeedleBot) {
+		super(name, bot);
+		this.commandExecutor = ObjectFactory.createCommandExecutorService();
+	}
+
+	public getRunType(): ListenerRunType {
 		return ListenerRunType.EveryTime;
 	}
 
-	public async handleEventEmitted(...[interaction]: ClientEvents["interactionCreate"]): Promise<void> {
+	public async onEmitted(...[interaction]: ClientEvents["interactionCreate"]): Promise<void> {
 		// TODO: Add message context to InteractionContext maybe
 
-		if (isValidChatInputCommand(interaction)) {
-			const command = await this.bot.getCommand(interaction.commandName);
+		if (interaction.isChatInputCommand()) {
+			const command = this.bot.getCommand(interaction.commandName);
 			const context = new InteractionContext(this.bot, interaction);
-			try {
-				return await command?.execute(context);
-			} catch (e) {
-				// TODO: Button to support server and bug report
-				interaction.reply({
-					content: "Something went wrong with this command, please try again later.",
-					ephemeral: true,
-				});
-				throw e;
-			}
+			await this.commandExecutor.execute(command, context);
 		}
 
-		// TODO: Other interactions
+		if (interaction.isButton()) {
+			const button = this.bot.getButton(interaction.customId);
+			const context = new InteractionContext(this.bot, interaction);
+			await button?.onPressed(context);
+		}
+
+		// TODO: Modal submit interaction
 	}
 }

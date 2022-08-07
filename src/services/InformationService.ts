@@ -1,22 +1,21 @@
-import type { Client } from "discord.js";
 import type NeedleBot from "../NeedleBot";
 
 export default class InformationService {
-	private client: Client;
+	private readonly bot: NeedleBot;
 
 	constructor(bot: NeedleBot) {
-		this.client = bot.getClient();
+		this.bot = bot;
 	}
 
 	public getServerCount(): number {
-		return this.client.guilds.cache.size;
+		return this.bot.client.guilds.cache.size;
 	}
 
 	public getUserCount(): number {
-		return this.client.guilds.cache.reduce((acc, guild) => acc + guild.memberCount, 0);
+		return this.bot.client.guilds.cache.reduce((acc, guild) => acc + guild.memberCount, 0);
 	}
 
 	public getWebSocketPing(): number {
-		return Math.round(this.client.ws.ping);
+		return Math.round(this.bot.client.ws.ping);
 	}
 }

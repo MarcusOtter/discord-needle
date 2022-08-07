@@ -1,62 +1,78 @@
-import { Client } from "discord.js";
+import type { Client, ClientEvents } from "discord.js";
 import { getApiToken } from "./destroy-me/helpers/configHelpers";
-import CommandsService from "./services/CommandsService";
-import NeedleCommand from "./models/NeedleCommand";
-import EventListenersService from "./services/EventListenersService";
+import type NeedleCommand from "./models/NeedleCommand";
 import ListenerRunType from "./models/enums/ListenerRunType";
+import type NeedleButton from "./models/NeedleButton";
+import type DynamicImportService from "./services/DynamicImportService";
+import type NeedleEventListener from "./models/NeedleEventListener";
 
 export default class NeedleBot {
-	private discordClient: Client;
-	private commandsService: CommandsService;
-	private eventsService: EventListenersService;
+	public readonly client: Client;
+
+	private commandsService: DynamicImportService<typeof NeedleCommand>;
+	private eventsService: DynamicImportService<typeof NeedleEventListener>;
+	private buttonsService: DynamicImportService<typeof NeedleButton>;
 
 	private isConnected = false;
 
-	public constructor(discordClient: Client, commandsService: CommandsService, eventsService: EventListenersService) {
-		this.discordClient = discordClient;
+	public constructor(
+		discordClient: Client,
+		commandsService: DynamicImportService<typeof NeedleCommand>,
+		eventsService: DynamicImportService<typeof NeedleEventListener>,
+		buttonsService: DynamicImportService<typeof NeedleButton>
+	) {
+		this.client = discordClient;
+
 		this.commandsService = commandsService;
 		this.eventsService = eventsService;
+		this.buttonsService = buttonsService;
 	}
 
 	public async connect(): Promise<void> {
 		if (this.isConnected) return;
 
-		await this.discordClient.login(getApiToken());
+		await this.client.login(getApiToken());
 		this.isConnected = true;
 	}
 
 	public async disconnect(): Promise<void> {
-		this.discordClient?.destroy();
+		this.client?.destroy();
 		this.isConnected = false;
 		console.log("Destroyed client");
 	}
 
 	public async registerCommands(): Promise<void> {
-		await this.commandsService.loadCommands(true, this);
+		await this.commandsService.load(true);
 	}
 
-	public getClient(): Client {
-		return this.discordClient;
+	public async registerButtons(): Promise<void> {
+		await this.buttonsService.load(true);
 	}
 
-	public async getCommand(commandName: string): Promise<NeedleCommand | undefined> {
-		return this.commandsService.getCommand(commandName);
+	public getCommand(commandName: string): NeedleCommand | undefined {
+		const Command = this.commandsService.get(commandName);
+		if (!Command) return;
+
+		return new Command(commandName, this);
 	}
 
-	public async registerEventListerners(): Promise<void> {
-		const eventListeners = await this.eventsService.loadEventListeners(true, this);
+	public getButton(customId: string): NeedleButton | undefined {
+		const Button = this.buttonsService.get(customId);
+		if (!Button) return;
 
-		for (const listener of eventListeners) {
-			const listenerType = listener.getListenerType();
+		return new Button(customId, this);
+	}
 
-			if (listenerType === ListenerRunType.EveryTime) {
-				this.discordClient.on(listener.name, (...args) =>
-					listener.handleEventEmitted(...args).catch(this.handleError)
-				);
-			} else if (listenerType === ListenerRunType.OnlyOnce) {
-				this.discordClient.once(listener.name, (...args) =>
-					listener.handleEventEmitted(...args).catch(this.handleError)
-				);
+	public async registerEventListeners(): Promise<void> {
+		const importedListeners = await this.eventsService.load(true);
+
+		for (const { fileName, Class } of importedListeners) {
+			const listener = new Class(fileName as keyof ClientEvents, this);
+
+			if (listener.getRunType() === ListenerRunType.EveryTime) {
+				this.client.on(listener.name, (...args) => listener.onEmitted(...args).catch(this.handleError));
+			} else if (listener.getRunType() === ListenerRunType.OnlyOnce) {
+				this.client.once(listener.name, (...args) => listener.onEmitted(...args).catch(this.handleError));
 			}
 		}
 

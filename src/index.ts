@@ -22,7 +22,8 @@ const bot = ObjectFactory.createNeedleBot();
 
 (async () => {
 	await bot.registerCommands();
-	await bot.registerEventListerners();
+	await bot.registerButtons();
+	await bot.registerEventListeners();
 	await bot.connect();
 })();
 

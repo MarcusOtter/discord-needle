@@ -22,7 +22,9 @@ export default class InfoCommand extends NeedleCommand {
 			.toJSON();
 	}
 
-	public async execute({ interaction }: InteractionContext): Promise<void> {
+	public async onExecuted({ interaction }: InteractionContext): Promise<void> {
+		if (!interaction.isCommand()) return;
+
 		const info = await this.getInformationEmbed();
 		await interaction.reply({ content: info });
 	}

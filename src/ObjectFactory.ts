@@ -1,7 +1,10 @@
 import { ActivityType, Client, GatewayIntentBits } from "discord.js";
+import type NeedleButton from "./models/NeedleButton";
+import type NeedleCommand from "./models/NeedleCommand";
+import type NeedleEventListener from "./models/NeedleEventListener";
 import NeedleBot from "./NeedleBot";
-import CommandsService from "./services/CommandsService";
-import EventListenersService from "./services/EventListenersService";
+import CommandExecutorService from "./services/CommandExecutorService";
+import DynamicImportService from "./services/DynamicImportService";
 import InformationService from "./services/InformationService";
 
 // This class acts as a composition root.
@@ -18,13 +21,14 @@ export default class ObjectFactory {
 
 	public static createNeedleBot(): NeedleBot {
 		if (this.bot) {
-			throw new Error("You should only create the bot once.");
+			throw new Error("You should only create the bot once");
 		}
 
 		this.bot = new NeedleBot(
 			ObjectFactory.createDiscordClient(),
 			ObjectFactory.createCommandsService(),
-			ObjectFactory.createEventListenersService()
+			ObjectFactory.createEventListenersService(),
+			ObjectFactory.createButtonsService()
 		);
 
 		return this.bot;
@@ -32,6 +36,10 @@ export default class ObjectFactory {
 
 	public static createInformationService(): InformationService {
 		return new InformationService(this.bot);
+	}
+
+	public static createCommandExecutorService(): CommandExecutorService {
+		return new CommandExecutorService();
 	}
 
 	private static createDiscordClient(): Client {
@@ -58,11 +66,15 @@ export default class ObjectFactory {
 		});
 	}
 
-	private static createCommandsService(): CommandsService {
-		return new CommandsService();
+	private static createCommandsService(): DynamicImportService<typeof NeedleCommand> {
+		return new DynamicImportService<typeof NeedleCommand>("../commands");
 	}
 
-	private static createEventListenersService(): EventListenersService {
-		return new EventListenersService();
+	private static createEventListenersService(): DynamicImportService<typeof NeedleEventListener> {
+		return new DynamicImportService<typeof NeedleEventListener>("../eventListeners");
+	}
+
+	private static createButtonsService(): DynamicImportService<typeof NeedleButton> {
+		return new DynamicImportService<typeof NeedleButton>("../buttons");
 	}
 }
