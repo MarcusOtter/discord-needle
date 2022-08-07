@@ -8,5 +8,6 @@ export default class ReadyEventListener extends NeedleEventListener {
 
 	public async handleEventEmitted(): Promise<void> {
 		console.log("Ready!");
+		// TODO: Delete unknown configs from servers
 	}
 }

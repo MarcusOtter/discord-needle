@@ -14,7 +14,7 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 import "dotenv/config";
-import license from "./license";
+import license from "./helpers/license";
 import ObjectFactory from "./ObjectFactory";
 
 console.log(license);

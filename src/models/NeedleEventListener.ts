@@ -16,5 +16,5 @@ export default abstract class NeedleEventListener {
 	}
 
 	public abstract getListenerType(): ListenerRunType;
-	public abstract handleEventEmitted(...args: ClientEvents[keyof ClientEvents]): Promise<void>;
+	public abstract handleEventEmitted(...[...args]: ClientEvents[keyof ClientEvents]): Promise<void>;
 }

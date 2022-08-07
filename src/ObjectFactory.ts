@@ -6,11 +6,15 @@ import InformationService from "./services/InformationService";
 
 // This class acts as a composition root.
 // We new up all the dependencies and pass them along through constructor injection when possible.
-// When not possible, it's used as a ServiceLocator, such as for commands, event listeners, and modals.
+// When not possible, it's used as a ServiceLocator (used in constructors for commands, event listeners, and modals).
 // We're not using any abstractions to keep complexity down, but it can be added in the future.
 
 export default class ObjectFactory {
 	private static bot: NeedleBot;
+
+	private constructor() {
+		// Not allowed
+	}
 
 	public static createNeedleBot(): NeedleBot {
 		if (this.bot) {

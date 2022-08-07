@@ -50,9 +50,13 @@ export default class NeedleBot {
 			const listenerType = listener.getListenerType();
 
 			if (listenerType === ListenerRunType.EveryTime) {
-				this.discordClient.on(listener.name, listener.handleEventEmitted);
+				this.discordClient.on(listener.name, (...args) =>
+					listener.handleEventEmitted(...args).catch(this.handleError)
+				);
 			} else if (listenerType === ListenerRunType.OnlyOnce) {
-				this.discordClient.once(listener.name, listener.handleEventEmitted);
+				this.discordClient.once(listener.name, (...args) =>
+					listener.handleEventEmitted(...args).catch(this.handleError)
+				);
 			}
 		}
 
@@ -68,5 +72,9 @@ export default class NeedleBot {
 		// this.discordClient.on("guildDelete", guild => {
 		// 	resetConfigToDefault(guild.id);
 		// });
+	}
+
+	private handleError(reason: unknown): void {
+		console.error(reason);
 	}
 }

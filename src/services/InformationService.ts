@@ -13,7 +13,7 @@ export default class InformationService {
 	}
 
 	public getUserCount(): number {
-		return this.client.users.cache.size;
+		return this.client.guilds.cache.reduce((acc, guild) => acc + guild.memberCount, 0);
 	}
 
 	public getWebSocketPing(): number {

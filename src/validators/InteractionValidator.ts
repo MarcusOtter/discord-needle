@@ -1,15 +1,15 @@
-import type { ChatInputCommandInteraction, TextBasedChannel } from "discord.js";
+import type { CacheType, ChatInputCommandInteraction, Interaction, TextBasedChannel } from "discord.js";
 
 export class InteractionValidator {
-	public static isValidCommand(interaction: ChatInputCommandInteraction): interaction is ValidCommandInteraction {
-		return !!interaction.channel;
+	private constructor() {
+		// Not allowed
+	}
+
+	public static isValidChatInputCommand(interaction: Interaction): interaction is ValidChatInputCommandInteraction {
+		return interaction.isChatInputCommand() && !!interaction.channel;
 	}
 }
 
-export interface ValidCommandInteraction extends ChatInputCommandInteraction {
+export interface ValidChatInputCommandInteraction extends ChatInputCommandInteraction<CacheType> {
 	channel: TextBasedChannel;
-
-	isChatInput(): this is ChatInputCommandInteraction;
 }
-
-// if (!InteractionValidator.isValidCommand(interaction)) return;

@@ -4,6 +4,7 @@ import type InteractionContext from "../models/InteractionContext";
 import type NeedleBot from "../NeedleBot";
 import type InformationService from "../services/InformationService";
 import ObjectFactory from "../ObjectFactory";
+import { plural } from "../helpers/stringHelpers";
 
 export default class InfoCommand extends NeedleCommand {
 	private infoService: InformationService;
@@ -29,10 +30,10 @@ export default class InfoCommand extends NeedleCommand {
 
 	// TODO: Make actual embed
 	private async getInformationEmbed(): Promise<string> {
-		const serverCount = this.infoService.getServerCount();
-		const userCount = this.infoService.getUserCount();
+		const nUsers = plural("user", this.infoService.getUserCount());
+		const nServers = plural("server", this.infoService.getServerCount());
 		const ping = this.infoService.getWebSocketPing();
 
-		return `I am serving ${userCount} users across ${serverCount} servers.\nPing: ${ping}ms`;
+		return `I am serving ${nUsers} across ${nServers}.\nPing: ${ping}ms`;
 	}
 }
