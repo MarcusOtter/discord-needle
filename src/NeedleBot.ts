@@ -1,5 +1,5 @@
 import { Client } from "discord.js";
-import { getApiToken } from "./destroy-me/configHelpers";
+import { getApiToken } from "./destroy-me/helpers/configHelpers";
 import CommandsService from "./services/CommandsService";
 import NeedleCommand from "./models/NeedleCommand";
 import EventListenersService from "./services/EventListenersService";
