@@ -1,21 +1,21 @@
 import type { Client, ClientEvents } from "discord.js";
 import type NeedleBot from "../NeedleBot";
 
-export default abstract class NeedleEventListener<TEventName extends keyof ClientEvents> {
+export default abstract class NeedleEventListener {
 	protected bot: NeedleBot;
 	protected client: Client;
-	protected eventName: TEventName;
+	protected eventName: keyof ClientEvents;
 
-	constructor(bot: NeedleBot, eventName: TEventName) {
+	constructor(bot: NeedleBot, eventName: keyof ClientEvents) {
 		this.bot = bot;
 		this.client = bot.getClient();
 		this.eventName = eventName;
 	}
 
 	public abstract getListenerType(): "on" | "once";
-	public abstract handleEventEmitted(...args: ClientEvents[TEventName]): Promise<void>;
+	public abstract handleEventEmitted(...args: ClientEvents[keyof ClientEvents]): Promise<void>;
 
-	public getEventName(): TEventName {
+	public getEventName(): keyof ClientEvents {
 		return this.eventName;
 	}
 }

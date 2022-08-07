@@ -6,21 +6,13 @@ import NeedleBot from "../NeedleBot";
 
 export default class EventListenersService {
 	private directoryPath = pathResolve(__dirname, "../eventListeners");
-	private eventCache: NeedleEventListener<keyof ClientEvents>[] = [];
+	private eventCache: NeedleEventListener[] = [];
 
-	public async loadEventListeners(
-		skipCache = false,
-		bot: NeedleBot
-	): Promise<NeedleEventListener<keyof ClientEvents>[]> {
+	public async loadEventListeners(skipCache = false, bot: NeedleBot): Promise<NeedleEventListener[]> {
 		if (!skipCache && this.eventCache.length > 0) return this.eventCache;
 
-		const events = await importClassesInDirectory<typeof NeedleEventListener<keyof ClientEvents>>(
-			this.directoryPath
-		);
-
-		this.eventCache = Array.from(events.values()).map(
-			(x, i) => new x(bot, Array.from(events.keys())[i] as keyof ClientEvents)
-		);
+		const events = await importClassesInDirectory<typeof NeedleEventListener>(this.directoryPath);
+		this.eventCache = events.map(event => new event.Class(bot, event.fileName as keyof ClientEvents));
 		return this.eventCache;
 	}
 }

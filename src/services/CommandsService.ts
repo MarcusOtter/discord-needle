@@ -11,7 +11,7 @@ export default class CommandsService {
 		if (!skipCache && this.commandCache.length > 0) return this.commandCache;
 
 		const commands = await importClassesInDirectory<typeof NeedleCommand>(this.directoryPath);
-		this.commandCache = Array.from(commands.values()).map(x => new x(bot));
+		this.commandCache = commands.map(command => new command.Class(bot));
 		return this.commandCache;
 	}
 

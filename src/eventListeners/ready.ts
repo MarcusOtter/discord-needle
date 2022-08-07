@@ -1,6 +1,6 @@
 import NeedleEventListener from "../models/NeedleEventListener";
 
-export default class ReadyEventListener extends NeedleEventListener<"ready"> {
+export default class ReadyEventListener extends NeedleEventListener {
 	public getListenerType(): "on" | "once" {
 		return "on";
 	}
@@ -9,6 +9,3 @@ export default class ReadyEventListener extends NeedleEventListener<"ready"> {
 		console.log("We're ready!");
 	}
 }
-
-// const event = new ReadyEventListener(null, "ready");
-// export default event;

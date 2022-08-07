@@ -1,22 +1,26 @@
-import { ClientEvents } from "discord.js";
 import { promises } from "fs";
 
-// The files need to have a CLASS AS DEFAULT EXPORT !!!
-export async function importClassesInDirectory<T extends Newable>(
-	directoryPath: string
-): Promise<Map<string, Concretize<T>>> {
+// The imported files need to have a CLASS AS DEFAULT EXPORT !!!
+export async function importClassesInDirectory<T extends Newable>(directoryPath: string): Promise<ImportedClass<T>[]> {
 	const allFileNames = await promises.readdir(directoryPath);
 	const jsFileNames = allFileNames.filter(file => file.endsWith(".js"));
 
-	const outputMap = new Map<string, Concretize<T>>();
-	for (const fileName of jsFileNames) {
-		const ImportedClass = (await import(`${directoryPath}/${fileName}`)).default as Concretize<T>;
-		const fileNameWithoutExtension = fileName.split(".")[0] as keyof ClientEvents;
-		outputMap.set(fileNameWithoutExtension, ImportedClass);
-	}
-
-	return outputMap;
+	return Promise.all(
+		jsFileNames.map(async fileName => {
+			return {
+				fileName: fileName.split(".")[0],
+				fileType: fileName.split(".")[1],
+				Class: (await import(`${directoryPath}/${fileName}`)).default,
+			} as ImportedClass<T>;
+		})
+	);
 }
 
 type Newable = abstract new (...args: never[]) => unknown;
 type Concretize<T extends Newable> = new (...args: ConstructorParameters<T>) => InstanceType<T>;
+
+type ImportedClass<T extends Newable> = {
+	fileName: string;
+	fileType: string;
+	Class: Concretize<T>;
+};
