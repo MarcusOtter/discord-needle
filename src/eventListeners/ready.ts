@@ -1,11 +1,12 @@
+import ListenerRunType from "../models/enums/ListenerRunType";
 import NeedleEventListener from "../models/NeedleEventListener";
 
 export default class ReadyEventListener extends NeedleEventListener {
-	public getListenerType(): "on" | "once" {
-		return "on";
+	public getListenerType(): ListenerRunType {
+		return ListenerRunType.OnlyOnce;
 	}
 
 	public async handleEventEmitted(): Promise<void> {
-		console.log("We're ready!");
+		console.log("Ready!");
 	}
 }

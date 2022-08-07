@@ -3,6 +3,7 @@ import { getApiToken } from "./destroy-me/configHelpers";
 import CommandsService from "./services/CommandsService";
 import NeedleCommand from "./models/NeedleCommand";
 import EventListenersService from "./services/EventListenersService";
+import ListenerRunType from "./models/enums/ListenerRunType";
 
 export default class NeedleBot {
 	private discordClient: Client;
@@ -46,13 +47,12 @@ export default class NeedleBot {
 		const eventListeners = await this.eventsService.loadEventListeners(true, this);
 
 		for (const listener of eventListeners) {
-			const eventName = listener.getEventName();
 			const listenerType = listener.getListenerType();
 
-			if (listenerType === "on") {
-				this.discordClient.on(eventName, listener.handleEventEmitted);
-			} else if (listenerType === "once") {
-				this.discordClient.once(eventName, listener.handleEventEmitted);
+			if (listenerType === ListenerRunType.EveryTime) {
+				this.discordClient.on(listener.name, listener.handleEventEmitted);
+			} else if (listenerType === ListenerRunType.OnlyOnce) {
+				this.discordClient.once(listener.name, listener.handleEventEmitted);
 			}
 		}
 

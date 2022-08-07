@@ -11,11 +11,11 @@ export default class CommandsService {
 		if (!skipCache && this.commandCache.length > 0) return this.commandCache;
 
 		const commands = await importClassesInDirectory<typeof NeedleCommand>(this.directoryPath);
-		this.commandCache = commands.map(command => new command.Class(bot));
+		this.commandCache = commands.map(command => new command.Class(command.fileName, bot));
 		return this.commandCache;
 	}
 
 	public async getCommand(commandName: string): Promise<NeedleCommand | undefined> {
-		return this.commandCache.find(async x => (await x.getSlashCommandBuilder()).name === commandName);
+		return this.commandCache.find(x => x.name === commandName);
 	}
 }

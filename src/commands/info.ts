@@ -1,4 +1,4 @@
-import { type RESTPostAPIApplicationCommandsJSONBody, SlashCommandBuilder } from "discord.js";
+import { type RESTPostAPIApplicationCommandsJSONBody, SlashCommandBuilder, type ClientEvents } from "discord.js";
 import NeedleCommand from "../models/NeedleCommand";
 import type InteractionContext from "../models/InteractionContext";
 import type NeedleBot from "../NeedleBot";
@@ -8,12 +8,12 @@ import ObjectFactory from "../ObjectFactory";
 export default class InfoCommand extends NeedleCommand {
 	private infoService: InformationService;
 
-	constructor(bot: NeedleBot) {
-		super(bot);
+	constructor(name: keyof ClientEvents, bot: NeedleBot) {
+		super(name, bot);
 		this.infoService = ObjectFactory.createInformationService();
 	}
 
-	public async getSlashCommandBuilder(): Promise<RESTPostAPIApplicationCommandsJSONBody> {
+	public async getBuilder(): Promise<RESTPostAPIApplicationCommandsJSONBody> {
 		return new SlashCommandBuilder()
 			.setName("info")
 			.setDescription("Get information about Needle")

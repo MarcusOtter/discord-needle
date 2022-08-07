@@ -2,7 +2,7 @@ import { importClassesInDirectory } from "../helpers/fileHelpers";
 import { resolve as pathResolve } from "path";
 import type NeedleEventListener from "../models/NeedleEventListener";
 import type { ClientEvents } from "discord.js";
-import NeedleBot from "../NeedleBot";
+import type NeedleBot from "../NeedleBot";
 
 export default class EventListenersService {
 	private directoryPath = pathResolve(__dirname, "../eventListeners");
@@ -12,7 +12,7 @@ export default class EventListenersService {
 		if (!skipCache && this.eventCache.length > 0) return this.eventCache;
 
 		const events = await importClassesInDirectory<typeof NeedleEventListener>(this.directoryPath);
-		this.eventCache = events.map(event => new event.Class(bot, event.fileName as keyof ClientEvents));
+		this.eventCache = events.map(event => new event.Class(event.fileName as keyof ClientEvents, bot));
 		return this.eventCache;
 	}
 }

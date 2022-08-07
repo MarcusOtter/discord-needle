@@ -9,7 +9,6 @@ export async function importClassesInDirectory<T extends Newable>(directoryPath:
 		jsFileNames.map(async fileName => {
 			return {
 				fileName: fileName.split(".")[0],
-				fileType: fileName.split(".")[1],
 				Class: (await import(`${directoryPath}/${fileName}`)).default,
 			} as ImportedClass<T>;
 		})
@@ -21,6 +20,5 @@ type Concretize<T extends Newable> = new (...args: ConstructorParameters<T>) => 
 
 type ImportedClass<T extends Newable> = {
 	fileName: string;
-	fileType: string;
 	Class: Concretize<T>;
 };
