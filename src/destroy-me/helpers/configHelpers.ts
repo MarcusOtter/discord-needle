@@ -15,12 +15,12 @@ If not, see <https://www.gnu.org/licenses/>.
 
 import type { Client, Guild, ThreadChannel } from "discord.js";
 import * as defaultConfig from "../../config.json";
-import { resolve as resolvePath } from "path";
+import * as path from "path";
 import * as fs from "fs";
 import type { NeedleConfig } from "../types/needleConfig";
 import { MessageKey } from "./messageHelpers";
 
-const CONFIGS_PATH = resolvePath(__dirname, "../../", process.env.CONFIGS_PATH || "configs");
+const CONFIGS_PATH = path.resolve(__dirname, "../../", process.env.CONFIGS_PATH || "configs");
 const guildConfigsCache = new Map<string, NeedleConfig>();
 
 export function getConfig(guildId = ""): NeedleConfig {
@@ -135,9 +135,9 @@ export function disableAutothreading(guild: Guild, channelId: string): boolean {
 }
 
 export function resetConfigToDefault(guildId: string): boolean {
-	const path = getGuildConfigPath(guildId);
-	if (!fs.existsSync(path)) return false;
-	fs.rmSync(path);
+	const configPath = getGuildConfigPath(guildId);
+	if (!fs.existsSync(configPath)) return false;
+	fs.rmSync(configPath);
 	guildConfigsCache.delete(guildId);
 	console.log(`Deleted data for guild ${guildId}`);
 	return true;
@@ -161,10 +161,10 @@ export function deleteConfigsFromUnknownServers(client: Client): void {
 }
 
 function readConfigFromFile(guildId: string): NeedleConfig | undefined {
-	const path = getGuildConfigPath(guildId);
-	if (!fs.existsSync(path)) return undefined;
+	const configPath = getGuildConfigPath(guildId);
+	if (!fs.existsSync(configPath)) return undefined;
 
-	const jsonConfig = fs.readFileSync(path, { encoding: "utf-8" });
+	const jsonConfig = fs.readFileSync(configPath, { encoding: "utf-8" });
 	return JSON.parse(jsonConfig);
 }
 
@@ -175,7 +175,7 @@ function getGuildConfigPath(guildId: string) {
 function setConfig(guild: Guild | null | undefined, config: NeedleConfig): boolean {
 	if (!guild || !config) return false;
 
-	const path = getGuildConfigPath(guild.id);
+	const configPath = getGuildConfigPath(guild.id);
 	if (!fs.existsSync(CONFIGS_PATH)) {
 		fs.mkdirSync(CONFIGS_PATH);
 	}
@@ -191,7 +191,7 @@ function setConfig(guild: Guild | null | undefined, config: NeedleConfig): boole
 		}
 	}
 
-	fs.writeFileSync(path, JSON.stringify(config), { encoding: "utf-8" });
+	fs.writeFileSync(configPath, JSON.stringify(config), { encoding: "utf-8" });
 	guildConfigsCache.set(guild.id, config);
 	return true;
 }

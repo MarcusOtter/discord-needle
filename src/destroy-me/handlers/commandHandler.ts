@@ -15,11 +15,11 @@ If not, see <https://www.gnu.org/licenses/>.
 
 import type { ChatInputCommandInteraction, MessageComponentInteraction } from "discord.js";
 import { promises } from "fs";
-import { resolve as resolvePath } from "path";
+import * as path from "path";
 import { getMessage, interactionReply } from "../helpers/messageHelpers";
 import type { ExecuteResult, NeedleCommand } from "../types/needleCommand";
 
-const COMMANDS_PATH = resolvePath(__dirname, "../commands");
+const COMMANDS_PATH = path.resolve(__dirname, "../commands");
 
 let loadedCommands: NeedleCommand[] = [];
 
