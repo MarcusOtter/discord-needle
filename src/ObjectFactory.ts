@@ -4,6 +4,7 @@ import type NeedleCommand from "./models/NeedleCommand";
 import type NeedleEventListener from "./models/NeedleEventListener";
 import NeedleBot from "./NeedleBot";
 import CommandExecutorService from "./services/CommandExecutorService";
+import ConfigService from "./services/ConfigService";
 import DynamicImportService from "./services/DynamicImportService";
 import InformationService from "./services/InformationService";
 
@@ -28,7 +29,8 @@ export default class ObjectFactory {
 			ObjectFactory.createDiscordClient(),
 			ObjectFactory.createCommandsService(),
 			ObjectFactory.createEventListenersService(),
-			ObjectFactory.createButtonsService()
+			ObjectFactory.createButtonsService(),
+			ObjectFactory.createConfigService()
 		);
 
 		return this.bot;
@@ -76,5 +78,9 @@ export default class ObjectFactory {
 
 	private static createButtonsService(): DynamicImportService<typeof NeedleButton> {
 		return new DynamicImportService<typeof NeedleButton>("./buttons");
+	}
+
+	private static createConfigService(): ConfigService {
+		return new ConfigService("./configs");
 	}
 }

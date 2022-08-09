@@ -8,10 +8,9 @@ export default class CommandExecutorService {
 		try {
 			return await command?.onExecuted(context);
 		} catch (e) {
-			// TODO: Use actual message key ERR_UNKNOWN
 			// TODO: Button to support server and bug report
 			context.interaction.reply({
-				content: "Something went wrong with this command, please try again later.",
+				content: context.messages.ERR_UNKNOWN,
 				ephemeral: true,
 			});
 

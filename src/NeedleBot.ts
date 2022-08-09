@@ -5,13 +5,15 @@ import ListenerRunType from "./models/enums/ListenerRunType";
 import type NeedleButton from "./models/NeedleButton";
 import type DynamicImportService from "./services/DynamicImportService";
 import type NeedleEventListener from "./models/NeedleEventListener";
+import ConfigService from "./services/ConfigService";
 
 export default class NeedleBot {
 	public readonly client: Client;
+	public readonly configs: ConfigService;
 
-	private commandsService: DynamicImportService<typeof NeedleCommand>;
-	private eventsService: DynamicImportService<typeof NeedleEventListener>;
-	private buttonsService: DynamicImportService<typeof NeedleButton>;
+	private readonly commandsService: DynamicImportService<typeof NeedleCommand>;
+	private readonly eventsService: DynamicImportService<typeof NeedleEventListener>;
+	private readonly buttonsService: DynamicImportService<typeof NeedleButton>;
 
 	private isConnected = false;
 
@@ -19,13 +21,15 @@ export default class NeedleBot {
 		discordClient: Client,
 		commandsService: DynamicImportService<typeof NeedleCommand>,
 		eventsService: DynamicImportService<typeof NeedleEventListener>,
-		buttonsService: DynamicImportService<typeof NeedleButton>
+		buttonsService: DynamicImportService<typeof NeedleButton>,
+		configs: ConfigService
 	) {
 		this.client = discordClient;
 
 		this.commandsService = commandsService;
 		this.eventsService = eventsService;
 		this.buttonsService = buttonsService;
+		this.configs = configs;
 	}
 
 	public async connect(): Promise<void> {
@@ -45,6 +49,7 @@ export default class NeedleBot {
 		await this.commandsService.load(true);
 	}
 
+	// TODO: Consider if this should be automatic with commands or events
 	public async registerButtons(): Promise<void> {
 		await this.buttonsService.load(true);
 	}

@@ -21,15 +21,19 @@ export default class InteractionCreateListener extends NeedleEventListener {
 	public async onEmitted(...[interaction]: ClientEvents["interactionCreate"]): Promise<void> {
 		// TODO: Add message context to InteractionContext maybe
 
+		if (!interaction.isChatInputCommand() && !interaction.isModalSubmit() && !interaction.isButton()) {
+			return;
+		}
+
+		const context = new InteractionContext(this.bot, interaction);
+
 		if (interaction.isChatInputCommand()) {
 			const command = this.bot.getCommand(interaction.commandName);
-			const context = new InteractionContext(this.bot, interaction);
 			await this.commandExecutor.execute(command, context);
 		}
 
 		if (interaction.isButton()) {
 			const button = this.bot.getButton(interaction.customId);
-			const context = new InteractionContext(this.bot, interaction);
 			await button?.onPressed(context);
 		}
 

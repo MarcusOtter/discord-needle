@@ -5,16 +5,16 @@
 import MessageKey from "./enums/MessageKey";
 
 export default interface NeedleConfig {
-	threadChannels?: AutothreadChannelConfig[];
-	emojisEnabled?: boolean;
-	messages?: {
+	threadChannels: AutothreadChannelConfig[];
+	emojisEnabled: boolean;
+	messages: {
 		[K in MessageKeys]: string;
 	};
 }
 
 type MessageKeys = keyof typeof MessageKey;
 
-export interface AutothreadChannelConfig {
+interface AutothreadChannelConfig {
 	channelId: string;
 	archiveImmediately?: boolean;
 	messageContent?: string;
