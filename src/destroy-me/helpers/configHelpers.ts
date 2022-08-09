@@ -15,12 +15,12 @@ If not, see <https://www.gnu.org/licenses/>.
 
 import type { Client, Guild, ThreadChannel } from "discord.js";
 import * as defaultConfig from "../../config.json";
-import { resolve as pathResolve } from "path";
+import { resolve as resolvePath } from "path";
 import * as fs from "fs";
 import type { NeedleConfig } from "../types/needleConfig";
 import { MessageKey } from "./messageHelpers";
 
-const CONFIGS_PATH = pathResolve(__dirname, "../../", process.env.CONFIGS_PATH || "configs");
+const CONFIGS_PATH = resolvePath(__dirname, "../../", process.env.CONFIGS_PATH || "configs");
 const guildConfigsCache = new Map<string, NeedleConfig>();
 
 export function getConfig(guildId = ""): NeedleConfig {

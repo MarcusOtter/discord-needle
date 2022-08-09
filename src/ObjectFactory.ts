@@ -67,14 +67,14 @@ export default class ObjectFactory {
 	}
 
 	private static createCommandsService(): DynamicImportService<typeof NeedleCommand> {
-		return new DynamicImportService<typeof NeedleCommand>("../commands");
+		return new DynamicImportService<typeof NeedleCommand>("./commands");
 	}
 
 	private static createEventListenersService(): DynamicImportService<typeof NeedleEventListener> {
-		return new DynamicImportService<typeof NeedleEventListener>("../eventListeners");
+		return new DynamicImportService<typeof NeedleEventListener>("./eventListeners");
 	}
 
 	private static createButtonsService(): DynamicImportService<typeof NeedleButton> {
-		return new DynamicImportService<typeof NeedleButton>("../buttons");
+		return new DynamicImportService<typeof NeedleButton>("./buttons");
 	}
 }

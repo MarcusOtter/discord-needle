@@ -7,7 +7,7 @@ import ObjectFactory from "../ObjectFactory";
 import { plural } from "../helpers/stringHelpers";
 
 export default class InfoCommand extends NeedleCommand {
-	private infoService: InformationService;
+	private readonly infoService: InformationService;
 
 	constructor(name: "info", bot: NeedleBot) {
 		super(name, bot);

@@ -1,3 +1,4 @@
+"use strict";
 /*
 This file is part of Needle.
 
@@ -16,6 +17,7 @@ If not, see <https://www.gnu.org/licenses/>.
 /* eslint-disable @typescript-eslint/no-var-requires */
 // You need to `tsc` before running this script.
 
+// TODO: Fix this file, it's completely broken.
 require("dotenv").config();
 
 const { REST } = require("@discordjs/rest");

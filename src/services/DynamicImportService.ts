@@ -1,5 +1,5 @@
 import { promises, existsSync } from "fs";
-import { resolve as pathResolve } from "path";
+import { resolve as resolvePath } from "path";
 
 export default class DynamicImportService<T extends Newable> {
 	private readonly directoryPath: string;
@@ -7,7 +7,7 @@ export default class DynamicImportService<T extends Newable> {
 	private cache: ImportedClass<T>[] = [];
 
 	constructor(directoryPath: string) {
-		this.directoryPath = pathResolve(__dirname, directoryPath);
+		this.directoryPath = resolvePath(__dirname, "../", directoryPath);
 	}
 
 	public async load(skipCache = false): Promise<ImportedClass<T>[]> {
