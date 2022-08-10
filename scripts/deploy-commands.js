@@ -1,3 +1,4 @@
+// @ts-check
 "use strict";
 /*
 This file is part of Needle.
@@ -48,7 +49,9 @@ if (!isGlobal && !GUILD_ID) {
 	process.exit(1);
 }
 
-const route = isGlobal ? Routes.applicationCommands(CLIENT_ID) : Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID);
+const route = isGlobal
+	? Routes.applicationCommands(CLIENT_ID)
+	: Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID ?? "");
 
 const rest = new REST({ version: "9" }).setToken(API_TOKEN);
 (async () => {
