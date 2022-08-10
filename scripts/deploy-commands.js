@@ -17,18 +17,14 @@ If not, see <https://www.gnu.org/licenses/>.
 /* eslint-disable @typescript-eslint/no-var-requires */
 // You need to `tsc` before running this script.
 
-// TODO: Fix this file, it's completely broken.
 require("dotenv").config();
-
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord.js");
+const DynamicImportService = require("../dist/services/DynamicImportService").default;
 
-const { getApiToken, getGuildId, getClientId } = require("../dist/helpers/configHelpers");
-const CommandsService = require("../dist/services/CommandsService").default;
-
-const API_TOKEN = getApiToken();
-const CLIENT_ID = getClientId();
-const GUILD_ID = getGuildId();
+const API_TOKEN = process.env.DISCORD_API_TOKEN;
+const CLIENT_ID = process.env.CLIENT_ID;
+const GUILD_ID = process.env.GUILD_ID;
 
 const isGlobal = process.argv.some(x => x === "--global");
 const isUndeploy = process.argv.some(x => x === "--undeploy");
@@ -73,11 +69,13 @@ async function getSlashCommandBuilders() {
 		return [];
 	}
 
-	const commandLoader = new CommandsService();
-	const allNeedleCommands = await commandLoader.loadCommands();
+	const commandImporter = new DynamicImportService("./commands");
+	const importedCommands = await commandImporter.load(true);
+
 	const allSlashCommandBuilders = [];
-	for (const command of allNeedleCommands) {
-		const builder = await command.getSlashCommandBuilder();
+	for (const { fileName, Class } of importedCommands) {
+		const command = new Class(fileName, null);
+		const builder = await command.getBuilder();
 		allSlashCommandBuilders.push(builder);
 	}
 
