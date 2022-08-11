@@ -8,6 +8,7 @@ export default class TitleCommand extends NeedleCommand {
 		return new SlashCommandBuilder()
 			.setName("title")
 			.setDescription("Sets the title of a thread")
+			.setDMPermission(false) // TODO: .setDefaultMemberPermissions
 			.addStringOption(option => {
 				return option.setName("value").setDescription("The new title of the thread").setRequired(true);
 			})

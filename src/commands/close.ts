@@ -5,7 +5,11 @@ import NeedleCommand from "../models/NeedleCommand";
 
 export default class CloseCommand extends NeedleCommand {
 	public async getBuilder() {
-		return new SlashCommandBuilder().setName("close").setDescription("Closes a thread.").toJSON();
+		return new SlashCommandBuilder()
+			.setName("close")
+			.setDescription("Closes a thread.")
+			.setDMPermission(false)
+			.toJSON();
 	}
 
 	public async execute(context: InteractionContext): Promise<void> {
