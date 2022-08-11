@@ -12,5 +12,5 @@ export default abstract class NeedleCommand {
 	}
 
 	public abstract getBuilder(): Promise<RESTPostAPIApplicationCommandsJSONBody>;
-	public abstract onExecuted(context: InteractionContext): Promise<void>;
+	public abstract execute(context: InteractionContext): Promise<void>;
 }

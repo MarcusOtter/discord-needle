@@ -32,31 +32,31 @@ export default class InteractionContext {
 		this.messages = bot.configs.get(interaction.guildId ?? "").messages;
 	}
 
-	public async replyInSecret(content: string | undefined): Promise<void> {
+	public replyInSecret = (content: string | undefined): Promise<void> => {
 		return this.reply(content, true);
-	}
+	};
 
-	public async replyInPublic(content: string | undefined): Promise<void> {
+	public replyInPublic = (content: string | undefined): Promise<void> => {
 		return this.reply(content, false);
-	}
+	};
 
-	public isInPublicThread(): this is ContextWithInteraction<PublicThreadInteraction> {
+	public isInPublicThread = (): this is ContextWithInteraction<PublicThreadInteraction> => {
 		if (this.interaction.channel?.type === ChannelType.GuildPublicThread) return true;
 		this.latestErrorMessage = this.messages.ERR_ONLY_IN_THREAD;
 		return false;
-	}
+	};
 
-	public isInGuild(): this is ContextWithInteraction<GuildInteraction> {
+	public isInGuild = (): this is ContextWithInteraction<GuildInteraction> => {
 		if (!this.interaction.channel?.isDMBased()) return true;
 		this.latestErrorMessage = this.messages.ERR_ONLY_IN_SERVER;
 		return false;
-	}
+	};
 
-	public isSlashCommand(): this is ContextWithInteraction<ChatInputCommandInteraction> {
+	public isSlashCommand = (): this is ContextWithInteraction<ChatInputCommandInteraction> => {
 		if (this.interaction.isChatInputCommand()) return true;
 		this.latestErrorMessage = this.messages.ERR_UNKNOWN;
 		return false;
-	}
+	};
 
 	// TODO: Implement behavior on what happens if content longer than 2k (pagination or multiple messages?)
 	private async reply(content: string | undefined, ephemeral: boolean): Promise<void> {
