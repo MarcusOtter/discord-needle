@@ -9,6 +9,7 @@ import {
 	ModalSubmitInteraction,
 	PublicThreadChannel,
 } from "discord.js";
+import { Overwrite } from "../helpers/typeHelpers";
 import type NeedleBot from "../NeedleBot";
 import NeedleConfig from "./NeedleConfig";
 
@@ -40,7 +41,7 @@ export default class InteractionContext {
 		return this.reply(content, false);
 	};
 
-	public isInPublicThread = (): this is ContextWithInteraction<PublicThreadInteraction> => {
+	public isInPublicThread = (): this is ContextWithInteraction<GuildInteraction & PublicThreadInteraction> => {
 		if (this.interaction.channel?.type === ChannelType.GuildPublicThread) return true;
 		this.latestErrorMessage = this.messages.ERR_ONLY_IN_THREAD;
 		return false;
@@ -74,8 +75,6 @@ type GuildInteraction = Overwrite<NeedleInteraction, { member: GuildMember; chan
 type PublicThreadInteraction = Overwrite<NeedleInteraction, { channel: PublicThreadChannel }>;
 
 type ContextWithInteraction<TInteraction> = Overwrite<InteractionContext, { interaction: TInteraction }>;
-
-type Overwrite<T, U> = Omit<T, keyof U> & U;
 
 // Little type hack with Omit to remove private members from djs types
 type NeedleInteraction = Omit<ChatInputCommandInteraction | MessageComponentInteraction | ModalSubmitInteraction, "">;

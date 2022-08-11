@@ -1,8 +1,9 @@
 import { GuildMember, PermissionsBitField, PublicThreadChannel } from "discord.js";
+import { Nullable } from "./typeHelpers";
 
 export async function isAllowedToChangeThreadTitle(
 	thread: PublicThreadChannel,
-	member: GuildMember | null | undefined
+	member: Nullable<GuildMember>
 ): Promise<boolean> {
 	if (!member) return false;
 
@@ -20,4 +21,8 @@ export async function isAllowedToChangeThreadTitle(
 	// Before we had some code here to determine thread author using pings (if starter msg was null)
 
 	return false;
+}
+
+export function isAllowedToArchiveThread(thread: PublicThreadChannel, member: Nullable<GuildMember>): Promise<boolean> {
+	return isAllowedToChangeThreadTitle(thread, member);
 }

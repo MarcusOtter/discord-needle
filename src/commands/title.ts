@@ -16,7 +16,7 @@ export default class TitleCommand extends NeedleCommand {
 
 	public async execute(context: InteractionContext): Promise<void> {
 		const { messages, replyInSecret } = context;
-		if (!context.isInGuild() || !context.isInPublicThread() || !context.isSlashCommand()) {
+		if (!context.isInPublicThread() || !context.isSlashCommand()) {
 			return replyInSecret(context.validationError);
 		}
 
