@@ -6,7 +6,7 @@ export default class CommandExecutorService {
 		if (!context.interaction.isCommand()) return;
 
 		try {
-			return await command?.onExecuted(context);
+			return await command?.onExecuted(context).catch(e => console.error(e));
 		} catch (e) {
 			// TODO: Button to support server and bug report
 			context.interaction.reply({
