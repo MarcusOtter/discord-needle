@@ -6,7 +6,7 @@ import NeedleCommand from "../models/NeedleCommand";
 
 export default class CloseCommand extends NeedleCommand {
 	public readonly name = "close";
-	public readonly description = "Closes a thread";
+	public readonly description = "Close a thread";
 	public readonly category = CommandCategory.ThreadOnly;
 
 	public async execute(context: InteractionContext): Promise<void> {

@@ -1,6 +1,7 @@
 import { ButtonBuilder, ButtonStyle } from "discord.js";
 import NeedleButton from "../models/NeedleButton";
 
+// TODO: Remove unused buttons, and remove all link buttons from here (make them manually instead)
 export default class BugReportButton extends NeedleButton {
 	public async getBuilder(): Promise<ButtonBuilder> {
 		return new ButtonBuilder()

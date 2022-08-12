@@ -1,8 +1,8 @@
 // TODO: Use emojis that have descriptive names
-
 enum CommandTag {
+	Popular = ":fire:",
 	OnlyEphemeralReplies = ":spy:",
-	PrivilegedPermissions = ":lock:",
+	RequiresSpecialPermissions = ":lock:",
 }
 
 export default CommandTag;

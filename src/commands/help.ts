@@ -6,7 +6,7 @@ import NeedleCommand from "../models/NeedleCommand";
 
 export default class HelpCommand extends NeedleCommand {
 	public readonly name = "help";
-	public readonly description = "Shows Needle's commands";
+	public readonly description = "See Needle's commands";
 	public readonly category = CommandCategory.Anywhere;
 	public readonly tags = [CommandTag.OnlyEphemeralReplies];
 
@@ -29,7 +29,8 @@ export default class HelpCommand extends NeedleCommand {
 			let value = "";
 			for (const { id, description, name, tags } of commandsInCategory) {
 				const tagEmojis = tags?.join("") ?? "";
-				value += `</${name}:${id}> — ${description} ${tagEmojis}\n`;
+				const command = id ? `</${name}:${id}>` : `\`/${name}\``;
+				value += `${command} — ${description} ${tagEmojis}\n`;
 			}
 
 			if (value.length > 0) {
@@ -37,6 +38,6 @@ export default class HelpCommand extends NeedleCommand {
 			}
 		}
 
-		return new EmbedBuilder().setTitle("COMMANDS").setColor("#2f3136").setFields(fields);
+		return new EmbedBuilder().setColor("#2f3136").setFields(fields);
 	}
 }

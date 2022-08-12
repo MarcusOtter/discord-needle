@@ -2,6 +2,7 @@
 enum CommandCategory {
 	ThreadOnly = "In threads",
 	Anywhere = "Anywhere",
+	Configuration = "Configuration",
 }
 
 export default CommandCategory;

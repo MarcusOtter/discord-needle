@@ -44,14 +44,15 @@ export default class ConfigService {
 		this.cache.set(guildId, config);
 	}
 
-	public delete(guildId: string): void {
+	public delete(guildId: string): boolean {
 		const configPath = this.getPath(guildId);
-		if (!fs.existsSync(configPath)) return;
+		if (!fs.existsSync(configPath)) return false;
 
 		fs.rmSync(configPath);
 		this.cache.delete(guildId);
 
 		console.log(`Deleted data for guild ${guildId}`);
+		return true;
 	}
 
 	public getDefault(): NeedleConfig {

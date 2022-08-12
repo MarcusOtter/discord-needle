@@ -50,7 +50,6 @@ export default class InteractionContext {
 	public isInGuild = (): this is ContextWithInteraction<GuildInteraction> => {
 		const { channel } = this.interaction;
 		if (channel && !channel?.isDMBased()) return true;
-
 		this.latestErrorMessage = this.messages.ERR_ONLY_IN_SERVER;
 		return false;
 	};
@@ -62,9 +61,10 @@ export default class InteractionContext {
 	};
 
 	// TODO: Implement behavior on what happens if content longer than 2k (pagination or multiple messages?)
+	// Should this be some kind of message sender? So we always send messages with the same safe guards
 	private async reply(content: string | undefined, ephemeral: boolean): Promise<void> {
 		if (!content || content.length === 0) {
-			console.error("Tried sending empty message");
+			console.warn("Tried sending empty message");
 			return;
 		}
 
@@ -73,7 +73,10 @@ export default class InteractionContext {
 }
 
 // TODO: These types can and should be interfaces instead, I think.
-type GuildInteraction = Overwrite<NeedleInteraction, { member: GuildMember; channel: GuildTextBasedChannel }>;
+type GuildInteraction = Overwrite<
+	NeedleInteraction,
+	{ member: GuildMember; guildId: string; channel: GuildTextBasedChannel }
+>;
 type PublicThreadInteraction = Overwrite<NeedleInteraction, { channel: PublicThreadChannel }>;
 
 type ContextWithInteraction<TInteraction> = Overwrite<InteractionContext, { interaction: TInteraction }>;

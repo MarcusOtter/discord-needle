@@ -7,7 +7,7 @@ import NeedleCommand from "../models/NeedleCommand";
 
 export default class TitleCommand extends NeedleCommand {
 	public readonly name = "title";
-	public readonly description = "Sets the title of a thread";
+	public readonly description = "Change the title of a thread";
 	public readonly category = CommandCategory.ThreadOnly;
 
 	public addOptions(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions {
