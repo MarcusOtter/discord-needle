@@ -1,12 +1,14 @@
 import { EmbedBuilder } from "discord.js";
-import ChannelType from "../models/enums/ChannelType";
+import CommandCategory from "../models/enums/CommandCategory";
+import CommandTag from "../models/enums/CommandTag";
 import InteractionContext from "../models/InteractionContext";
 import NeedleCommand from "../models/NeedleCommand";
 
 export default class HelpCommand extends NeedleCommand {
 	public readonly name = "help";
 	public readonly description = "Shows Needle's commands";
-	public readonly allowedChannels = ChannelType.Any;
+	public readonly category = CommandCategory.Anywhere;
+	public readonly tags = [CommandTag.OnlyEphemeralReplies];
 
 	public async execute(context: InteractionContext): Promise<void> {
 		if (!context.isInGuild()) {
@@ -32,28 +34,24 @@ export default class HelpCommand extends NeedleCommand {
 	}
 
 	// TODO: Only show commands user is permitted to use
-	// TODO: Emojis and stuff if output is hidden/ephemeral, etc
 	private async getCommandsEmbed(): Promise<EmbedBuilder> {
 		const commands = await this.bot.getAllCommands();
 
-		let commandsForThreads = "";
-		let commandsForAnything = "";
-		for (const { id, description, name, allowedChannels } of commands) {
-			const commandInfo = `</${name}:${id}> — ${description}\n`;
+		const fields = [];
+		for (const category of Object.values(CommandCategory)) {
+			const commandsInCategory = commands.filter(cmd => cmd.category === category);
 
-			if (allowedChannels === ChannelType.Thread) {
-				commandsForThreads += commandInfo;
-			} else if (allowedChannels === ChannelType.Any) {
-				commandsForAnything += commandInfo;
+			let value = "";
+			for (const { id, description, name, tags } of commandsInCategory) {
+				const tagEmojis = tags?.join("") ?? "";
+				value += `</${name}:${id}> — ${description} ${tagEmojis}\n`;
+			}
+
+			if (value.length > 0) {
+				fields.push({ name: category, value });
 			}
 		}
 
-		return new EmbedBuilder()
-			.setTitle("COMMANDS")
-			.setColor("#2f3136")
-			.setFields(
-				{ name: "In threads", value: commandsForThreads },
-				{ name: "Anywhere", value: commandsForAnything }
-			);
+		return new EmbedBuilder().setTitle("COMMANDS").setColor("#2f3136").setFields(fields);
 	}
 }

@@ -1,16 +1,18 @@
 import { RESTPostAPIApplicationCommandsJSONBody, SlashCommandBuilder } from "discord.js";
 import { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
 import type NeedleBot from "../NeedleBot";
-import ChannelType from "./enums/ChannelType";
+import CommandCategory from "./enums/CommandCategory";
+import CommandTag from "./enums/CommandTag";
 import type InteractionContext from "./InteractionContext";
 
 export default abstract class NeedleCommand {
 	public readonly id: Nullish<string>;
 	protected readonly bot: NeedleBot;
 
-	public abstract get name(): string;
-	public abstract get description(): string;
-	public abstract get allowedChannels(): ChannelType;
+	public abstract readonly name: string;
+	public abstract readonly description: string;
+	public abstract readonly category: CommandCategory;
+	public readonly tags?: CommandTag[];
 
 	constructor(id: Nullish<string>, bot: NeedleBot) {
 		this.id = id;
@@ -30,6 +32,6 @@ export default abstract class NeedleCommand {
 		return new SlashCommandBuilder()
 			.setName(this.name)
 			.setDescription(this.description)
-			.setDMPermission((this.allowedChannels & ChannelType.DirectMessage) === ChannelType.DirectMessage);
+			.setDMPermission(this.category === CommandCategory.Anywhere);
 	}
 }

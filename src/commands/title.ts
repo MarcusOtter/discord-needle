@@ -1,14 +1,14 @@
 import { SlashCommandBuilder } from "discord.js";
 import { isAllowedToChangeThreadTitle } from "../helpers/permissionsHelpers";
 import { SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
-import ChannelType from "../models/enums/ChannelType";
+import CommandCategory from "../models/enums/CommandCategory";
 import InteractionContext from "../models/InteractionContext";
 import NeedleCommand from "../models/NeedleCommand";
 
 export default class TitleCommand extends NeedleCommand {
 	public readonly name = "title";
 	public readonly description = "Sets the title of a thread";
-	public readonly allowedChannels = ChannelType.Thread;
+	public readonly category = CommandCategory.ThreadOnly;
 
 	public addOptions(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions {
 		return builder.addStringOption(option =>

@@ -5,12 +5,14 @@ import type InformationService from "../services/InformationService";
 import ObjectFactory from "../ObjectFactory";
 import { plural } from "../helpers/stringHelpers";
 import { Nullish } from "../helpers/typeHelpers";
-import ChannelType from "../models/enums/ChannelType";
+import CommandCategory from "../models/enums/CommandCategory";
+import CommandTag from "../models/enums/CommandTag";
 
 export default class InfoCommand extends NeedleCommand {
 	public readonly name = "info";
 	public readonly description = "Shows information about Needle";
-	public readonly allowedChannels = ChannelType.Any;
+	public readonly category = CommandCategory.Anywhere;
+	public readonly tags = [CommandTag.OnlyEphemeralReplies];
 
 	private readonly infoService: InformationService;
 
