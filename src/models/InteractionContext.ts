@@ -60,6 +60,12 @@ export default class InteractionContext {
 		return false;
 	};
 
+	public isModalSubmit = (): this is ContextWithInteraction<ModalSubmitInteraction> => {
+		if (this.interaction.isModalSubmit()) return true;
+		this.latestErrorMessage = this.messages.ERR_UNKNOWN;
+		return false;
+	};
+
 	// TODO: Implement behavior on what happens if content longer than 2k (pagination or multiple messages?)
 	// Should this be some kind of message sender? So we always send messages with the same safe guards
 	private async reply(content: string | undefined, ephemeral: boolean): Promise<void> {

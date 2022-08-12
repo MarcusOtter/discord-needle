@@ -30,10 +30,15 @@ export default class ConfirmFactoryResetModal extends NeedleModal {
 	}
 
 	public submit(context: InteractionContext): Promise<void> {
-		if (!context.isInGuild()) {
+		if (!context.isInGuild() || !context.isModalSubmit()) {
 			return context.replyInSecret(context.validationError);
 		}
 		const { replyInSecret, replyInPublic, interaction, messages } = context;
+
+		const isConfirmed = interaction.fields.getTextInputValue("confirm").toLowerCase() === "yes";
+		if (!isConfirmed) {
+			return replyInSecret("Action cancelled."); // TODO: Add message for this
+		}
 
 		const success = this.bot.configs.delete(interaction.guildId);
 		return success

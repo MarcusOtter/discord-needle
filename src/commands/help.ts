@@ -7,7 +7,7 @@ import NeedleCommand from "../models/NeedleCommand";
 export default class HelpCommand extends NeedleCommand {
 	public readonly name = "help";
 	public readonly description = "See Needle's commands";
-	public readonly category = CommandCategory.Anywhere;
+	public readonly category = CommandCategory.Info;
 	public readonly tags = [CommandTag.OnlyEphemeralReplies];
 
 	public async execute(context: InteractionContext): Promise<void> {

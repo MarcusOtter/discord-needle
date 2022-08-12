@@ -34,7 +34,7 @@ export default abstract class NeedleCommand {
 		return new SlashCommandBuilder()
 			.setName(this.name)
 			.setDescription(this.description)
-			.setDMPermission(this.category === CommandCategory.Anywhere)
+			.setDMPermission(this.category === CommandCategory.Info)
 			.setDefaultMemberPermissions(getDefaultPermissions() | (this.permissions ?? 0n));
 	}
 }

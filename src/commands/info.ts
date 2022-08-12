@@ -12,7 +12,8 @@ import { EmbedBuilder } from "discord.js";
 export default class InfoCommand extends NeedleCommand {
 	public readonly name = "info";
 	public readonly description = "See information about Needle";
-	public readonly category = CommandCategory.Anywhere;
+	public readonly category = CommandCategory.Info;
+	// TODO: Maybe remove popular
 	public readonly tags = [CommandTag.Popular, CommandTag.OnlyEphemeralReplies];
 
 	private readonly infoService: InformationService;

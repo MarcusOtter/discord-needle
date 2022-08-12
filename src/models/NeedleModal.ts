@@ -11,6 +11,7 @@ export default abstract class NeedleModal {
 		this.bot = bot;
 	}
 
+	// TODO: Stop making these async for no reason, maybe make it an abstract get
 	public abstract getBuilder(): Promise<ModalBuilder>;
 	public abstract submit(context: InteractionContext): Promise<void>;
 }

@@ -1,6 +1,7 @@
 import { ActivityType, Client, GatewayIntentBits } from "discord.js";
 import type NeedleButton from "./models/NeedleButton";
 import type NeedleEventListener from "./models/NeedleEventListener";
+import NeedleModal from "./models/NeedleModal";
 import NeedleBot from "./NeedleBot";
 import CommandExecutorService from "./services/CommandExecutorService";
 import CommandImportService from "./services/CommandImportService";
@@ -26,11 +27,12 @@ export default class ObjectFactory {
 		}
 
 		this.bot = new NeedleBot(
-			ObjectFactory.createDiscordClient(),
-			ObjectFactory.createCommandsService(),
-			ObjectFactory.createEventListenersService(),
-			ObjectFactory.createButtonsService(),
-			ObjectFactory.createConfigService()
+			this.createDiscordClient(),
+			this.createCommandsService(),
+			this.createEventListenersService(),
+			this.createButtonsService(),
+			this.createModalsService(),
+			this.createConfigService()
 		);
 
 		return this.bot;
@@ -78,6 +80,10 @@ export default class ObjectFactory {
 
 	private static createButtonsService(): DynamicImportService<typeof NeedleButton> {
 		return new DynamicImportService<typeof NeedleButton>("./buttons");
+	}
+
+	private static createModalsService(): DynamicImportService<typeof NeedleModal> {
+		return new DynamicImportService<typeof NeedleModal>("./modals");
 	}
 
 	private static createConfigService(): ConfigService {

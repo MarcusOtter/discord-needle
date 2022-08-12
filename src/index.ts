@@ -21,9 +21,7 @@ console.log(license);
 const bot = ObjectFactory.createNeedleBot();
 
 (async () => {
-	await bot.registerCommands();
-	await bot.registerButtons();
-	await bot.registerEventListeners();
+	await bot.loadDynamicImports();
 	await bot.connect();
 })();
 

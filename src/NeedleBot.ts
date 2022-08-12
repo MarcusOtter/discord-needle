@@ -1,5 +1,4 @@
 import type { Client, ClientEvents } from "discord.js";
-import { getApiToken } from "./destroy-me/helpers/configHelpers";
 import type NeedleCommand from "./models/NeedleCommand";
 import ListenerRunType from "./models/enums/ListenerRunType";
 import type NeedleButton from "./models/NeedleButton";
@@ -7,6 +6,7 @@ import type DynamicImportService from "./services/DynamicImportService";
 import type NeedleEventListener from "./models/NeedleEventListener";
 import ConfigService from "./services/ConfigService";
 import CommandImportService from "./services/CommandImportService";
+import NeedleModal from "./models/NeedleModal";
 
 export default class NeedleBot {
 	public readonly client: Client;
@@ -15,6 +15,7 @@ export default class NeedleBot {
 	private readonly commandsService: CommandImportService;
 	private readonly eventsService: DynamicImportService<typeof NeedleEventListener>;
 	private readonly buttonsService: DynamicImportService<typeof NeedleButton>;
+	private readonly modalsService: DynamicImportService<typeof NeedleModal>;
 
 	private isConnected = false;
 
@@ -23,20 +24,30 @@ export default class NeedleBot {
 		commandsService: CommandImportService,
 		eventsService: DynamicImportService<typeof NeedleEventListener>,
 		buttonsService: DynamicImportService<typeof NeedleButton>,
-		configs: ConfigService
+		modalsService: DynamicImportService<typeof NeedleModal>,
+		configService: ConfigService
 	) {
 		this.client = discordClient;
 
 		this.commandsService = commandsService;
 		this.eventsService = eventsService;
 		this.buttonsService = buttonsService;
-		this.configs = configs;
+		this.modalsService = modalsService;
+		this.configs = configService;
+	}
+
+	public async loadDynamicImports(): Promise<void> {
+		await this.commandsService.load(true);
+		await this.buttonsService.load(true);
+		await this.modalsService.load(true);
+
+		await this.registerEventListeners();
 	}
 
 	public async connect(): Promise<void> {
 		if (this.isConnected) return;
 
-		await this.client.login(getApiToken());
+		await this.client.login(process.env.DISCORD_API_TOKEN);
 		this.isConnected = true;
 	}
 
@@ -44,15 +55,6 @@ export default class NeedleBot {
 		this.client?.destroy();
 		this.isConnected = false;
 		console.log("Destroyed client");
-	}
-
-	public async registerCommands(): Promise<void> {
-		await this.commandsService.load(true);
-	}
-
-	// TODO: Consider if this should be automatic with commands or events
-	public async registerButtons(): Promise<void> {
-		await this.buttonsService.load(true);
 	}
 
 	public getCommand(commandName: string): NeedleCommand | undefined {
@@ -70,12 +72,15 @@ export default class NeedleBot {
 
 	public getButton(customId: string): NeedleButton | undefined {
 		const Button = this.buttonsService.get(customId);
-		if (!Button) return;
-
-		return new Button(customId, this);
+		return Button ? new Button(customId, this) : undefined;
 	}
 
-	public async registerEventListeners(): Promise<void> {
+	public getModal(customId: string): NeedleModal | undefined {
+		const Modal = this.modalsService.get(customId);
+		return Modal ? new Modal(this) : undefined;
+	}
+
+	private async registerEventListeners(): Promise<void> {
 		const importedListeners = await this.eventsService.load(true);
 
 		for (const { fileName, Class } of importedListeners) {

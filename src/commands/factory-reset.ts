@@ -1,11 +1,4 @@
-import {
-	ActionRowBuilder,
-	ModalActionRowComponentBuilder,
-	ModalBuilder,
-	PermissionFlagsBits,
-	TextInputBuilder,
-	TextInputStyle,
-} from "discord.js";
+import { PermissionFlagsBits } from "discord.js";
 import CommandCategory from "../models/enums/CommandCategory";
 import CommandTag from "../models/enums/CommandTag";
 import InteractionContext from "../models/InteractionContext";
@@ -22,14 +15,12 @@ export default class FactoryResetCommand extends NeedleCommand {
 		if (!context.isSlashCommand() || !context.isInGuild()) {
 			return context.replyInSecret(context.validationError);
 		}
-		const { replyInSecret, replyInPublic, interaction, messages } = context;
+		const { replyInSecret, interaction, messages } = context;
 
-		// TODO: Open modal
-		// await interaction.showModal(await this.getBuilder());
+		const confirmationModal = this.bot.getModal("confirm-factory-reset");
+		if (!confirmationModal) return replyInSecret(messages.ERR_UNKNOWN);
 
-		const success = this.bot.configs.delete(interaction.guildId);
-		return success
-			? replyInPublic("Successfully reset Needle to factory settings.")
-			: replyInSecret(messages.ERR_NO_EFFECT);
+		const modalBuilder = await confirmationModal.getBuilder();
+		await interaction.showModal(modalBuilder);
 	}
 }
