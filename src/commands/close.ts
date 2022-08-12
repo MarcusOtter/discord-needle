@@ -1,15 +1,16 @@
 import { SlashCommandBuilder, ThreadAutoArchiveDuration } from "discord.js";
 import { isAllowedToArchiveThread } from "../helpers/permissionsHelpers";
+import ChannelType from "../models/enums/ChannelType";
 import InteractionContext from "../models/InteractionContext";
 import NeedleCommand from "../models/NeedleCommand";
 
 export default class CloseCommand extends NeedleCommand {
-	public async getBuilder() {
-		return new SlashCommandBuilder()
-			.setName("close")
-			.setDescription("Closes a thread.")
-			.setDMPermission(false)
-			.toJSON();
+	public readonly name = "close";
+	public readonly description = "Closes a thread";
+	public readonly allowedChannels = ChannelType.Thread;
+
+	public async getBuilder(): Promise<SlashCommandBuilder> {
+		return new SlashCommandBuilder().setName("close").setDescription("Closes a thread").setDMPermission(false);
 	}
 
 	public async execute(context: InteractionContext): Promise<void> {

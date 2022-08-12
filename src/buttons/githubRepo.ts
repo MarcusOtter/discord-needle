@@ -4,7 +4,6 @@ import NeedleButton from "../models/NeedleButton";
 export default class GithubRepoButton extends NeedleButton {
 	public async getBuilder(): Promise<ButtonBuilder> {
 		return new ButtonBuilder()
-			.setCustomId(this.customId)
 			.setLabel("Source code")
 			.setStyle(ButtonStyle.Link)
 			.setURL("https://needle.gg/github")

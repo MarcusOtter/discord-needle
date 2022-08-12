@@ -1,9 +1,9 @@
 import { GuildMember, PermissionsBitField, PublicThreadChannel } from "discord.js";
-import { Nullable } from "./typeHelpers";
+import { Nullish } from "./typeHelpers";
 
 export async function isAllowedToChangeThreadTitle(
 	thread: PublicThreadChannel,
-	member: Nullable<GuildMember>
+	member: Nullish<GuildMember>
 ): Promise<boolean> {
 	if (!member) return false;
 
@@ -23,6 +23,6 @@ export async function isAllowedToChangeThreadTitle(
 	return false;
 }
 
-export function isAllowedToArchiveThread(thread: PublicThreadChannel, member: Nullable<GuildMember>): Promise<boolean> {
+export function isAllowedToArchiveThread(thread: PublicThreadChannel, member: Nullish<GuildMember>): Promise<boolean> {
 	return isAllowedToChangeThreadTitle(thread, member);
 }

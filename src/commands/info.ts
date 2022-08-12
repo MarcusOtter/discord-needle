@@ -1,25 +1,22 @@
-import { SlashCommandBuilder } from "discord.js";
 import NeedleCommand from "../models/NeedleCommand";
 import type InteractionContext from "../models/InteractionContext";
 import type NeedleBot from "../NeedleBot";
 import type InformationService from "../services/InformationService";
 import ObjectFactory from "../ObjectFactory";
 import { plural } from "../helpers/stringHelpers";
+import { Nullish } from "../helpers/typeHelpers";
+import ChannelType from "../models/enums/ChannelType";
 
 export default class InfoCommand extends NeedleCommand {
+	public readonly name = "info";
+	public readonly description = "Shows information about Needle";
+	public readonly allowedChannels = ChannelType.Any;
+
 	private readonly infoService: InformationService;
 
-	constructor(name: "info", bot: NeedleBot) {
-		super(name, bot);
+	constructor(id: Nullish<string>, bot: NeedleBot) {
+		super(id, bot);
 		this.infoService = ObjectFactory.createInformationService();
-	}
-
-	public async getBuilder() {
-		return new SlashCommandBuilder()
-			.setName("info")
-			.setDescription("Get information about Needle")
-			.setDMPermission(true)
-			.toJSON();
 	}
 
 	public async execute({ interaction }: InteractionContext): Promise<void> {

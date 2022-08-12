@@ -1,18 +1,19 @@
 import { SlashCommandBuilder } from "discord.js";
 import { isAllowedToChangeThreadTitle } from "../helpers/permissionsHelpers";
+import { SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
+import ChannelType from "../models/enums/ChannelType";
 import InteractionContext from "../models/InteractionContext";
 import NeedleCommand from "../models/NeedleCommand";
 
 export default class TitleCommand extends NeedleCommand {
-	public async getBuilder() {
-		return new SlashCommandBuilder()
-			.setName("title")
-			.setDescription("Sets the title of a thread")
-			.setDMPermission(false) // TODO: .setDefaultMemberPermissions
-			.addStringOption(option => {
-				return option.setName("value").setDescription("The new title of the thread").setRequired(true);
-			})
-			.toJSON();
+	public readonly name = "title";
+	public readonly description = "Sets the title of a thread";
+	public readonly allowedChannels = ChannelType.Thread;
+
+	public addOptions(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions {
+		return builder.addStringOption(option =>
+			option.setName("value").setDescription("The new title of the thread").setRequired(true)
+		);
 	}
 
 	public async execute(context: InteractionContext): Promise<void> {

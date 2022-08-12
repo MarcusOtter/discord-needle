@@ -1,5 +1,6 @@
 import { promises, existsSync } from "fs";
 import * as path from "path";
+import { Concretize, ImportedClass, Newable } from "../helpers/typeHelpers";
 
 export default class DynamicImportService<T extends Newable> {
 	private readonly directoryPath: string;
@@ -41,10 +42,3 @@ export default class DynamicImportService<T extends Newable> {
 		);
 	}
 }
-
-type Newable = abstract new (...args: never[]) => unknown;
-type Concretize<T extends Newable> = new (...args: ConstructorParameters<T>) => InstanceType<T>;
-type ImportedClass<T extends Newable> = {
-	fileName: string;
-	Class: Concretize<T>;
-};

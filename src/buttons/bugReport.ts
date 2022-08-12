@@ -4,7 +4,6 @@ import NeedleButton from "../models/NeedleButton";
 export default class BugReportButton extends NeedleButton {
 	public async getBuilder(): Promise<ButtonBuilder> {
 		return new ButtonBuilder()
-			.setCustomId(this.customId)
 			.setLabel("Report a bug")
 			.setStyle(ButtonStyle.Link)
 			.setURL("https://github.com/MarcusOtter/discord-needle/issues/new/choose")

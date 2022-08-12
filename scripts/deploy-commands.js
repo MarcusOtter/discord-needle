@@ -1,5 +1,4 @@
 // @ts-check
-"use strict";
 /*
 This file is part of Needle.
 
@@ -21,7 +20,7 @@ If not, see <https://www.gnu.org/licenses/>.
 require("dotenv").config();
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord.js");
-const DynamicImportService = require("../dist/services/DynamicImportService").default;
+const CommandImportService = require("../dist/services/CommandImportService").default;
 
 const API_TOKEN = process.env.DISCORD_API_TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -42,6 +41,7 @@ if (isUndeploy && !GUILD_ID) {
 	process.exit(1);
 }
 
+// TODO: Remove non-global deployments and maybe Guild ID too if we don't use it.
 if (!isGlobal && !GUILD_ID) {
 	console.log("Aborting guild command deployment");
 	console.log("GUILD_ID is missing from the .env file.");
@@ -53,7 +53,7 @@ const route = isGlobal
 	? Routes.applicationCommands(CLIENT_ID)
 	: Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID ?? "");
 
-const rest = new REST({ version: "9" }).setToken(API_TOKEN);
+const rest = new REST({ version: "10" }).setToken(API_TOKEN);
 (async () => {
 	const builders = await getSlashCommandBuilders();
 
@@ -72,13 +72,13 @@ async function getSlashCommandBuilders() {
 		return [];
 	}
 
-	const commandImporter = new DynamicImportService("./commands");
+	const commandImporter = new CommandImportService("./commands");
 	const importedCommands = await commandImporter.load(true);
 
 	const allSlashCommandBuilders = [];
 	for (const { fileName, Class } of importedCommands) {
-		const command = new Class(fileName, null);
-		const builder = await command.getBuilder();
+		const command = new Class(commandImporter.getId(fileName), null);
+		const builder = await command.getBuilderJson();
 		allSlashCommandBuilders.push(builder);
 	}
 

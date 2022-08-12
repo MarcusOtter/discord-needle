@@ -6,12 +6,13 @@ import type NeedleButton from "./models/NeedleButton";
 import type DynamicImportService from "./services/DynamicImportService";
 import type NeedleEventListener from "./models/NeedleEventListener";
 import ConfigService from "./services/ConfigService";
+import CommandImportService from "./services/CommandImportService";
 
 export default class NeedleBot {
 	public readonly client: Client;
 	public readonly configs: ConfigService;
 
-	private readonly commandsService: DynamicImportService<typeof NeedleCommand>;
+	private readonly commandsService: CommandImportService;
 	private readonly eventsService: DynamicImportService<typeof NeedleEventListener>;
 	private readonly buttonsService: DynamicImportService<typeof NeedleButton>;
 
@@ -19,7 +20,7 @@ export default class NeedleBot {
 
 	public constructor(
 		discordClient: Client,
-		commandsService: DynamicImportService<typeof NeedleCommand>,
+		commandsService: CommandImportService,
 		eventsService: DynamicImportService<typeof NeedleEventListener>,
 		buttonsService: DynamicImportService<typeof NeedleButton>,
 		configs: ConfigService
@@ -58,7 +59,13 @@ export default class NeedleBot {
 		const Command = this.commandsService.get(commandName);
 		if (!Command) return;
 
-		return new Command(commandName, this);
+		const id = this.commandsService.getId(commandName);
+		return new Command(id, this);
+	}
+
+	public async getAllCommands(): Promise<NeedleCommand[]> {
+		const importedCommands = await this.commandsService.load();
+		return importedCommands.map(c => new c.Class(this.commandsService.getId(c.fileName), this));
 	}
 
 	public getButton(customId: string): NeedleButton | undefined {

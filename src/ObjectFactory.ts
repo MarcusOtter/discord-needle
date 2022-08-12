@@ -1,9 +1,9 @@
 import { ActivityType, Client, GatewayIntentBits } from "discord.js";
 import type NeedleButton from "./models/NeedleButton";
-import type NeedleCommand from "./models/NeedleCommand";
 import type NeedleEventListener from "./models/NeedleEventListener";
 import NeedleBot from "./NeedleBot";
 import CommandExecutorService from "./services/CommandExecutorService";
+import CommandImportService from "./services/CommandImportService";
 import ConfigService from "./services/ConfigService";
 import DynamicImportService from "./services/DynamicImportService";
 import InformationService from "./services/InformationService";
@@ -68,8 +68,8 @@ export default class ObjectFactory {
 		});
 	}
 
-	private static createCommandsService(): DynamicImportService<typeof NeedleCommand> {
-		return new DynamicImportService<typeof NeedleCommand>("./commands");
+	private static createCommandsService(): CommandImportService {
+		return new CommandImportService("./commands");
 	}
 
 	private static createEventListenersService(): DynamicImportService<typeof NeedleEventListener> {
