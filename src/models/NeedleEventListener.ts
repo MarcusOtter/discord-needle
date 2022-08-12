@@ -11,6 +11,7 @@ export default abstract class NeedleEventListener {
 		this.bot = bot;
 	}
 
+	// TODO: Make this an abstract readonly thing instead
 	public abstract getRunType(): ListenerRunType;
 	public abstract onEmitted(...[...args]: ClientEvents[keyof ClientEvents]): Promise<void>;
 }

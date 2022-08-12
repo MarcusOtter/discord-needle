@@ -10,7 +10,7 @@ export default class SupportServerButton extends NeedleButton {
 			.setEmoji("930584823473516564"); // :discord_light:
 	}
 
-	public async onPressed(): Promise<void> {
+	public async press(): Promise<void> {
 		// Do nothing, links open automatically
 	}
 }

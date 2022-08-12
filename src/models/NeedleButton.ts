@@ -3,6 +3,7 @@ import type NeedleBot from "../NeedleBot";
 import type InteractionContext from "./InteractionContext";
 
 export default abstract class NeedleButton {
+	// TODO: remove customId from ctor, put it in the actual class as name like commands do it
 	public readonly customId: string;
 	protected readonly bot: NeedleBot;
 
@@ -12,5 +13,5 @@ export default abstract class NeedleButton {
 	}
 
 	public abstract getBuilder(): Promise<ButtonBuilder>;
-	public abstract onPressed(interaction: InteractionContext): Promise<void>;
+	public abstract press(context: InteractionContext): Promise<void>;
 }

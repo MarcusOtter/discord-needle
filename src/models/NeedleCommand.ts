@@ -1,4 +1,5 @@
 import { RESTPostAPIApplicationCommandsJSONBody, SlashCommandBuilder } from "discord.js";
+import { getDefaultPermissions } from "../helpers/permissionsHelpers";
 import { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
 import type NeedleBot from "../NeedleBot";
 import CommandCategory from "./enums/CommandCategory";
@@ -12,7 +13,9 @@ export default abstract class NeedleCommand {
 	public abstract readonly name: string;
 	public abstract readonly description: string;
 	public abstract readonly category: CommandCategory;
+
 	public readonly tags?: CommandTag[];
+	public readonly permissions?: bigint;
 
 	constructor(id: Nullish<string>, bot: NeedleBot) {
 		this.id = id;
@@ -27,11 +30,11 @@ export default abstract class NeedleCommand {
 		return this.addOptions ? this.addOptions(builder).toJSON() : builder.toJSON();
 	}
 
-	// TODO: Default permissions
 	private getDefaultBuilder(): SlashCommandBuilder {
 		return new SlashCommandBuilder()
 			.setName(this.name)
 			.setDescription(this.description)
-			.setDMPermission(this.category === CommandCategory.Anywhere);
+			.setDMPermission(this.category === CommandCategory.Anywhere)
+			.setDefaultMemberPermissions(getDefaultPermissions() | (this.permissions ?? 0n));
 	}
 }

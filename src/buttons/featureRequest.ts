@@ -10,7 +10,7 @@ export default class FeatureRequestButton extends NeedleButton {
 			.setEmoji("💡");
 	}
 
-	public async onPressed(): Promise<void> {
+	public async press(): Promise<void> {
 		// Do nothing, links open automatically
 	}
 }

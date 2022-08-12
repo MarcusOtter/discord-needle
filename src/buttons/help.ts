@@ -21,7 +21,7 @@ export default class HelpButton extends NeedleButton {
 			.setEmoji("937931337942306877"); // :slash_commands:
 	}
 
-	public async onPressed(context: InteractionContext): Promise<void> {
+	public async press(context: InteractionContext): Promise<void> {
 		const helpCommand = this.bot.getCommand(this.customId);
 		this.commandExecutor.execute(helpCommand, context);
 	}

@@ -23,6 +23,11 @@ export async function isAllowedToChangeThreadTitle(
 	return false;
 }
 
+// TODO: se PermissionFlagsBits instead in the whole bot
+export function getDefaultPermissions(): bigint {
+	return PermissionsBitField.Flags.UseApplicationCommands | PermissionsBitField.Flags.SendMessages;
+}
+
 export function isAllowedToArchiveThread(thread: PublicThreadChannel, member: Nullish<GuildMember>): Promise<boolean> {
 	return isAllowedToChangeThreadTitle(thread, member);
 }

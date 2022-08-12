@@ -34,7 +34,7 @@ export default class InteractionCreateListener extends NeedleEventListener {
 
 		if (interaction.isButton()) {
 			const button = this.bot.getButton(interaction.customId);
-			await button?.onPressed(context);
+			await button?.press(context);
 		}
 
 		// TODO: Modal submit interaction
