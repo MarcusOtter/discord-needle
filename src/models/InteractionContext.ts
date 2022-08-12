@@ -48,7 +48,9 @@ export default class InteractionContext {
 	};
 
 	public isInGuild = (): this is ContextWithInteraction<GuildInteraction> => {
-		if (!this.interaction.channel?.isDMBased()) return true;
+		const { channel } = this.interaction;
+		if (channel && !channel?.isDMBased()) return true;
+
 		this.latestErrorMessage = this.messages.ERR_ONLY_IN_SERVER;
 		return false;
 	};

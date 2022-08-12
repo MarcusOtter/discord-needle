@@ -7,6 +7,7 @@ import { plural } from "../helpers/stringHelpers";
 import { Nullish } from "../helpers/typeHelpers";
 import CommandCategory from "../models/enums/CommandCategory";
 import CommandTag from "../models/enums/CommandTag";
+import { EmbedBuilder } from "discord.js";
 
 export default class InfoCommand extends NeedleCommand {
 	public readonly name = "info";
@@ -22,10 +23,9 @@ export default class InfoCommand extends NeedleCommand {
 	}
 
 	public async execute({ interaction }: InteractionContext): Promise<void> {
-		if (!interaction.isCommand()) return;
-
 		const info = await this.getInformationEmbed();
-		await interaction.reply({ content: info });
+		const descriptionEmbed = this.getDescriptionEmbed();
+		await interaction.reply({ content: info, embeds: [descriptionEmbed], ephemeral: true });
 	}
 
 	// TODO: Make actual embed
@@ -35,5 +35,13 @@ export default class InfoCommand extends NeedleCommand {
 		const ping = this.infoService.getWebSocketPing();
 
 		return `I am serving ${nUsers} across ${nServers}.\nPing: ${ping}ms`;
+	}
+
+	private getDescriptionEmbed() {
+		return new EmbedBuilder()
+			.setColor("#2f3136")
+			.setDescription(
+				"Needle is a bot that creates [threads](https://discord.com/blog/connect-the-conversation-with-threads-on-discord) in certain channels automatically. You can interact with Needle through [slash commands](https://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ) and buttons. If you want help with using this bot, feel free to join the [support server](https://discord.gg/8BmnndXHp6)."
+			);
 	}
 }
