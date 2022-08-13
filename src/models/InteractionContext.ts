@@ -79,7 +79,7 @@ export default class InteractionContext {
 }
 
 // TODO: These types can and should be interfaces instead, I think.
-type GuildInteraction = Overwrite<
+export type GuildInteraction = Overwrite<
 	NeedleInteraction,
 	{ member: GuildMember; guildId: string; channel: GuildTextBasedChannel }
 >;

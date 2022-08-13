@@ -1,7 +1,7 @@
 // TODO: Add license comments
 // TODO: Remove "Needle" prefix for these types, kinda redundant
-// TODO: Fix bug with success_thread_create
 
+import AutothreadChannelConfig from "./AutothreadChannelConfig";
 import MessageKey from "./enums/MessageKey";
 
 export default interface NeedleConfig {
@@ -13,12 +13,3 @@ export default interface NeedleConfig {
 }
 
 type MessageKeys = keyof typeof MessageKey;
-
-interface AutothreadChannelConfig {
-	channelId: string;
-	archiveImmediately?: boolean;
-	messageContent?: string;
-	includeBots?: boolean;
-	slowmode?: number;
-	titleFormat?: string;
-}
