@@ -13,7 +13,7 @@ export default class InfoCommand extends NeedleCommand {
 	public readonly name = "info";
 	public readonly description = "See information about Needle";
 	public readonly category = CommandCategory.Info;
-	public readonly tags = [CommandTag.OnlyEphemeralReplies];
+	public readonly tags = [CommandTag.OnlyEphemeralReplies, CommandTag.New];
 
 	private readonly infoService: InformationService;
 

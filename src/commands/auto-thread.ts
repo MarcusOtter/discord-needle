@@ -24,10 +24,6 @@ export default class AutoThreadCommand extends NeedleCommand {
 	public readonly permissions = PermissionFlagsBits.ManageThreads;
 
 	public async execute(context: InteractionContext): Promise<void> {
-		// TODO: Check if unauthorized people can invoke this even if default perms are higher
-		// If they can we have to do some stuff to get which permisison this command has and check for it
-		// That would be stupid...
-
 		if (!context.isInGuild() || !context.isSlashCommand()) {
 			return context.replyInSecret(context.validationError);
 		}
@@ -39,11 +35,13 @@ export default class AutoThreadCommand extends NeedleCommand {
 		// TODO: Handle error if bot cannot create threads in this channel
 		// TODO: Handle error if we try to set slowmode but bot does not have manage threads perm
 
+		// TODO: Handle error if channel is not a channel that can be auto-threaded, like a thread or text voice chat
+
 		const channelId = options.getChannel("channel")?.id ?? channel.id;
 		const guildConfig = this.bot.configs.get(guildId);
 		const oldConfigIndex = guildConfig.threadChannels.findIndex(c => c.channelId === channelId);
 		const oldAutoThreadConfig = oldConfigIndex > -1 ? guildConfig.threadChannels[oldConfigIndex] : undefined;
-		const removeAutoThreading = options.getString("toggle") === "off";
+		const removeAutoThreading = options.getInteger("toggle") === ToggleOption.Off;
 		const newTitleFormat = options.getString("title-format");
 		const openNewTitleModal = newTitleFormat === "custom" && newTitleFormat !== oldAutoThreadConfig?.titleFormat;
 
@@ -74,13 +72,12 @@ export default class AutoThreadCommand extends NeedleCommand {
 		const newAutoThreadConfig = new AutothreadChannelConfig(
 			oldAutoThreadConfig,
 			channelId,
-			options.getString("archive-behavior"),
+			options.getInteger("archive-behavior"),
 			options.getString("custom-message"),
-			options.getString("include-bots"),
+			options.getInteger("include-bots"),
 			options.getInteger("slowmode"),
-			newTitleFormat,
 			newCustomTitleFormat,
-			options.getString("status-reactions")
+			options.getInteger("status-reactions")
 		);
 
 		console.dir("NEW:");
@@ -132,37 +129,75 @@ export default class AutoThreadCommand extends NeedleCommand {
 		return title;
 	}
 
+	// TODO: What if.. instead of string options, we do enums? MUCH easier to work with...
 	public addOptions(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions {
 		return builder
 			.addChannelOption(option =>
 				option
 					.setName("channel")
 					.setDescription("Which channel? Current channel by default.")
-					.addChannelTypes(ChannelType.GuildText, ChannelType.GuildNews) // TODO: Add category
-					.setRequired(false)
+					// TODO: Add category
+					.addChannelTypes(ChannelType.GuildText, ChannelType.GuildNews)
 			)
-			.addStringOption(option =>
+			.addIntegerOption(option =>
 				option
 					.setName("toggle")
 					.setDescription("Should auto-threading be turned on or off?")
 					.addChoices(
-						{ name: "Auto-threading ON (ᴅᴇꜰᴀᴜʟᴛ)", value: "on" },
-						{ name: "Auto-threading OFF", value: "off" }
+						{ name: "Auto-threading ON (ᴅᴇꜰᴀᴜʟᴛ)", value: ToggleOption.On },
+						{ name: "Auto-threading OFF", value: ToggleOption.Off }
 					)
 			)
-			.addStringOption(option =>
+			.addIntegerOption(option =>
+				option
+					.setName("reply-message")
+					.setDescription("How should Needle reply in the thread? 🔥")
+					.addChoices(
+						{ name: "Default message with buttons (ᴅᴇꜰᴀᴜʟᴛ)", value: ReplyMessage.DefaultWithButtons },
+						{ name: "Default message without buttons", value: ReplyMessage.DefaultWithoutButtons },
+						{ name: "Only buttons, no message", value: ReplyMessage.NothingWithButtons },
+						{ name: "No reply at all, just create the thread", value: ReplyMessage.NothingWithoutButtons },
+						{ name: "Custom message with buttons 🔥", value: ReplyMessage.CustomWithButtons },
+						{ name: "Custom message without buttons", value: ReplyMessage.CustomWithoutButtons }
+					)
+			)
+			.addIntegerOption(option =>
 				option
 					.setName("include-bots")
 					.setDescription("Should threads be created on bot messages?")
-					.addChoices({ name: "Exclude bots (ᴅᴇꜰᴀᴜʟᴛ)", value: "off" }, { name: "Include bots", value: "on" })
+					.addChoices(
+						{ name: "Exclude bots (ᴅᴇꜰᴀᴜʟᴛ)", value: ToggleOption.Off },
+						{ name: "Include bots", value: ToggleOption.On }
+					)
 			)
-			.addStringOption(option =>
+			.addIntegerOption(option =>
 				option
 					.setName("archive-behavior")
 					.setDescription("What should happen when users close a thread?")
 					.addChoices(
-						{ name: "Archive immediately (ᴅᴇꜰᴀᴜʟᴛ)", value: "immediately" },
-						{ name: "Archive after 1 hour of inactivity", value: "slow" }
+						{ name: "Archive immediately (ᴅᴇꜰᴀᴜʟᴛ)", value: ToggleOption.On },
+						{ name: "Archive after 1 hour of inactivity", value: ToggleOption.Off }
+					)
+			)
+			.addIntegerOption(option =>
+				option
+					.setName("title-format")
+					.setDescription("How should the thread title look? 🆕")
+					.addChoices(
+						{ name: "Let Discord decide (ᴅᴇꜰᴀᴜʟᴛ)", value: TitleFormat.DiscordDefault },
+						{ name: "Nickname (yyyy-MM-dd)", value: TitleFormat.NicknameDate },
+						{ name: "First 30 characters of message", value: TitleFormat.FirstThirtyChars },
+						{ name: "First line of message", value: TitleFormat.FirstLineOfMessage },
+						{ name: "Custom", value: TitleFormat.Custom }
+					)
+			)
+			.addIntegerOption(option =>
+				option
+					.setName("status-reactions")
+					.setDescription("Should thread statuses be shown with emoji reactions? 🆕")
+					.addChoices(
+						{ name: "Reactions OFF (ᴅᴇꜰᴀᴜʟᴛ)", value: ToggleOption.Off },
+						{ name: "Reactions ON", value: ToggleOption.On }
 					)
 			)
 			.addIntegerOption(option =>
@@ -179,34 +214,28 @@ export default class AutoThreadCommand extends NeedleCommand {
 						{ name: "1 hour", value: 3600 },
 						{ name: "6 hours", value: 21600 }
 					)
-			)
-			.addStringOption(option =>
-				option
-					.setName("title-format")
-					.setDescription("How should the thread title look?")
-					.addChoices(
-						{ name: "Let Discord decide (ᴅᴇꜰᴀᴜʟᴛ)", value: "discordDefault" },
-						{ name: "Nickname (yyyy-MM-dd)", value: "usernameDate" },
-						{ name: "First 30 characters of message", value: "firstThirtyChars" },
-						{ name: "First line of message", value: "firstLine" },
-						{ name: "Custom", value: "custom" }
-					)
-			)
-			.addStringOption(option =>
-				option
-					.setName("status-reactions")
-					.setDescription("Should thread statuses be shown with emoji reactions?")
-					.addChoices(
-						{ name: "Reactions OFF (ᴅᴇꜰᴀᴜʟᴛ)", value: "off" },
-						{ name: "Reactions ON", value: "on" }
-					)
-			)
-			.addStringOption(option =>
-				// TODO: Make this a dropdown with custom option just like title format
-				option
-					.setName("custom-message")
-					.setDescription('What should Needle say to users? Use "\\n" for new line.')
-					.setMaxLength(2000)
 			);
 	}
+}
+
+export enum ToggleOption {
+	Off = 0,
+	On = 1,
+}
+
+enum TitleFormat {
+	DiscordDefault = 0,
+	NicknameDate,
+	FirstThirtyChars,
+	FirstLineOfMessage,
+	Custom,
+}
+
+enum ReplyMessage {
+	DefaultWithButtons = 0,
+	DefaultWithoutButtons,
+	NothingWithButtons,
+	NothingWithoutButtons,
+	CustomWithButtons,
+	CustomWithoutButtons,
 }

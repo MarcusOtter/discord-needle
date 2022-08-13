@@ -1,4 +1,5 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, PermissionsBitField } from "discord.js";
+import { Nullish } from "../helpers/typeHelpers";
 import CommandCategory from "../models/enums/CommandCategory";
 import CommandTag from "../models/enums/CommandTag";
 import InteractionContext from "../models/InteractionContext";
@@ -11,23 +12,27 @@ export default class HelpCommand extends NeedleCommand {
 	public readonly tags = [CommandTag.OnlyEphemeralReplies];
 
 	public async execute(context: InteractionContext): Promise<void> {
-		const commandsEmbed = await this.getCommandsEmbed();
+		const commandsEmbed = await this.getCommandsEmbed(context.interaction.memberPermissions);
 		await context.interaction.reply({
 			embeds: [commandsEmbed],
 			ephemeral: true,
 		});
 	}
 
-	// TODO: Only show commands user is permitted to use
-	private async getCommandsEmbed(): Promise<EmbedBuilder> {
+	private async getCommandsEmbed(memberPermissions: Nullish<PermissionsBitField>): Promise<EmbedBuilder> {
 		const commands = await this.bot.getAllCommands();
 
 		const fields = [];
+		let seeingAllCommands = true;
 		for (const category of Object.values(CommandCategory)) {
 			const commandsInCategory = commands.filter(cmd => cmd.category === category);
 
 			let value = "";
-			for (const { id, description, name, tags } of commandsInCategory) {
+			for (const { id, description, name, tags, permissions } of commandsInCategory) {
+				if (!memberPermissions?.has(permissions ?? 0n, true)) {
+					seeingAllCommands = false;
+					continue;
+				}
 				const tagEmojis = tags?.join("") ?? "";
 				const command = id ? `</${name}:${id}>` : `\`/${name}\``;
 				value += `${command} ${tagEmojis} — ${description}\n`;
@@ -38,6 +43,16 @@ export default class HelpCommand extends NeedleCommand {
 			}
 		}
 
-		return new EmbedBuilder().setColor("#2f3136").setFields(fields);
+		if (fields.length === 0) {
+			return new EmbedBuilder()
+				.setColor("#2f3136")
+				.setDescription("You do not have permission to use any Needle commands");
+		}
+
+		const footerText = seeingAllCommands
+			? "You have access to all Needle commands ✨"
+			: "Moderator commands are hidden 🔒";
+
+		return new EmbedBuilder().setColor("#2f3136").setFields(fields).setFooter({ text: footerText });
 	}
 }
