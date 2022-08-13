@@ -57,6 +57,7 @@ const rest = new REST({ version: "10" }).setToken(API_TOKEN);
 (async () => {
 	const builders = await getSlashCommandBuilders();
 
+	// TODO: Improve output of this command
 	try {
 		console.log(`Started deploying ${builders.length} application commands.`);
 		await rest.put(route, { body: builders });

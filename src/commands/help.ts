@@ -30,7 +30,7 @@ export default class HelpCommand extends NeedleCommand {
 			for (const { id, description, name, tags } of commandsInCategory) {
 				const tagEmojis = tags?.join("") ?? "";
 				const command = id ? `</${name}:${id}>` : `\`/${name}\``;
-				value += `${command} — ${description} ${tagEmojis}\n`;
+				value += `${command} ${tagEmojis} — ${description}\n`;
 			}
 
 			if (value.length > 0) {
