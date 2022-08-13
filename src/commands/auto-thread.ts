@@ -33,15 +33,16 @@ export default class AutoThreadCommand extends NeedleCommand {
 		}
 
 		const { interaction, messages, replyInSecret, replyInPublic } = context;
-		const { guildId, channelId, channel, options, member } = interaction;
+		const { guildId, channel, options, member } = interaction;
 
 		// TODO: Handle channel visibility error if bot cannot see
 		// TODO: Handle error if bot cannot create threads in this channel
 		// TODO: Handle error if we try to set slowmode but bot does not have manage threads perm
 
+		const channelId = options.getChannel("channel")?.id ?? channel.id;
 		const guildConfig = this.bot.configs.get(guildId);
 		const oldConfigIndex = guildConfig.threadChannels.findIndex(c => c.channelId === channelId);
-		const oldAutoThreadConfig = oldConfigIndex > 0 ? guildConfig.threadChannels[oldConfigIndex] : undefined;
+		const oldAutoThreadConfig = oldConfigIndex > -1 ? guildConfig.threadChannels[oldConfigIndex] : undefined;
 		const removeAutoThreading = options.getString("toggle") === "off";
 		const newTitleFormat = options.getString("title-format");
 		const openNewTitleModal = newTitleFormat === "custom" && newTitleFormat !== oldAutoThreadConfig?.titleFormat;
@@ -56,8 +57,12 @@ export default class AutoThreadCommand extends NeedleCommand {
 			return replyInPublic(`Removed auto-threading in <#${channel.id}>`);
 		}
 
+		// TODO: Check if we have 2 custom options (title AND custom-message), and if so, error out with new error
+		// Do it one at a time if u want both custom
+
 		let newCustomTitleFormat;
 		if (openNewTitleModal) {
+			// TODO: Just have one title format and make the options in actual regexes
 			newCustomTitleFormat = await this.getCustomTitleFormat(interaction);
 		}
 
@@ -67,26 +72,31 @@ export default class AutoThreadCommand extends NeedleCommand {
 
 		// TODO: Okay apparently the whole thing is bugged, it still overwrites for some reason...
 		const newAutoThreadConfig = new AutothreadChannelConfig(
-			options.getChannel("channel")?.id ?? channel.id,
-			options.getString("archive-behavior") === "immediately" ?? oldAutoThreadConfig?.archiveImmediately,
-			options.getString("custom-message") ?? oldAutoThreadConfig?.messageContent,
-			options.getString("include-bots") === "on" ?? oldAutoThreadConfig?.includeBots,
-			options.getInteger("slowmode") ?? oldAutoThreadConfig?.slowmode,
-			newTitleFormat ?? oldAutoThreadConfig?.titleFormat,
-			newCustomTitleFormat ?? oldAutoThreadConfig?.customTitleFormat,
-			options.getString("status-reactions") === "on" ?? oldAutoThreadConfig?.statusReactions
+			oldAutoThreadConfig,
+			channelId,
+			options.getString("archive-behavior"),
+			options.getString("custom-message"),
+			options.getString("include-bots"),
+			options.getInteger("slowmode"),
+			newTitleFormat,
+			newCustomTitleFormat,
+			options.getString("status-reactions")
 		);
 
 		console.dir("NEW:");
 		console.dir(newAutoThreadConfig);
 		console.dir("OLD:");
 		console.dir(oldAutoThreadConfig);
-		// TODO: Not even this works, something wrong with old
+
 		if (JSON.stringify(oldAutoThreadConfig) === JSON.stringify(newAutoThreadConfig)) {
 			return replyInSecret(messages.ERR_NO_EFFECT);
 		}
 
-		guildConfig.threadChannels[oldConfigIndex] = newAutoThreadConfig;
+		if (oldConfigIndex > -1) {
+			guildConfig.threadChannels[oldConfigIndex] = newAutoThreadConfig;
+		} else {
+			guildConfig.threadChannels.push(newAutoThreadConfig);
+		}
 
 		this.bot.configs.set(guildId, guildConfig);
 		// TODO: Fix bug with success_thread_create
@@ -99,22 +109,8 @@ export default class AutoThreadCommand extends NeedleCommand {
 	}
 
 	private async getCustomTitleFormat(interaction: GuildInteraction & ChatInputCommandInteraction): Promise<string> {
-		const modal = this.getCustomTitleModal("custom-title");
-		await interaction.showModal(modal);
-		const submitInteraction = await interaction.awaitModalSubmit({
-			time: 1000 * 60 * 5, // 5 min
-			filter: x => x.customId === "custom-title" && x.user.id === interaction.user.id,
-		});
-
-		const title = submitInteraction.fields.getTextInputValue("title");
-		// TODO: Put this reply somewhere else because we need to know if it's successful first
-		await submitInteraction.reply({ content: `New custom title: \`${title}\``, ephemeral: true });
-		return title;
-	}
-
-	// TODO: Add more instructions to this modal
-	private getCustomTitleModal(customId: string): ModalBuilder {
-		const modal = new ModalBuilder().setCustomId(customId).setTitle("Set a custom title format");
+		// TODO: Add more instructions to this modal
+		const modal = new ModalBuilder().setCustomId("custom-title").setTitle("Set a custom title format");
 		const titleInput = new TextInputBuilder()
 			.setCustomId("title")
 			.setLabel("Title format")
@@ -122,7 +118,18 @@ export default class AutoThreadCommand extends NeedleCommand {
 			.setPlaceholder("Help $USER with /\\w*a\\w*/gi")
 			.setStyle(TextInputStyle.Short);
 		const row = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(titleInput);
-		return modal.addComponents(row);
+		modal.addComponents(row);
+
+		await interaction.showModal(modal);
+		const submitInteraction = await interaction.awaitModalSubmit({
+			time: 1000 * 60 * 15, // 15 min
+			filter: x => x.customId === "custom-title" && x.user.id === interaction.user.id,
+		});
+
+		const title = submitInteraction.fields.getTextInputValue("title");
+		// TODO: Put this reply somewhere else because we need to know if it's successful first
+		await submitInteraction.reply({ content: `New custom title: \`${title}\``, ephemeral: true });
+		return title;
 	}
 
 	public addOptions(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions {
@@ -195,9 +202,11 @@ export default class AutoThreadCommand extends NeedleCommand {
 					)
 			)
 			.addStringOption(option =>
+				// TODO: Make this a dropdown with custom option just like title format
 				option
 					.setName("custom-message")
 					.setDescription('What should Needle say to users? Use "\\n" for new line.')
+					.setMaxLength(2000)
 			);
 	}
 }

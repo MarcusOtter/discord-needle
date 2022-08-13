@@ -11,22 +11,25 @@ export default class AutothreadChannelConfig {
 	public readonly statusReactions: boolean;
 
 	constructor(
+		oldConfig: Nullish<AutothreadChannelConfig>,
 		channelId: string,
-		archiveImmediately: Nullish<boolean>,
+		archiveImmediately: Nullish<string>,
 		messageContent: Nullish<string>,
-		includeBots: Nullish<boolean>,
+		includeBots: Nullish<string>,
 		slowmode: Nullish<number>,
 		titleFormat: Nullish<string>,
 		customTitleFormat: Nullish<string>,
-		statusReactions: Nullish<boolean>
+		statusReactions: Nullish<string>
 	) {
 		this.channelId = channelId;
-		this.archiveImmediately = archiveImmediately ?? true;
-		this.messageContent = messageContent ?? "";
-		this.includeBots = includeBots ?? false;
-		this.slowmode = slowmode ?? 0;
-		this.titleFormat = titleFormat ?? "defaultDiscord";
-		this.customTitleFormat = customTitleFormat ?? "";
-		this.statusReactions = statusReactions ?? false;
+		this.archiveImmediately = archiveImmediately
+			? archiveImmediately === "immediately"
+			: oldConfig?.archiveImmediately ?? true;
+		this.messageContent = messageContent ?? oldConfig?.messageContent ?? "";
+		this.includeBots = includeBots ? includeBots === "on" : oldConfig?.includeBots ?? false;
+		this.slowmode = slowmode ?? oldConfig?.slowmode ?? 0;
+		this.titleFormat = titleFormat ?? oldConfig?.titleFormat ?? "defaultDiscord";
+		this.customTitleFormat = customTitleFormat ?? oldConfig?.customTitleFormat ?? "";
+		this.statusReactions = statusReactions ? statusReactions === "on" : oldConfig?.statusReactions ?? false;
 	}
 }
