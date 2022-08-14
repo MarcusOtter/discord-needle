@@ -33,12 +33,12 @@ export default class InteractionContext {
 		this.messages = bot.configs.get(interaction.guildId ?? "").messages;
 	}
 
-	public replyInSecret = (content: string | undefined): Promise<void> => {
-		return this.reply(content, true);
+	public replyInSecret = (content: string | undefined, interaction?: NeedleInteraction): Promise<void> => {
+		return this.reply(content, true, interaction);
 	};
 
-	public replyInPublic = (content: string | undefined): Promise<void> => {
-		return this.reply(content, false);
+	public replyInPublic = (content: string | undefined, interaction?: NeedleInteraction): Promise<void> => {
+		return this.reply(content, false, interaction);
 	};
 
 	public isInPublicThread = (): this is ContextWithInteraction<GuildInteraction & PublicThreadInteraction> => {
@@ -68,13 +68,17 @@ export default class InteractionContext {
 
 	// TODO: Implement behavior on what happens if content longer than 2k (pagination or multiple messages?)
 	// Should this be some kind of message sender? So we always send messages with the same safe guards
-	private async reply(content: string | undefined, ephemeral: boolean): Promise<void> {
+	private async reply(
+		content: string | undefined,
+		ephemeral: boolean,
+		interaction?: NeedleInteraction
+	): Promise<void> {
 		if (!content || content.length === 0) {
 			console.warn("Tried sending empty message");
 			return;
 		}
 
-		await this.interaction.reply({ content: content, ephemeral: ephemeral });
+		await (interaction ?? this.interaction).reply({ content: content, ephemeral: ephemeral });
 	}
 }
 
@@ -88,4 +92,7 @@ type PublicThreadInteraction = Overwrite<NeedleInteraction, { channel: PublicThr
 type ContextWithInteraction<TInteraction> = Overwrite<InteractionContext, { interaction: TInteraction }>;
 
 // Little type hack with Omit to remove private members from djs types
-type NeedleInteraction = Omit<ChatInputCommandInteraction | MessageComponentInteraction | ModalSubmitInteraction, "">;
+export type NeedleInteraction = Omit<
+	ChatInputCommandInteraction | MessageComponentInteraction | ModalSubmitInteraction,
+	""
+>;

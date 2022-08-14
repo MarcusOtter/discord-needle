@@ -4,12 +4,13 @@ import {
 	ChatInputCommandInteraction,
 	ModalActionRowComponentBuilder,
 	ModalBuilder,
+	ModalSubmitInteraction,
 	PermissionFlagsBits,
 	SlashCommandBuilder,
 	TextInputBuilder,
 	TextInputStyle,
 } from "discord.js";
-import { SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
+import { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
 import AutothreadChannelConfig from "../models/AutothreadChannelConfig";
 import CommandCategory from "../models/enums/CommandCategory";
 import CommandTag from "../models/enums/CommandTag";
@@ -23,6 +24,8 @@ export default class AutoThreadCommand extends NeedleCommand {
 	public readonly tags = [CommandTag.Popular, CommandTag.RequiresSpecialPermissions];
 	public readonly permissions = PermissionFlagsBits.ManageThreads;
 
+	private interactionToReplyTo: ChatInputCommandInteraction | ModalSubmitInteraction | undefined;
+
 	public async execute(context: InteractionContext): Promise<void> {
 		if (!context.isInGuild() || !context.isSlashCommand()) {
 			return context.replyInSecret(context.validationError);
@@ -30,6 +33,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 
 		const { interaction, messages, replyInSecret, replyInPublic } = context;
 		const { guildId, channel, options, member } = interaction;
+		this.interactionToReplyTo = interaction;
 
 		// TODO: Handle channel visibility error if bot cannot see
 		// TODO: Handle error if bot cannot create threads in this channel
@@ -41,11 +45,13 @@ export default class AutoThreadCommand extends NeedleCommand {
 		const guildConfig = this.bot.configs.get(guildId);
 		const oldConfigIndex = guildConfig.threadChannels.findIndex(c => c.channelId === channelId);
 		const oldAutoThreadConfig = oldConfigIndex > -1 ? guildConfig.threadChannels[oldConfigIndex] : undefined;
-		const removeAutoThreading = options.getInteger("toggle") === ToggleOption.Off;
-		const newTitleFormat = options.getString("title-format");
-		const openNewTitleModal = newTitleFormat === "custom" && newTitleFormat !== oldAutoThreadConfig?.titleFormat;
+		const openTitleModal = options.getInteger("title-format") === TitleFormat.Custom;
+		const replyMessageOption = options.getInteger("reply-message");
+		const openReplyMessageModal =
+			replyMessageOption === ReplyMessage.CustomWithButtons ||
+			replyMessageOption === ReplyMessage.CustomWithoutButtons;
 
-		if (removeAutoThreading) {
+		if (options.getInteger("toggle") === ToggleOption.Off) {
 			if (!oldAutoThreadConfig) {
 				return replyInSecret(messages.ERR_NO_EFFECT);
 			}
@@ -55,28 +61,26 @@ export default class AutoThreadCommand extends NeedleCommand {
 			return replyInPublic(`Removed auto-threading in <#${channel.id}>`);
 		}
 
-		// TODO: Check if we have 2 custom options (title AND custom-message), and if so, error out with new error
-		// Do it one at a time if u want both custom
-
-		let newCustomTitleFormat;
-		if (openNewTitleModal) {
-			// TODO: Just have one title format and make the options in actual regexes
-			newCustomTitleFormat = await this.getCustomTitleFormat(interaction);
+		if (openTitleModal && openReplyMessageModal) {
+			// TODO: Add message key for this
+			return replyInSecret(
+				"If you want to set both a custom title and custom reply message, please do it one at a time"
+			);
 		}
 
-		// TODO: The boolean things have bugs here, can never be undefined right
-		// Maybe constructor should take the string value and convert it to a boolean
-		// This would also look less messy if we also provided the old thread config in the ctor
+		// Use interactionToReplyTo after this point
+		const newTitleFormat = openTitleModal
+			? await this.getCustomTitleFormat(interaction)
+			: this.getTitleRegex(options.getInteger("title-format"));
 
-		// TODO: Okay apparently the whole thing is bugged, it still overwrites for some reason...
 		const newAutoThreadConfig = new AutothreadChannelConfig(
 			oldAutoThreadConfig,
 			channelId,
 			options.getInteger("archive-behavior"),
-			options.getString("custom-message"),
+			newTitleFormat,
 			options.getInteger("include-bots"),
 			options.getInteger("slowmode"),
-			newCustomTitleFormat,
+			newTitleFormat,
 			options.getInteger("status-reactions")
 		);
 
@@ -86,7 +90,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 		console.dir(oldAutoThreadConfig);
 
 		if (JSON.stringify(oldAutoThreadConfig) === JSON.stringify(newAutoThreadConfig)) {
-			return replyInSecret(messages.ERR_NO_EFFECT);
+			return replyInSecret(messages.ERR_NO_EFFECT, this.interactionToReplyTo);
 		}
 
 		if (oldConfigIndex > -1) {
@@ -96,12 +100,13 @@ export default class AutoThreadCommand extends NeedleCommand {
 		}
 
 		this.bot.configs.set(guildId, guildConfig);
-		// TODO: Fix bug with success_thread_create
-		// TODO: If custom format and empty custom title format, do default format instead
+		// TODO: Fix bug with success_thread_create (if empty msg I think we should use that instead)
+		// TODO: If custom format and empty title format, do default format instead
 
 		// TODO: Make public when done
-		if (!openNewTitleModal) {
-			replyInSecret("It might have worked...");
+		// Make different for enable autothread, disable, and update settings
+		if (!openTitleModal) {
+			return replyInSecret("It might have worked...", this.interactionToReplyTo);
 		}
 	}
 
@@ -112,7 +117,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 			.setCustomId("title")
 			.setLabel("Title format")
 			.setRequired(true)
-			.setPlaceholder("Help $USER with /\\w*a\\w*/gi")
+			.setPlaceholder("$USER help: /^(.*)$/m")
 			.setStyle(TextInputStyle.Short);
 		const row = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(titleInput);
 		modal.addComponents(row);
@@ -123,13 +128,53 @@ export default class AutoThreadCommand extends NeedleCommand {
 			filter: x => x.customId === "custom-title" && x.user.id === interaction.user.id,
 		});
 
-		const title = submitInteraction.fields.getTextInputValue("title");
-		// TODO: Put this reply somewhere else because we need to know if it's successful first
-		await submitInteraction.reply({ content: `New custom title: \`${title}\``, ephemeral: true });
-		return title;
+		this.interactionToReplyTo = submitInteraction;
+		return submitInteraction.fields.getTextInputValue("title");
 	}
 
-	// TODO: What if.. instead of string options, we do enums? MUCH easier to work with...
+	// TODO: I think I need to split this up again to 2 values for reply message....
+	// TODO: Maybe make this stuff generic because I copy pasted from above
+	// TODO: If this returns nullish then it should be empty string I think lol nice job
+	private async getCustomReplyMessage(
+		interaction: GuildInteraction & ChatInputCommandInteraction
+	): Promise<Nullish<string>> {
+		const modal = new ModalBuilder().setCustomId("reply-message-modal").setTitle("Set a custom reply message");
+		const messageInput = new TextInputBuilder()
+			.setCustomId("message")
+			.setLabel("Custom message")
+			.setRequired(false)
+			.setPlaceholder("Thread automatically created by $USER in $CHANNEL.")
+			.setStyle(TextInputStyle.Paragraph);
+		const row = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(messageInput);
+		modal.addComponents(row);
+
+		await interaction.showModal(modal);
+		const submitInteraction = await interaction.awaitModalSubmit({
+			time: 1000 * 60 * 15, // 15 min
+			filter: x => x.customId === "reply-message-modal" && x.user.id === interaction.user.id,
+		});
+
+		this.interactionToReplyTo = submitInteraction;
+		return submitInteraction.fields.getTextInputValue("message");
+	}
+
+	private getTitleRegex(formatOption: Nullish<TitleFormat>): string | undefined {
+		if (formatOption === undefined || formatOption === null) return undefined;
+		switch (formatOption) {
+			case TitleFormat.FirstLineOfMessage:
+				return "/^(.*)$/m";
+			case TitleFormat.FirstThirtyChars:
+				return "/^((.|\\s){0,30})/ig";
+			case TitleFormat.NicknameDate:
+				return "$USER ($DATE)";
+
+			default:
+			case TitleFormat.DiscordDefault:
+			case TitleFormat.Custom:
+				return "";
+		}
+	}
+
 	public addOptions(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions {
 		return builder
 			.addChannelOption(option =>

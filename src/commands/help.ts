@@ -12,14 +12,17 @@ export default class HelpCommand extends NeedleCommand {
 	public readonly tags = [CommandTag.OnlyEphemeralReplies];
 
 	public async execute(context: InteractionContext): Promise<void> {
-		const commandsEmbed = await this.getCommandsEmbed(context.interaction.memberPermissions);
+		const commandsEmbed = await this.getCommandsEmbed(context.isInGuild(), context.interaction.memberPermissions);
 		await context.interaction.reply({
 			embeds: [commandsEmbed],
 			ephemeral: true,
 		});
 	}
 
-	private async getCommandsEmbed(memberPermissions: Nullish<PermissionsBitField>): Promise<EmbedBuilder> {
+	private async getCommandsEmbed(
+		isInGuild: boolean,
+		memberPermissions: Nullish<PermissionsBitField>
+	): Promise<EmbedBuilder> {
 		const commands = await this.bot.getAllCommands();
 
 		const fields = [];
@@ -29,7 +32,7 @@ export default class HelpCommand extends NeedleCommand {
 
 			let value = "";
 			for (const { id, description, name, tags, permissions } of commandsInCategory) {
-				if (!memberPermissions?.has(permissions ?? 0n, true)) {
+				if (isInGuild && !memberPermissions?.has(permissions ?? 0n, true)) {
 					seeingAllCommands = false;
 					continue;
 				}
@@ -49,10 +52,11 @@ export default class HelpCommand extends NeedleCommand {
 				.setDescription("You do not have permission to use any Needle commands");
 		}
 
-		const footerText = seeingAllCommands
-			? "You have access to all Needle commands ✨"
-			: "Moderator commands are hidden 🔒";
+		const builder = new EmbedBuilder().setColor("#2f3136").setFields(fields);
+		if (isInGuild && !seeingAllCommands) {
+			builder.setFooter({ text: "Moderator commands are hidden 🔒" });
+		}
 
-		return new EmbedBuilder().setColor("#2f3136").setFields(fields).setFooter({ text: footerText });
+		return builder;
 	}
 }
