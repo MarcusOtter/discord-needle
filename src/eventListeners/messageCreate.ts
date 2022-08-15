@@ -67,7 +67,7 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 
 		const creationDate = message.createdAt.toISOString().slice(0, 10);
 		const authorName = authorMember?.nickname ?? authorUser.username;
-		const name = `${authorName} (${creationDate})`;
+		const name = `${authorName} (${creationDate})`; // TODO: Get correct format
 
 		const thread = await message.startThread({
 			name,
@@ -87,8 +87,8 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 		const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(closeButton, helpButton);
 
 		const msgContent =
-			channelConfig.replyMessage.length > 0
-				? channelConfig.replyMessage
+			channelConfig.customReply.length > 0
+				? channelConfig.customReply
 				: guildConfig.messages.SUCCESS_THREAD_CREATE;
 
 		// ? replaceMessageVariables(overrideMessageContent, requestId)

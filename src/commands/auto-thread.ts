@@ -1,20 +1,18 @@
 import {
-	ActionRowBuilder,
 	ChannelType,
 	ChatInputCommandInteraction,
-	ModalActionRowComponentBuilder,
-	ModalBuilder,
 	ModalSubmitInteraction,
 	PermissionFlagsBits,
 	SlashCommandBuilder,
-	TextInputBuilder,
-	TextInputStyle,
 } from "discord.js";
-import { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
+import { SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
 import AutothreadChannelConfig from "../models/AutothreadChannelConfig";
 import CommandCategory from "../models/enums/CommandCategory";
 import CommandTag from "../models/enums/CommandTag";
-import InteractionContext, { GuildInteraction } from "../models/InteractionContext";
+import ReplyType from "../models/enums/ReplyType";
+import TitleFormat from "../models/enums/TitleFormat";
+import ToggleOption from "../models/enums/ToggleOption";
+import InteractionContext from "../models/InteractionContext";
 import NeedleCommand from "../models/NeedleCommand";
 
 export default class AutoThreadCommand extends NeedleCommand {
@@ -48,8 +46,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 		const openTitleModal = options.getInteger("title-format") === TitleFormat.Custom;
 		const replyMessageOption = options.getInteger("reply-message");
 		const openReplyMessageModal =
-			replyMessageOption === ReplyMessage.CustomWithButtons ||
-			replyMessageOption === ReplyMessage.CustomWithoutButtons;
+			replyMessageOption === ReplyType.CustomWithButtons || replyMessageOption === ReplyType.CustomWithoutButtons;
 
 		if (options.getInteger("toggle") === ToggleOption.Off) {
 			if (!oldAutoThreadConfig) {
@@ -69,19 +66,26 @@ export default class AutoThreadCommand extends NeedleCommand {
 		}
 
 		// Use interactionToReplyTo after this point
-		const newTitleFormat = openTitleModal
-			? await this.getCustomTitleFormat(interaction)
-			: this.getTitleRegex(options.getInteger("title-format"));
+		// TODO: Refactor and fix, now we are throwing away the modal submit interaction
+		// We should make it into its own function, can maybe be used by custom message as well
+		let newCustomTitle;
+		if (openTitleModal) {
+			const customTitleModal = this.bot.getModal("custom-title-format");
+			const customTitleInteraction = await customTitleModal?.openAndAwaitSubmit(interaction);
+			newCustomTitle = customTitleInteraction?.fields.getTextInputValue("title");
+		}
 
 		const newAutoThreadConfig = new AutothreadChannelConfig(
 			oldAutoThreadConfig,
 			channelId,
 			options.getInteger("archive-behavior"),
-			newTitleFormat,
+			options.getInteger("reply-message"), // TODO: change name
+			"", // wrong, get the actual reply message from modal if needed
 			options.getInteger("include-bots"),
 			options.getInteger("slowmode"),
-			newTitleFormat,
-			options.getInteger("status-reactions")
+			options.getInteger("status-reactions"),
+			options.getInteger("title-format"), // TODO: Rename to title-type
+			newCustomTitle
 		);
 
 		console.dir("NEW:");
@@ -110,78 +114,12 @@ export default class AutoThreadCommand extends NeedleCommand {
 		}
 	}
 
-	private async getCustomTitleFormat(interaction: GuildInteraction & ChatInputCommandInteraction): Promise<string> {
-		// TODO: Add more instructions to this modal
-		const modal = new ModalBuilder().setCustomId("custom-title").setTitle("Set a custom title format");
-		const titleInput = new TextInputBuilder()
-			.setCustomId("title")
-			.setLabel("Title format")
-			.setRequired(true)
-			.setPlaceholder("$USER help: /^(.*)$/m")
-			.setStyle(TextInputStyle.Short);
-		const row = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(titleInput);
-		modal.addComponents(row);
-
-		await interaction.showModal(modal);
-		const submitInteraction = await interaction.awaitModalSubmit({
-			time: 1000 * 60 * 15, // 15 min
-			filter: x => x.customId === "custom-title" && x.user.id === interaction.user.id,
-		});
-
-		this.interactionToReplyTo = submitInteraction;
-		return submitInteraction.fields.getTextInputValue("title");
-	}
-
-	// TODO: I think I need to split this up again to 2 values for reply message....
-	// TODO: Maybe make this stuff generic because I copy pasted from above
-	// TODO: If this returns nullish then it should be empty string I think lol nice job
-	private async getCustomReplyMessage(
-		interaction: GuildInteraction & ChatInputCommandInteraction
-	): Promise<Nullish<string>> {
-		const modal = new ModalBuilder().setCustomId("reply-message-modal").setTitle("Set a custom reply message");
-		const messageInput = new TextInputBuilder()
-			.setCustomId("message")
-			.setLabel("Custom message")
-			.setRequired(false)
-			.setPlaceholder("Thread automatically created by $USER in $CHANNEL.")
-			.setStyle(TextInputStyle.Paragraph);
-		const row = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(messageInput);
-		modal.addComponents(row);
-
-		await interaction.showModal(modal);
-		const submitInteraction = await interaction.awaitModalSubmit({
-			time: 1000 * 60 * 15, // 15 min
-			filter: x => x.customId === "reply-message-modal" && x.user.id === interaction.user.id,
-		});
-
-		this.interactionToReplyTo = submitInteraction;
-		return submitInteraction.fields.getTextInputValue("message");
-	}
-
-	private getTitleRegex(formatOption: Nullish<TitleFormat>): string | undefined {
-		if (formatOption === undefined || formatOption === null) return undefined;
-		switch (formatOption) {
-			case TitleFormat.FirstLineOfMessage:
-				return "/^(.*)$/m";
-			case TitleFormat.FirstThirtyChars:
-				return "/^((.|\\s){0,30})/ig";
-			case TitleFormat.NicknameDate:
-				return "$USER ($DATE)";
-
-			default:
-			case TitleFormat.DiscordDefault:
-			case TitleFormat.Custom:
-				return "";
-		}
-	}
-
 	public addOptions(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions {
 		return builder
 			.addChannelOption(option =>
 				option
 					.setName("channel")
 					.setDescription("Which channel? Current channel by default.")
-					// TODO: Add category
 					.addChannelTypes(ChannelType.GuildText, ChannelType.GuildNews)
 			)
 			.addIntegerOption(option =>
@@ -198,12 +136,12 @@ export default class AutoThreadCommand extends NeedleCommand {
 					.setName("reply-message")
 					.setDescription("How should Needle reply in the thread? 🔥")
 					.addChoices(
-						{ name: "Default message with buttons (ᴅᴇꜰᴀᴜʟᴛ)", value: ReplyMessage.DefaultWithButtons },
-						{ name: "Default message without buttons", value: ReplyMessage.DefaultWithoutButtons },
-						{ name: "Only buttons, no message", value: ReplyMessage.NothingWithButtons },
-						{ name: "No reply at all, just create the thread", value: ReplyMessage.NothingWithoutButtons },
-						{ name: "Custom message with buttons 🔥", value: ReplyMessage.CustomWithButtons },
-						{ name: "Custom message without buttons", value: ReplyMessage.CustomWithoutButtons }
+						{ name: "Default message with buttons (ᴅᴇꜰᴀᴜʟᴛ)", value: ReplyType.DefaultWithButtons },
+						{ name: "Default message without buttons", value: ReplyType.DefaultWithoutButtons },
+						{ name: "Only buttons, no message", value: ReplyType.NothingWithButtons },
+						{ name: "No reply at all, just create the thread 🔥", value: ReplyType.NothingWithoutButtons },
+						{ name: "Custom message with buttons 🔥", value: ReplyType.CustomWithButtons },
+						{ name: "Custom message without buttons", value: ReplyType.CustomWithoutButtons }
 					)
 			)
 			.addIntegerOption(option =>
@@ -261,26 +199,4 @@ export default class AutoThreadCommand extends NeedleCommand {
 					)
 			);
 	}
-}
-
-export enum ToggleOption {
-	Off = 0,
-	On = 1,
-}
-
-enum TitleFormat {
-	DiscordDefault = 0,
-	NicknameDate,
-	FirstThirtyChars,
-	FirstLineOfMessage,
-	Custom,
-}
-
-enum ReplyMessage {
-	DefaultWithButtons = 0,
-	DefaultWithoutButtons,
-	NothingWithButtons,
-	NothingWithoutButtons,
-	CustomWithButtons,
-	CustomWithoutButtons,
 }

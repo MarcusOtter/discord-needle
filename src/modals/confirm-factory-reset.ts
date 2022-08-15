@@ -12,10 +12,6 @@ import NeedleModal from "../models/NeedleModal";
 export default class ConfirmFactoryResetModal extends NeedleModal {
 	public readonly customId = "confirm-factory-reset";
 	public get builder(): ModalBuilder {
-		const modal = new ModalBuilder()
-			.setCustomId("confirm-factory-reset")
-			.setTitle("Reset Needle to factory settings");
-
 		const confirmInput = new TextInputBuilder()
 			.setCustomId("confirm")
 			.setLabel("Factory reset? (yes/no)")
@@ -25,8 +21,10 @@ export default class ConfirmFactoryResetModal extends NeedleModal {
 			.setStyle(TextInputStyle.Short);
 
 		const row = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents([confirmInput]);
-		modal.addComponents(row);
-		return modal;
+		return new ModalBuilder()
+			.setCustomId(this.customId)
+			.setTitle("Reset Needle to factory settings")
+			.addComponents(row);
 	}
 
 	public submit(context: InteractionContext): Promise<void> {
