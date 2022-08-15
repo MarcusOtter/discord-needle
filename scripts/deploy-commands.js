@@ -79,8 +79,7 @@ async function getSlashCommandBuilders() {
 	const allSlashCommandBuilders = [];
 	for (const { fileName, Class } of importedCommands) {
 		const command = new Class(commandImporter.getId(fileName), null);
-		const builder = await command.getBuilderJson();
-		allSlashCommandBuilders.push(builder);
+		allSlashCommandBuilders.push(command.builderJson);
 	}
 
 	return allSlashCommandBuilders;

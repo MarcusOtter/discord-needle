@@ -11,8 +11,7 @@ import NeedleModal from "../models/NeedleModal";
 // TODO: Maybe we just remove custom modals and let them live in the command/button they came from with awaitModalSubmit
 export default class ConfirmFactoryResetModal extends NeedleModal {
 	public readonly customId = "confirm-factory-reset";
-
-	public async getBuilder(): Promise<ModalBuilder> {
+	public get builder(): ModalBuilder {
 		const modal = new ModalBuilder()
 			.setCustomId("confirm-factory-reset")
 			.setTitle("Reset Needle to factory settings");

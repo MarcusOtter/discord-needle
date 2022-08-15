@@ -19,8 +19,6 @@ export default class FactoryResetCommand extends NeedleCommand {
 
 		const confirmationModal = this.bot.getModal("confirm-factory-reset");
 		if (!confirmationModal) return replyInSecret(messages.ERR_UNKNOWN);
-
-		const modalBuilder = await confirmationModal.getBuilder();
-		await interaction.showModal(modalBuilder);
+		await interaction.showModal(confirmationModal.builder);
 	}
 }

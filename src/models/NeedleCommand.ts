@@ -8,6 +8,11 @@ import type InteractionContext from "./InteractionContext";
 
 export default abstract class NeedleCommand {
 	public readonly id: Nullish<string>;
+	public get builderJson(): RESTPostAPIApplicationCommandsJSONBody {
+		const builder = this.getDefaultBuilder();
+		return this.addOptions ? this.addOptions(builder).toJSON() : builder.toJSON();
+	}
+
 	protected readonly bot: NeedleBot;
 
 	public abstract readonly name: string;
@@ -24,11 +29,6 @@ export default abstract class NeedleCommand {
 
 	public addOptions?(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions;
 	public abstract execute(context: InteractionContext): Promise<void>;
-
-	public async getBuilderJson(): Promise<RESTPostAPIApplicationCommandsJSONBody> {
-		const builder = this.getDefaultBuilder();
-		return this.addOptions ? this.addOptions(builder).toJSON() : builder.toJSON();
-	}
 
 	private getDefaultBuilder(): SlashCommandBuilder {
 		return new SlashCommandBuilder()
