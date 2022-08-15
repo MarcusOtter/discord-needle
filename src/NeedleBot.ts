@@ -1,4 +1,4 @@
-import type { Client, ClientEvents } from "discord.js";
+import type { Client } from "discord.js";
 import type NeedleCommand from "./models/NeedleCommand";
 import ListenerRunType from "./models/enums/ListenerRunType";
 import type NeedleButton from "./models/NeedleButton";
@@ -83,13 +83,13 @@ export default class NeedleBot {
 	private async registerEventListeners(): Promise<void> {
 		const importedListeners = await this.eventsService.load(true);
 
-		for (const { fileName, Class } of importedListeners) {
-			const listener = new Class(fileName as keyof ClientEvents, this);
+		for (const { Class } of importedListeners) {
+			const listener = new Class(this);
 
-			if (listener.getRunType() === ListenerRunType.EveryTime) {
-				this.client.on(listener.name, (...args) => listener.onEmitted(...args).catch(this.handleError));
-			} else if (listener.getRunType() === ListenerRunType.OnlyOnce) {
-				this.client.once(listener.name, (...args) => listener.onEmitted(...args).catch(this.handleError));
+			if (listener.runType === ListenerRunType.EveryTime) {
+				this.client.on(listener.name, (...args) => listener.handle(...args).catch(this.handleError));
+			} else if (listener.runType === ListenerRunType.OnlyOnce) {
+				this.client.once(listener.name, (...args) => listener.handle(...args).catch(this.handleError));
 			}
 		}
 

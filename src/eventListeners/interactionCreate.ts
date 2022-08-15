@@ -7,18 +7,17 @@ import CommandExecutorService from "../services/CommandExecutorService";
 import ObjectFactory from "../ObjectFactory";
 
 export default class InteractionCreateListener extends NeedleEventListener {
+	public readonly name = "interactionCreate";
+	public readonly runType = ListenerRunType.EveryTime;
+
 	private readonly commandExecutor: CommandExecutorService;
 
-	constructor(name: keyof ClientEvents, bot: NeedleBot) {
-		super(name, bot);
+	constructor(bot: NeedleBot) {
+		super(bot);
 		this.commandExecutor = ObjectFactory.createCommandExecutorService();
 	}
 
-	public getRunType(): ListenerRunType {
-		return ListenerRunType.EveryTime;
-	}
-
-	public async onEmitted(...[interaction]: ClientEvents["interactionCreate"]): Promise<void> {
+	public async handle(...[interaction]: ClientEvents["interactionCreate"]): Promise<void> {
 		// TODO: Add message context to InteractionContext maybe
 
 		if (!interaction.isChatInputCommand() && !interaction.isModalSubmit() && !interaction.isButton()) {

@@ -23,7 +23,23 @@ export async function isAllowedToChangeThreadTitle(
 	return false;
 }
 
-// TODO: se PermissionFlagsBits instead in the whole bot
+export function getRequiredPermissions(slowmode?: number): bigint[] {
+	const output = [
+		PermissionsBitField.Flags.ViewChannel,
+		PermissionsBitField.Flags.SendMessages,
+		PermissionsBitField.Flags.SendMessagesInThreads,
+		PermissionsBitField.Flags.CreatePublicThreads,
+		PermissionsBitField.Flags.ReadMessageHistory,
+	];
+
+	if (slowmode && slowmode > 0) {
+		output.push(PermissionsBitField.Flags.ManageThreads);
+	}
+
+	return output;
+}
+
+// TODO: use PermissionFlagsBits instead in the whole bot
 export function getDefaultPermissions(): bigint {
 	return PermissionsBitField.Flags.UseApplicationCommands | PermissionsBitField.Flags.SendMessages;
 }
