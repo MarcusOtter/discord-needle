@@ -13,6 +13,7 @@ import TitleType from "../models/enums/TitleFormat";
 import ToggleOption from "../models/enums/ToggleOption";
 import InteractionContext from "../models/InteractionContext";
 import NeedleCommand from "../models/NeedleCommand";
+import { ModalOpenableInteraction } from "../models/NeedleModal";
 
 export default class AutoThreadCommand extends NeedleCommand {
 	public readonly name = "auto-thread";
@@ -28,7 +29,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 		}
 
 		const { interaction, messages, replyInSecret, replyInPublic } = context;
-		const { guildId, channel, options, member } = interaction;
+		const { guildId, options } = interaction;
 		this.interactionToReplyTo = interaction;
 
 		// TODO: Handle channel visibility error if bot cannot see
@@ -37,7 +38,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 
 		// TODO: Handle error if channel is not a channel that can be auto-threaded, like a thread or text voice chat
 
-		const channelId = options.getChannel("channel")?.id ?? channel.id;
+		const channelId = options.getChannel("channel")?.id ?? interaction.channel.id;
 		const guildConfig = this.bot.configs.get(guildId);
 		const oldConfigIndex = guildConfig.threadChannels.findIndex(c => c.channelId === channelId);
 		const oldAutoThreadConfig = oldConfigIndex > -1 ? guildConfig.threadChannels[oldConfigIndex] : undefined;
@@ -48,31 +49,33 @@ export default class AutoThreadCommand extends NeedleCommand {
 
 		if (options.getInteger("toggle") === ToggleOption.Off) {
 			if (!oldAutoThreadConfig) {
-				return replyInSecret(messages.ERR_NO_EFFECT);
+				return replyInSecret(messages.ERR_NO_EFFECT, this.interactionToReplyTo);
 			}
 
 			guildConfig.threadChannels.splice(oldConfigIndex, 1);
 			this.bot.configs.set(guildId, guildConfig);
-			return replyInPublic(`Removed auto-threading in <#${channel.id}>`);
+			return replyInPublic(`Removed auto-threading in <#${channelId}>`, this.interactionToReplyTo);
 		}
 
 		if (openTitleModal && openReplyMessageModal) {
 			// TODO: Add message key for this
 			return replyInSecret(
-				"If you want to set both a custom title and custom reply message, please do it one at a time"
+				"If you want to set both a custom title and custom reply message, please do it one at a time.",
+				this.interactionToReplyTo
 			);
 		}
 
-		// Use interactionToReplyTo after this point
-		// TODO: Refactor and fix, now we are throwing away the modal submit interaction
 		// We should make it into its own function, can maybe be used by custom message as well
 		// Also TODO: Throw error if more than 2 slashes because our regex parser cannot handle that
-		// IMPORTANT TODO: Use safe-regex to make sure the regex we received is safe, code for extraction is in messageCreate atm
+
 		let newCustomTitle;
 		if (openTitleModal) {
-			const customTitleModal = this.bot.getModal("custom-title-format");
-			const customTitleInteraction = await customTitleModal?.openAndAwaitSubmit(interaction);
-			newCustomTitle = customTitleInteraction?.fields.getTextInputValue("title");
+			newCustomTitle = await this.getTextInputFromModal("custom-title-format", "title", interaction);
+		}
+
+		let newReplyMessage;
+		if (openReplyMessageModal) {
+			newReplyMessage = await this.getTextInputFromModal("custom-reply-message", "message", interaction);
 		}
 
 		const newAutoThreadConfig = new AutothreadChannelConfig(
@@ -80,7 +83,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 			channelId,
 			options.getInteger("archive-behavior"),
 			options.getInteger("reply-message"), // TODO: change name
-			"", // wrong, get the actual reply message from modal if needed
+			newReplyMessage,
 			options.getInteger("include-bots"),
 			options.getInteger("slowmode"),
 			options.getInteger("status-reactions"),
@@ -97,9 +100,12 @@ export default class AutoThreadCommand extends NeedleCommand {
 			return replyInSecret(messages.ERR_NO_EFFECT, this.interactionToReplyTo);
 		}
 
+		let interactionReplyMessage;
 		if (oldConfigIndex > -1) {
+			interactionReplyMessage = `Updated settings for auto-threading in <#${channelId}>`;
 			guildConfig.threadChannels[oldConfigIndex] = newAutoThreadConfig;
 		} else {
+			interactionReplyMessage = `Enabled auto-threading in <#${channelId}>`;
 			guildConfig.threadChannels.push(newAutoThreadConfig);
 		}
 
@@ -108,10 +114,18 @@ export default class AutoThreadCommand extends NeedleCommand {
 		// TODO: If custom format and empty title format, do default format instead
 
 		// TODO: Make public when done
-		// Make different for enable autothread, disable, and update settings
-		if (!openTitleModal) {
-			return replyInSecret("It might have worked...", this.interactionToReplyTo);
-		}
+		return replyInSecret(interactionReplyMessage, this.interactionToReplyTo);
+	}
+
+	// IMPORTANT TODO: Use safe-regex to make sure the regex we received is safe, code for extraction is in messageCreate atm
+	private async getTextInputFromModal(
+		modalName: string,
+		inputCustomId: string,
+		interaction: ModalOpenableInteraction
+	): Promise<string | undefined> {
+		const customTitleModal = this.bot.getModal(modalName);
+		this.interactionToReplyTo = await customTitleModal?.openAndAwaitSubmit(interaction);
+		return this.interactionToReplyTo?.fields.getTextInputValue(inputCustomId);
 	}
 
 	public addOptions(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions {

@@ -45,7 +45,7 @@ export default class AutothreadChannelConfig {
 		if (formatOption === undefined || formatOption === null) return undefined;
 		switch (formatOption) {
 			case TitleType.FirstLineOfMessage:
-				return "/^(?:.*)$/m"; // TODO: Test if just /.*/ works lol I think it does...
+				return ".*/";
 			case TitleType.FirstFourtyChars:
 				return "/^((.|\\s){0,40})/ig";
 			case TitleType.NicknameDate:

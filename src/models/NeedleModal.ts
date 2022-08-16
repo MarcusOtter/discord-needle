@@ -23,4 +23,4 @@ export default abstract class NeedleModal {
 	}
 }
 
-type ModalOpenableInteraction = GuildInteraction & ChatInputCommandInteraction;
+export type ModalOpenableInteraction = GuildInteraction & ChatInputCommandInteraction;
