@@ -14,7 +14,7 @@ export default class CustomTitleFormatModal extends NeedleModal {
 			.setCustomId("title")
 			.setLabel("Title format")
 			.setRequired(true)
-			.setPlaceholder("$USER help: /^(.*)$/m")
+			.setPlaceholder("Help $USER — /(\\b\\w*a\\w*\\b)\\s/ig")
 			.setStyle(TextInputStyle.Short);
 		const row = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(titleInput);
 		return new ModalBuilder().setCustomId(this.customId).setTitle("Set a custom title format").addComponents(row);

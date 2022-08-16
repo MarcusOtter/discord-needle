@@ -1,5 +1,5 @@
-import { EmbedBuilder, PermissionsBitField } from "discord.js";
-import { Nullish } from "../helpers/typeHelpers";
+import { EmbedBuilder, PermissionsBitField, SlashCommandBuilder } from "discord.js";
+import { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
 import CommandCategory from "../models/enums/CommandCategory";
 import CommandTag from "../models/enums/CommandTag";
 import InteractionContext from "../models/InteractionContext";
@@ -12,15 +12,29 @@ export default class HelpCommand extends NeedleCommand {
 	public readonly tags = [CommandTag.OnlyEphemeralReplies];
 
 	public async execute(context: InteractionContext): Promise<void> {
-		const commandsEmbed = await this.getCommandsEmbed(context.isInGuild(), context.interaction.memberPermissions);
+		const useOldFormat = context.isSlashCommand() && context.interaction.options.getBoolean("from-phone");
+		const commandsEmbed = await this.getCommandsEmbed(
+			context.isInGuild(),
+			useOldFormat,
+			context.interaction.memberPermissions
+		);
 		await context.interaction.reply({
 			embeds: [commandsEmbed],
 			ephemeral: true,
 		});
 	}
 
+	// Remove this as soon as all Discord clients supports command mentions
+	// Behavior as of 2022-08-16: On Desktop it looks fine, on iOS it shows nothing, on Android it shows the raw input
+	public addOptions(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions {
+		return builder.addBooleanOption(option =>
+			option.setName("from-phone").setDescription("Are you writing this command on a phone?").setRequired(false)
+		);
+	}
+
 	private async getCommandsEmbed(
 		isInGuild: boolean,
+		useOldFormat: Nullish<boolean>,
 		memberPermissions: Nullish<PermissionsBitField>
 	): Promise<EmbedBuilder> {
 		const commands = await this.bot.getAllCommands();
@@ -37,7 +51,7 @@ export default class HelpCommand extends NeedleCommand {
 					continue;
 				}
 				const tagEmojis = tags?.join("") ?? "";
-				const command = id ? `</${name}:${id}>` : `\`/${name}\``;
+				const command = !useOldFormat && id ? `</${name}:${id}>` : `/${name}`;
 				value += `${command} ${tagEmojis} — ${description}\n`;
 			}
 
