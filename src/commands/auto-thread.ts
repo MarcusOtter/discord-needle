@@ -10,7 +10,7 @@ import AutothreadChannelConfig from "../models/AutothreadChannelConfig";
 import CommandCategory from "../models/enums/CommandCategory";
 import CommandTag from "../models/enums/CommandTag";
 import ReplyType from "../models/enums/ReplyType";
-import TitleFormat from "../models/enums/TitleFormat";
+import TitleType from "../models/enums/TitleFormat";
 import ToggleOption from "../models/enums/ToggleOption";
 import InteractionContext from "../models/InteractionContext";
 import NeedleCommand from "../models/NeedleCommand";
@@ -43,7 +43,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 		const guildConfig = this.bot.configs.get(guildId);
 		const oldConfigIndex = guildConfig.threadChannels.findIndex(c => c.channelId === channelId);
 		const oldAutoThreadConfig = oldConfigIndex > -1 ? guildConfig.threadChannels[oldConfigIndex] : undefined;
-		const openTitleModal = options.getInteger("title-format") === TitleFormat.Custom;
+		const openTitleModal = options.getInteger("title-format") === TitleType.Custom;
 		const replyMessageOption = options.getInteger("reply-message");
 		const openReplyMessageModal =
 			replyMessageOption === ReplyType.CustomWithButtons || replyMessageOption === ReplyType.CustomWithoutButtons;
@@ -169,11 +169,11 @@ export default class AutoThreadCommand extends NeedleCommand {
 					.setName("title-format")
 					.setDescription("How should the thread title look? 🆕🔥")
 					.addChoices(
-						{ name: "First 40 characters of message (ᴅᴇꜰᴀᴜʟᴛ)", value: TitleFormat.FirstFourtyChars },
-						{ name: "Let Discord decide", value: TitleFormat.DiscordDefault },
-						{ name: "Nickname (yyyy-MM-dd) 🔥", value: TitleFormat.NicknameDate },
-						{ name: "First line of message", value: TitleFormat.FirstLineOfMessage },
-						{ name: "Custom 🔥", value: TitleFormat.Custom }
+						{ name: "First 40 characters of message (ᴅᴇꜰᴀᴜʟᴛ)", value: TitleType.FirstFourtyChars },
+						{ name: "Let Discord decide", value: TitleType.DiscordDefault },
+						{ name: "Nickname (yyyy-MM-dd) 🔥", value: TitleType.NicknameDate },
+						{ name: "First line of message", value: TitleType.FirstLineOfMessage },
+						{ name: "Custom 🔥", value: TitleType.Custom }
 					)
 			)
 			.addIntegerOption(option =>

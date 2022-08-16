@@ -1,4 +1,4 @@
-enum TitleFormat {
+enum TitleType {
 	DiscordDefault = 0,
 	NicknameDate,
 	FirstFourtyChars,
@@ -6,4 +6,4 @@ enum TitleFormat {
 	Custom,
 }
 
-export default TitleFormat;
+export default TitleType;
