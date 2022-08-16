@@ -6,14 +6,12 @@ import ObjectFactory from "../ObjectFactory";
 import { plural } from "../helpers/stringHelpers";
 import { Nullish } from "../helpers/typeHelpers";
 import CommandCategory from "../models/enums/CommandCategory";
-import CommandTag from "../models/enums/CommandTag";
 import { EmbedBuilder } from "discord.js";
 
 export default class InfoCommand extends NeedleCommand {
 	public readonly name = "info";
 	public readonly description = "See information about Needle";
 	public readonly category = CommandCategory.Info;
-	public readonly tags = [CommandTag.OnlyEphemeralReplies, CommandTag.New];
 
 	private readonly infoService: InformationService;
 

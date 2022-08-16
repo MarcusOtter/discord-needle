@@ -8,7 +8,6 @@ import {
 import { SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
 import AutothreadChannelConfig from "../models/AutothreadChannelConfig";
 import CommandCategory from "../models/enums/CommandCategory";
-import CommandTag from "../models/enums/CommandTag";
 import ReplyType from "../models/enums/ReplyType";
 import TitleType from "../models/enums/TitleFormat";
 import ToggleOption from "../models/enums/ToggleOption";
@@ -19,7 +18,6 @@ export default class AutoThreadCommand extends NeedleCommand {
 	public readonly name = "auto-thread";
 	public readonly description = "Configure automatic creation of threads in a channel";
 	public readonly category = CommandCategory.Configuration;
-	public readonly tags = [CommandTag.Popular, CommandTag.RequiresSpecialPermissions];
 	public readonly permissions = PermissionFlagsBits.ManageThreads;
 
 	private interactionToReplyTo: ChatInputCommandInteraction | ModalSubmitInteraction | undefined;
