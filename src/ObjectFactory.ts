@@ -53,7 +53,7 @@ export default class ObjectFactory {
 		};
 
 		return new Client({
-			intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
+			intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
 			shards: "auto",
 			presence: {
 				activities: [

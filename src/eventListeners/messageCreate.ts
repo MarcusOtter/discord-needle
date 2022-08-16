@@ -3,15 +3,19 @@ import {
 	ButtonBuilder,
 	ButtonStyle,
 	ClientEvents,
+	Message,
 	NewsChannel,
 	PermissionsBitField,
 	TextChannel,
 	ThreadAutoArchiveDuration,
+	PermissionFlagsBits,
 } from "discord.js";
 import { getRequiredPermissions } from "../helpers/permissionsHelpers";
 import { wait } from "../helpers/promiseHelpers";
-import { plural } from "../helpers/stringHelpers";
+import { clampWithElipse, extractRegex, hasUrl, plural } from "../helpers/stringHelpers";
+import AutothreadChannelConfig from "../models/AutothreadChannelConfig";
 import ListenerRunType from "../models/enums/ListenerRunType";
+import TitleFormat from "../models/enums/TitleFormat";
 import NeedleEventListener from "../models/NeedleEventListener";
 
 export default class MessageCreateEventListener extends NeedleEventListener {
@@ -19,25 +23,26 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 	public readonly runType = ListenerRunType.EveryTime;
 
 	public async handle(...[message]: ClientEvents["messageCreate"]): Promise<void> {
+		// Wait for potential embed updates, 2 seconds sounds about right lol
+		// TODO: Check if we're even doing the discord embed thing
+		if (this.mayContainEmbed(message) && message.embeds.length === 0) {
+			await wait(2000);
+			message = await message.fetch();
+		}
+
 		if (!message.guild?.available) return; // Server outage
-		if (message.client.user === null) return; // Not logged in
-		if (message.system) return;
-		if (!message.channel.isTextBased()) return;
-		if (!message.inGuild()) return;
+		if (message.system || !message.channel.isTextBased() || !message.inGuild()) return;
 		if (!(message.channel instanceof TextChannel) && !(message.channel instanceof NewsChannel)) return;
-		if (message.author.id === message.client.user.id) return;
+		if (message.author.id === message.client.user?.id) return;
+		if (message.hasThread) return;
 
 		const guildConfig = this.bot.configs.get(message.guildId);
 		const channelConfig = guildConfig.threadChannels.find(c => c.channelId === message.channelId);
 		if (!channelConfig) return;
-
-		const authorUser = message.author;
-		const authorMember = message.member;
-		const guild = message.guild;
-		const channel = message.channel;
-
 		if (!channelConfig.includeBots && message.author.bot) return;
-		if (message.hasThread) return;
+
+		const { author, member, guild, channel } = message;
+		const botMember = await guild.members.fetchMe();
 
 		// TODO: If message is in a thread, change the emoji and remove new emoji
 		// if (!message.author.bot && message.channel.type === ChannelType.GuildPublicThread) {
@@ -45,7 +50,6 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 		// 	return;
 		// }
 
-		const botMember = await guild.members.fetch(message.client.user);
 		const botPermissions = botMember.permissionsIn(message.channel.id);
 		const requiredPermissions = getRequiredPermissions(channelConfig.slowmode);
 		if (!botPermissions.has(requiredPermissions)) {
@@ -66,8 +70,11 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 		// });
 
 		const creationDate = message.createdAt.toISOString().slice(0, 10);
-		const authorName = authorMember?.nickname ?? authorUser.username;
-		const name = `${authorName} (${creationDate})`; // TODO: Get correct format
+		const authorName = member?.nickname ?? author.username;
+
+		// TODO: Get correct format and parse the regex and stuff
+		const name = this.getThreadName(message, channelConfig);
+		// const name = `${authorName} (${creationDate})`;
 
 		const thread = await message.startThread({
 			name,
@@ -108,5 +115,60 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 		}
 
 		// resetMessageContext(requestId);
+	}
+
+	private getThreadName(message: Message, config: AutothreadChannelConfig): string {
+		if (config.titleType === TitleFormat.DiscordDefault) return this.generateDefaultThreadName(message);
+
+		const result = extractRegex(config.customTitle);
+		const regexResult = result.regex && message.content.match(result.regex);
+		let title = result.inputWithRegexVariable
+			.replace("$REGEXRESULT", regexResult?.join("") ?? "")
+			.replaceAll("\n", " ");
+
+		if (config.titleType === TitleFormat.FirstFourtyChars) {
+			title = message.content > title ? title + "..." : title;
+		}
+
+		return clampWithElipse(title, 100, true);
+	}
+
+	private mayContainEmbed(message: Message): boolean {
+		const permissions = message.member?.permissionsIn(message.channelId);
+		if (!permissions?.has(PermissionFlagsBits.EmbedLinks)) return false;
+		if (!hasUrl(message.content)) return false;
+		return true;
+	}
+
+	// This is an approximation of Discord's own algorithm done in the Discord client
+	// It does not, however, strip away invalid characters like dots and slashes.
+	// https://github.com/discord/discord-api-docs/discussions/5326
+	private generateDefaultThreadName(message: Message): string {
+		// I also include alt text from attachments, which Discord does not do.
+		const attachmentText = message.attachments.first()?.description;
+		if (attachmentText && attachmentText.length > 0) return clampWithElipse(attachmentText, 40);
+
+		const embedTitle = message.embeds.length > 0 && message.embeds[0].title;
+		if (embedTitle && embedTitle.length > 0) return clampWithElipse(embedTitle, 40);
+
+		const words = message.content.split(/\s/);
+		let output = "";
+		for (const word of words) {
+			if (output.length + word.length > 41) break;
+			output += word + " ";
+		}
+
+		if (words.length > 0 && output.length === 0) {
+			output = clampWithElipse(words[0], 40);
+		}
+
+		// For example, if you posted an attachment without alt text and without content
+		if (output.length === 0) {
+			output = "New Thread";
+		}
+
+		// Discord probably has an off by one error with message content,
+		// making them possible to be 41 chars instead of 40 like embed titles
+		return clampWithElipse(output.trim(), 41);
 	}
 }

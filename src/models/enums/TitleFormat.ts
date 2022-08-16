@@ -1,7 +1,7 @@
 enum TitleFormat {
 	DiscordDefault = 0,
 	NicknameDate,
-	FirstThirtyChars,
+	FirstFourtyChars,
 	FirstLineOfMessage,
 	Custom,
 }

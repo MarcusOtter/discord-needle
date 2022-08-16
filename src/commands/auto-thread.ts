@@ -68,6 +68,8 @@ export default class AutoThreadCommand extends NeedleCommand {
 		// Use interactionToReplyTo after this point
 		// TODO: Refactor and fix, now we are throwing away the modal submit interaction
 		// We should make it into its own function, can maybe be used by custom message as well
+		// Also TODO: Throw error if more than 2 slashes because our regex parser cannot handle that
+		// IMPORTANT TODO: Use safe-regex to make sure the regex we received is safe, code for extraction is in messageCreate atm
 		let newCustomTitle;
 		if (openTitleModal) {
 			const customTitleModal = this.bot.getModal("custom-title-format");
@@ -165,13 +167,13 @@ export default class AutoThreadCommand extends NeedleCommand {
 			.addIntegerOption(option =>
 				option
 					.setName("title-format")
-					.setDescription("How should the thread title look? 🆕")
+					.setDescription("How should the thread title look? 🆕🔥")
 					.addChoices(
-						{ name: "Let Discord decide (ᴅᴇꜰᴀᴜʟᴛ)", value: TitleFormat.DiscordDefault },
-						{ name: "Nickname (yyyy-MM-dd)", value: TitleFormat.NicknameDate },
-						{ name: "First 30 characters of message", value: TitleFormat.FirstThirtyChars },
+						{ name: "First 40 characters of message (ᴅᴇꜰᴀᴜʟᴛ)", value: TitleFormat.FirstFourtyChars },
+						{ name: "Let Discord decide", value: TitleFormat.DiscordDefault },
+						{ name: "Nickname (yyyy-MM-dd) 🔥", value: TitleFormat.NicknameDate },
 						{ name: "First line of message", value: TitleFormat.FirstLineOfMessage },
-						{ name: "Custom", value: TitleFormat.Custom }
+						{ name: "Custom 🔥", value: TitleFormat.Custom }
 					)
 			)
 			.addIntegerOption(option =>

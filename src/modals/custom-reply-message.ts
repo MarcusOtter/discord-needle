@@ -5,7 +5,6 @@ import {
 	TextInputBuilder,
 	TextInputStyle,
 } from "discord.js";
-import InteractionContext from "../models/InteractionContext";
 import NeedleModal from "../models/NeedleModal";
 
 export default class CustomReplyMessageModal extends NeedleModal {
@@ -21,8 +20,7 @@ export default class CustomReplyMessageModal extends NeedleModal {
 		return new ModalBuilder().setCustomId(this.customId).setTitle("Set a custom reply message").addComponents(row);
 	}
 
-	// We only use openAndAwaitSubmit on this modal
-	public submit(context: InteractionContext): Promise<void> {
-		return context.replyInSecret(context.messages.ERR_UNKNOWN);
+	public async submit(): Promise<void> {
+		// Not used, we only use openAndAwaitSubmit on this modal
 	}
 }

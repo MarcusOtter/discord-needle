@@ -34,21 +34,20 @@ export default class AutothreadChannelConfig {
 		this.slowmode = slowmode ?? oldConfig?.slowmode ?? 0;
 		this.statusReactions = statusReactions ?? oldConfig?.statusReactions ?? ToggleOption.Off;
 
-		this.titleType = titleType ?? oldConfig?.titleType ?? TitleType.DiscordDefault;
+		this.titleType = titleType ?? oldConfig?.titleType ?? TitleType.FirstFourtyChars;
 		this.customTitle =
-			titleType === TitleType.Custom
+			this.titleType === TitleType.Custom
 				? customTitle ?? oldConfig?.customTitle ?? ""
-				: this.getTitleRegex(titleType) ?? oldConfig?.customTitle ?? "";
+				: this.getTitleRegex(this.titleType) ?? oldConfig?.customTitle ?? "";
 	}
 
-	private getTitleRegex(formatOption: Nullish<TitleType> | string): string | undefined {
+	private getTitleRegex(formatOption: Nullish<TitleType>): string | undefined {
 		if (formatOption === undefined || formatOption === null) return undefined;
-		if (typeof formatOption === "string") return formatOption; // Custom title
 		switch (formatOption) {
 			case TitleType.FirstLineOfMessage:
-				return "/^(.*)$/m";
-			case TitleType.FirstThirtyChars:
-				return "/^((.|\\s){0,30})/ig";
+				return "/^(?:.*)$/m";
+			case TitleType.FirstFourtyChars:
+				return "/^((.|\\s){0,40})/ig";
 			case TitleType.NicknameDate:
 				return "$USER ($DATE)";
 
