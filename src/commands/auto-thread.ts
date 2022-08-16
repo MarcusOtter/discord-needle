@@ -5,7 +5,7 @@ import {
 	PermissionFlagsBits,
 	SlashCommandBuilder,
 } from "discord.js";
-import { SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
+import { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
 import AutothreadChannelConfig from "../models/AutothreadChannelConfig";
 import CommandCategory from "../models/enums/CommandCategory";
 import ReplyType from "../models/enums/ReplyType";
@@ -70,12 +70,14 @@ export default class AutoThreadCommand extends NeedleCommand {
 
 		let newCustomTitle;
 		if (openTitleModal) {
-			newCustomTitle = await this.getTextInputFromModal("custom-title-format", "title", interaction);
+			const oldValue = oldAutoThreadConfig?.customTitle;
+			newCustomTitle = await this.getTextInputFromModal("custom-title-format", "title", oldValue, interaction);
 		}
 
-		let newReplyMessage;
+		let newReply;
 		if (openReplyMessageModal) {
-			newReplyMessage = await this.getTextInputFromModal("custom-reply-message", "message", interaction);
+			const oldValue = oldAutoThreadConfig?.customReply;
+			newReply = await this.getTextInputFromModal("custom-reply-message", "message", oldValue, interaction);
 		}
 
 		const newAutoThreadConfig = new AutothreadChannelConfig(
@@ -83,7 +85,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 			channelId,
 			options.getInteger("archive-behavior"),
 			options.getInteger("reply-message"), // TODO: change name
-			newReplyMessage,
+			newReply,
 			options.getInteger("include-bots"),
 			options.getInteger("slowmode"),
 			options.getInteger("status-reactions"),
@@ -121,10 +123,11 @@ export default class AutoThreadCommand extends NeedleCommand {
 	private async getTextInputFromModal(
 		modalName: string,
 		inputCustomId: string,
+		currentValue: Nullish<string>,
 		interaction: ModalOpenableInteraction
 	): Promise<string | undefined> {
 		const customTitleModal = this.bot.getModal(modalName);
-		this.interactionToReplyTo = await customTitleModal?.openAndAwaitSubmit(interaction);
+		this.interactionToReplyTo = await customTitleModal?.openAndAwaitSubmit(interaction, currentValue);
 		return this.interactionToReplyTo?.fields.getTextInputValue(inputCustomId);
 	}
 

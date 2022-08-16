@@ -35,7 +35,7 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 			message = await message.fetch();
 		}
 
-		if (!message.guild?.available) return; // Server outage
+		if (!message.guild?.available) return;
 		if (!(message.channel instanceof TextChannel) && !(message.channel instanceof NewsChannel)) return;
 		if (message.author.id === message.client.user?.id) return;
 		if (message.hasThread) return;
@@ -132,8 +132,8 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 	private shouldWaitForEmbed(message: Message, config: AutothreadChannelConfig): boolean {
 		return (
 			config.titleType === TitleType.DiscordDefault &&
-			this.mayContainEmbed(message) &&
-			message.embeds.length === 0
+			message.embeds.length === 0 &&
+			this.mayContainEmbed(message)
 		);
 	}
 

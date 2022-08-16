@@ -15,7 +15,8 @@ export default class CustomReplyMessageModal extends NeedleModal {
 			.setLabel("Custom message")
 			.setRequired(false)
 			.setPlaceholder("Thread automatically created by $USER in $CHANNEL.")
-			.setStyle(TextInputStyle.Paragraph);
+			.setStyle(TextInputStyle.Paragraph)
+			.setMaxLength(2000);
 		const row = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(messageInput);
 		return new ModalBuilder().setCustomId(this.customId).setTitle("Set a custom reply message").addComponents(row);
 	}
