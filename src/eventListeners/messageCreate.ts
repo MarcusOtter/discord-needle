@@ -52,13 +52,9 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 		const botPermissions = botMember.permissionsIn(message.channel.id);
 		const requiredPermissions = getRequiredPermissions(channelConfig.slowmode);
 		if (!botPermissions.has(requiredPermissions)) {
-			try {
-				const missing = botPermissions.missing(requiredPermissions);
-				const errorMessage = `Missing ${plural("permission", missing.length)}:`;
-				await message.channel.send(`${errorMessage}\n    - ${missing.join("\n    - ")}`);
-			} catch (e) {
-				console.log(e);
-			}
+			const missing = botPermissions.missing(requiredPermissions);
+			const errorMessage = `Missing ${plural("permission", missing.length)}:`;
+			await message.channel.send(`${errorMessage}\n    - ${missing.join("\n    - ")}`);
 			return;
 		}
 
@@ -89,6 +85,7 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 
 		const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(closeButton, helpButton);
 
+		// TODO: Support regexes for message content
 		const msgContent =
 			channelConfig.customReply.length > 0
 				? channelConfig.customReply

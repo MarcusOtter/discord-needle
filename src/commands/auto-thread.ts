@@ -1,10 +1,4 @@
-import {
-	ChannelType,
-	ChatInputCommandInteraction,
-	ModalSubmitInteraction,
-	PermissionFlagsBits,
-	SlashCommandBuilder,
-} from "discord.js";
+import { ChannelType, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
 import AutothreadChannelConfig from "../models/AutothreadChannelConfig";
 import CommandCategory from "../models/enums/CommandCategory";
@@ -21,8 +15,6 @@ export default class AutoThreadCommand extends NeedleCommand {
 	public readonly category = CommandCategory.Configuration;
 	public readonly permissions = PermissionFlagsBits.ManageThreads;
 
-	private interactionToReplyTo: ChatInputCommandInteraction | ModalSubmitInteraction | undefined;
-
 	public async execute(context: InteractionContext): Promise<void> {
 		if (!context.isInGuild() || !context.isSlashCommand()) {
 			return context.replyInSecret(context.validationError);
@@ -30,7 +22,6 @@ export default class AutoThreadCommand extends NeedleCommand {
 
 		const { interaction, messages, replyInSecret, replyInPublic } = context;
 		const { guildId, options } = interaction;
-		this.interactionToReplyTo = interaction;
 
 		// TODO: Handle channel visibility error if bot cannot see
 		// TODO: Handle error if bot cannot create threads in this channel
@@ -43,52 +34,71 @@ export default class AutoThreadCommand extends NeedleCommand {
 		const oldConfigIndex = guildConfig.threadChannels.findIndex(c => c.channelId === channelId);
 		const oldAutoThreadConfig = oldConfigIndex > -1 ? guildConfig.threadChannels[oldConfigIndex] : undefined;
 		const openTitleModal = options.getInteger("title-format") === TitleType.Custom;
-		const replyMessageOption = options.getInteger("reply-message");
+		const replyType = options.getInteger("reply-message");
 		const openReplyMessageModal =
-			replyMessageOption === ReplyType.CustomWithButtons || replyMessageOption === ReplyType.CustomWithoutButtons;
+			replyType === ReplyType.CustomWithButtons || replyType === ReplyType.CustomWithoutButtons;
 
 		if (options.getInteger("toggle") === ToggleOption.Off) {
 			if (!oldAutoThreadConfig) {
-				return replyInSecret(messages.ERR_NO_EFFECT, this.interactionToReplyTo);
+				return replyInSecret(messages.ERR_NO_EFFECT);
 			}
 
 			guildConfig.threadChannels.splice(oldConfigIndex, 1);
 			this.bot.configs.set(guildId, guildConfig);
-			return replyInPublic(`Removed auto-threading in <#${channelId}>`, this.interactionToReplyTo);
+			return replyInPublic(`Removed auto-threading in <#${channelId}>`);
 		}
 
 		if (openTitleModal && openReplyMessageModal) {
 			// TODO: Add message key for this
 			return replyInSecret(
-				"If you want to set both a custom title and custom reply message, please do it one at a time.",
-				this.interactionToReplyTo
+				"If you want to set both a custom title and custom reply message, please do it one at a time."
 			);
 		}
 
-		// We should make it into its own function, can maybe be used by custom message as well
-		// Also TODO: Throw error if more than 2 slashes because our regex parser cannot handle that
+		// TODO: It should be smart enough to figure out if the modal doesn't need to be opened before they are
+		// Just check both types I guess, new and old
 
 		let newCustomTitle;
 		if (openTitleModal) {
-			const oldValue = oldAutoThreadConfig?.customTitle;
-			newCustomTitle = await this.getTextInputFromModal("custom-title-format", "title", oldValue, interaction);
+			const oldValue = oldAutoThreadConfig?.customTitle ?? "";
+			newCustomTitle = await this.getTextInputFromModal(
+				"custom-title-format",
+				"title",
+				oldValue,
+				interaction,
+				context
+			);
+			// VALIDATE that it's not empty or something bad
 		}
 
-		let newReply;
+		let newCustomReply;
 		if (openReplyMessageModal) {
-			const oldValue = oldAutoThreadConfig?.customReply;
-			newReply = await this.getTextInputFromModal("custom-reply-message", "message", oldValue, interaction);
+			const oldReplyType = oldAutoThreadConfig?.replyType;
+			const wasUsingDefaultReply =
+				oldReplyType === ReplyType.DefaultWithButtons || oldReplyType === ReplyType.DefaultWithoutButtons;
+			const oldValue = wasUsingDefaultReply
+				? messages.SUCCESS_THREAD_CREATE
+				: oldAutoThreadConfig?.customReply ?? "";
+			newCustomReply = await this.getTextInputFromModal(
+				"custom-reply-message",
+				"message",
+				oldValue,
+				interaction,
+				context
+			);
 		}
+
+		// Also TODO: Throw error if more than 2 slashes because our regex parser cannot handle that
 
 		const newAutoThreadConfig = new AutothreadChannelConfig(
 			oldAutoThreadConfig,
 			channelId,
 			options.getInteger("archive-behavior"),
-			options.getInteger("reply-message"), // TODO: change name
-			newReply,
 			options.getInteger("include-bots"),
 			options.getInteger("slowmode"),
 			options.getInteger("status-reactions"),
+			options.getInteger("reply-message"), // TODO: change name to reply-type
+			newCustomReply,
 			options.getInteger("title-format"), // TODO: Rename to title-type
 			newCustomTitle
 		);
@@ -99,7 +109,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 		console.dir(oldAutoThreadConfig);
 
 		if (JSON.stringify(oldAutoThreadConfig) === JSON.stringify(newAutoThreadConfig)) {
-			return replyInSecret(messages.ERR_NO_EFFECT, this.interactionToReplyTo);
+			return replyInSecret(messages.ERR_NO_EFFECT);
 		}
 
 		let interactionReplyMessage;
@@ -116,7 +126,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 		// TODO: If custom format and empty title format, do default format instead
 
 		// TODO: Make public when done
-		return replyInSecret(interactionReplyMessage, this.interactionToReplyTo);
+		return replyInSecret(interactionReplyMessage);
 	}
 
 	// IMPORTANT TODO: Use safe-regex to make sure the regex we received is safe, code for extraction is in messageCreate atm
@@ -124,11 +134,13 @@ export default class AutoThreadCommand extends NeedleCommand {
 		modalName: string,
 		inputCustomId: string,
 		currentValue: Nullish<string>,
-		interaction: ModalOpenableInteraction
+		interaction: ModalOpenableInteraction,
+		context: InteractionContext
 	): Promise<string | undefined> {
 		const customTitleModal = this.bot.getModal(modalName);
-		this.interactionToReplyTo = await customTitleModal?.openAndAwaitSubmit(interaction, currentValue);
-		return this.interactionToReplyTo?.fields.getTextInputValue(inputCustomId);
+		const submitInteraction = await customTitleModal?.openAndAwaitSubmit(interaction, currentValue);
+		context.setInteractionToReplyTo(submitInteraction);
+		return submitInteraction?.fields.getTextInputValue(inputCustomId);
 	}
 
 	public addOptions(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions {

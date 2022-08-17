@@ -15,30 +15,38 @@ import NeedleConfig from "./NeedleConfig";
 
 export default class InteractionContext {
 	public readonly bot: NeedleBot;
-	public readonly interaction: NeedleInteraction;
 	public readonly messages: NeedleConfig["messages"];
+	public get interaction(): NeedleInteraction {
+		return this.interactionToReplyTo;
+	}
 
 	public get validationError(): string | undefined {
 		return this.latestErrorMessage;
 	}
 
+	private interactionToReplyTo: NeedleInteraction;
 	private latestErrorMessage: string | undefined;
 
 	constructor(bot: NeedleBot, interaction: NeedleInteraction) {
 		this.bot = bot;
-		this.interaction = interaction;
+		this.interactionToReplyTo = interaction;
 
 		// Actually, we could be cheeky and inject the message variables here, if we had the context!
 		// Even more actually, maybe we can construct the context from here? But it would depend on interaction I think.
 		this.messages = bot.configs.get(interaction.guildId ?? "").messages;
 	}
 
-	public replyInSecret = (content: string | undefined, interaction?: NeedleInteraction): Promise<void> => {
-		return this.reply(content, true, interaction);
+	public setInteractionToReplyTo = (interaction: NeedleInteraction | undefined) => {
+		if (!interaction) return;
+		this.interactionToReplyTo = interaction;
 	};
 
-	public replyInPublic = (content: string | undefined, interaction?: NeedleInteraction): Promise<void> => {
-		return this.reply(content, false, interaction);
+	public replyInSecret = (content: string | undefined): Promise<void> => {
+		return this.reply(content, true);
+	};
+
+	public replyInPublic = (content: string | undefined): Promise<void> => {
+		return this.reply(content, false);
 	};
 
 	public isInPublicThread = (): this is ContextWithInteraction<GuildInteraction & PublicThreadInteraction> => {
@@ -68,17 +76,13 @@ export default class InteractionContext {
 
 	// TODO: Implement behavior on what happens if content longer than 2k (pagination or multiple messages?)
 	// Should this be some kind of message sender? So we always send messages with the same safe guards
-	private async reply(
-		content: string | undefined,
-		ephemeral: boolean,
-		interaction?: NeedleInteraction
-	): Promise<void> {
+	private async reply(content: string | undefined, ephemeral: boolean): Promise<void> {
 		if (!content || content.length === 0) {
 			console.warn("Tried sending empty message");
 			return;
 		}
 
-		await (interaction ?? this.interaction).reply({ content: content, ephemeral: ephemeral });
+		await this.interaction.reply({ content: content, ephemeral: ephemeral });
 	}
 }
 
