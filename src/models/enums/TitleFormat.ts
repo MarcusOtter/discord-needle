@@ -1,7 +1,6 @@
 enum TitleType {
-	DiscordDefault = 0,
+	FirstFourtyChars = 0,
 	NicknameDate,
-	FirstFourtyChars,
 	FirstLineOfMessage,
 	Custom,
 }

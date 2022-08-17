@@ -64,7 +64,6 @@ export default class AutothreadChannelConfig {
 				return "$USER ($DATE)";
 
 			default:
-			case TitleType.DiscordDefault:
 			case TitleType.Custom:
 				return "";
 		}

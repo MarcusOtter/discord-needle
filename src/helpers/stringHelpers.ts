@@ -9,10 +9,8 @@ export function hasUrl(input: string): boolean {
 	return (input.match(/\b(https?):\/\/[^\s]+\.[^\s]+/gim)?.length ?? 0) > 0;
 }
 
-export function clampWithElipse(input: string, maxLength: number, replace = false): string {
-	const output = input.substring(0, maxLength);
-	const stringWithoutElipse = replace ? output.substring(0, output.length - 3) : output;
-	return input.length > maxLength ? stringWithoutElipse + "..." : output;
+export function clampWithElipse(input: string, maxLength: number): string {
+	return input.length > maxLength ? input.substring(0, maxLength - 3) + "..." : input;
 }
 
 // https://github.com/discord/discord-api-docs/discussions/5338#discussioncomment-3411282

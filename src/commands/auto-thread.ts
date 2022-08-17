@@ -211,7 +211,6 @@ export default class AutoThreadCommand extends NeedleCommand {
 					.setDescription("How should the thread title look? 🆕🔥")
 					.addChoices(
 						{ name: "First 40 characters of message (ᴅᴇꜰᴀᴜʟᴛ)", value: TitleType.FirstFourtyChars },
-						{ name: "Let Discord decide", value: TitleType.DiscordDefault },
 						{ name: "Nickname (yyyy-MM-dd) 🔥", value: TitleType.NicknameDate },
 						{ name: "First line of message", value: TitleType.FirstLineOfMessage },
 						{ name: "Custom 🔥", value: TitleType.Custom }

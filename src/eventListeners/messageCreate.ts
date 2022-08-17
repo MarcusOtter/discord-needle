@@ -8,11 +8,10 @@ import {
 	PermissionsBitField,
 	TextChannel,
 	ThreadAutoArchiveDuration,
-	PermissionFlagsBits,
 } from "discord.js";
 import { getRequiredPermissions } from "../helpers/permissionsHelpers";
 import { wait } from "../helpers/promiseHelpers";
-import { clampWithElipse, extractRegex, hasUrl, plural } from "../helpers/stringHelpers";
+import { clampWithElipse, extractRegex, plural } from "../helpers/stringHelpers";
 import AutothreadChannelConfig from "../models/AutothreadChannelConfig";
 import ListenerRunType from "../models/enums/ListenerRunType";
 import TitleType from "../models/enums/TitleFormat";
@@ -24,21 +23,15 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 
 	public async handle(...[message]: ClientEvents["messageCreate"]): Promise<void> {
 		if (message.system || !message.channel.isTextBased() || !message.inGuild()) return;
+		if (!message.guild?.available) return;
+		if (!(message.channel instanceof TextChannel) && !(message.channel instanceof NewsChannel)) return;
+		if (message.author.id === message.client.user?.id) return;
+		if (message.hasThread) return;
 
 		const guildConfig = this.bot.configs.get(message.guildId);
 		const channelConfig = guildConfig.threadChannels?.find(c => c.channelId === message.channelId);
 		if (!channelConfig) return;
 		if (!channelConfig.includeBots && message.author.bot) return;
-
-		if (this.shouldWaitForEmbed(message, channelConfig)) {
-			await wait(2000); // maybe embed exists now ¯\_(ツ)_/¯
-			message = await message.fetch();
-		}
-
-		if (!message.guild?.available) return;
-		if (!(message.channel instanceof TextChannel) && !(message.channel instanceof NewsChannel)) return;
-		if (message.author.id === message.client.user?.id) return;
-		if (message.hasThread) return;
 
 		const { author, member, guild, channel } = message;
 		const botMember = await guild.members.fetchMe();
@@ -67,7 +60,6 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 		// const creationDate = message.createdAt.toISOString().slice(0, 10);
 		// const authorName = member?.nickname ?? author.username;
 
-		// TODO: If custom format and empty title format, do default format instead
 		const name = this.getThreadName(message, channelConfig);
 		const thread = await message.startThread({
 			name,
@@ -112,65 +104,16 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 	}
 
 	private getThreadName(message: Message, config: AutothreadChannelConfig): string {
-		if (config.titleType === TitleType.DiscordDefault) return this.generateDefaultThreadName(message);
-
 		const result = extractRegex(config.customTitle);
 		const regexResult = result.regex && message.content.match(result.regex);
-		let title = result.inputWithRegexVariable
+		const title = result.inputWithRegexVariable
 			.replace("$REGEXRESULT", regexResult?.join("") ?? "")
 			.replaceAll("\n", " ");
 
 		if (config.titleType === TitleType.FirstFourtyChars) {
-			title = message.content > title ? title + "..." : title;
+			return message.content.length > 40 ? title + "..." : title;
 		}
 
-		return clampWithElipse(title, 100, true);
-	}
-
-	private shouldWaitForEmbed(message: Message, config: AutothreadChannelConfig): boolean {
-		return (
-			config.titleType === TitleType.DiscordDefault &&
-			message.embeds.length === 0 &&
-			this.mayContainEmbed(message)
-		);
-	}
-
-	private mayContainEmbed(message: Message): boolean {
-		const permissions = message.member?.permissionsIn(message.channelId);
-		if (!permissions?.has(PermissionFlagsBits.EmbedLinks)) return false;
-		if (!hasUrl(message.content)) return false;
-		return true;
-	}
-
-	// This is an approximation of Discord's own algorithm done in the Discord client
-	// It does not, however, strip away invalid characters like dots and slashes.
-	// https://github.com/discord/discord-api-docs/discussions/5326
-	private generateDefaultThreadName(message: Message): string {
-		// I also include alt text from attachments, which Discord does not do.
-		const attachmentText = message.attachments.first()?.description;
-		if (attachmentText && attachmentText.length > 0) return clampWithElipse(attachmentText, 40);
-
-		const embedTitle = message.embeds.length > 0 && message.embeds[0].title;
-		if (embedTitle && embedTitle.length > 0) return clampWithElipse(embedTitle, 40);
-
-		const words = message.content.split(/\s/);
-		let output = "";
-		for (const word of words) {
-			if (output.length + word.length > 41) break;
-			output += word + " ";
-		}
-
-		if (words.length > 0 && output.length === 0) {
-			output = clampWithElipse(words[0], 40);
-		}
-
-		// For example, if you posted an attachment without alt text and without content
-		if (output.length === 0) {
-			output = "New Thread";
-		}
-
-		// Discord probably has an off by one error with message content,
-		// making them possible to be 41 chars instead of 40 like embed titles
-		return clampWithElipse(output.trim(), 41);
+		return clampWithElipse(title, 100);
 	}
 }
