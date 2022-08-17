@@ -67,6 +67,7 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 		// const creationDate = message.createdAt.toISOString().slice(0, 10);
 		// const authorName = member?.nickname ?? author.username;
 
+		// TODO: If custom format and empty title format, do default format instead
 		const name = this.getThreadName(message, channelConfig);
 		const thread = await message.startThread({
 			name,
@@ -85,7 +86,6 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 
 		const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(closeButton, helpButton);
 
-		// TODO: Support regexes for message content
 		const msgContent =
 			channelConfig.customReply.length > 0
 				? channelConfig.customReply
@@ -94,6 +94,7 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 		// ? replaceMessageVariables(overrideMessageContent, requestId)
 		// : getMessage("SUCCESS_THREAD_CREATE", requestId);
 
+		// TODO: Use correct amount of buttons and all that
 		if (msgContent && msgContent.length > 0) {
 			const msg = await thread.send({
 				content: msgContent,

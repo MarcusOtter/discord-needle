@@ -12,7 +12,7 @@ export default class CustomTitleFormatModal extends NeedleModal {
 	public get builder(): ModalBuilder {
 		const titleInput = new TextInputBuilder()
 			.setCustomId("title")
-			.setLabel("Title format")
+			.setLabel("Title format (RegEx supported)")
 			.setRequired(true)
 			.setPlaceholder("Help $USER — /(\\b\\w*a\\w*\\b)\\s/ig")
 			.setStyle(TextInputStyle.Short);

@@ -8,12 +8,12 @@ import {
 import NeedleModal from "../models/NeedleModal";
 
 export default class CustomReplyMessageModal extends NeedleModal {
-	public customId = "custom-reply-message";
+	public readonly customId = "custom-reply-message";
 	public get builder(): ModalBuilder {
 		const messageInput = new TextInputBuilder()
 			.setCustomId("message")
 			.setLabel("Custom message")
-			.setRequired(false)
+			.setRequired(true)
 			.setPlaceholder("Thread automatically created by $USER in $CHANNEL.")
 			.setStyle(TextInputStyle.Paragraph)
 			.setMaxLength(2000);

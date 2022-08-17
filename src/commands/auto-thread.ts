@@ -8,6 +8,8 @@ import ToggleOption from "../models/enums/ToggleOption";
 import InteractionContext from "../models/InteractionContext";
 import NeedleCommand from "../models/NeedleCommand";
 import { ModalOpenableInteraction } from "../models/NeedleModal";
+import safe_regex from "safe-regex";
+import { extractRegex, removeInvalidThreadNameChars } from "../helpers/stringHelpers";
 
 export default class AutoThreadCommand extends NeedleCommand {
 	public readonly name = "auto-thread";
@@ -55,9 +57,6 @@ export default class AutoThreadCommand extends NeedleCommand {
 			);
 		}
 
-		// TODO: It should be smart enough to figure out if the modal doesn't need to be opened before they are
-		// Just check both types I guess, new and old
-
 		let newCustomTitle;
 		if (openTitleModal) {
 			const oldValue = oldAutoThreadConfig?.customTitle ?? "";
@@ -68,7 +67,22 @@ export default class AutoThreadCommand extends NeedleCommand {
 				interaction,
 				context
 			);
-			// VALIDATE that it's not empty or something bad
+
+			// TODO: Message variables below
+
+			const hasMoreThanTwoSlashes = newCustomTitle.split("/").length - 1 > 2;
+			if (hasMoreThanTwoSlashes) {
+				return replyInSecret("Custom titles can not have more than one regex.");
+			}
+
+			const { inputWithRegexVariable, regex } = extractRegex(newCustomTitle);
+			if (regex && !safe_regex(regex)) {
+				return replyInSecret("Unsafe regex detected, please try again with a safe regex.");
+			}
+
+			if (removeInvalidThreadNameChars(inputWithRegexVariable).length === 0) {
+				return replyInSecret("Invalid title, please provide at least one valid character.");
+			}
 		}
 
 		let newCustomReply;
@@ -86,9 +100,11 @@ export default class AutoThreadCommand extends NeedleCommand {
 				interaction,
 				context
 			);
-		}
 
-		// Also TODO: Throw error if more than 2 slashes because our regex parser cannot handle that
+			if (newCustomReply.trim().length === 0) {
+				return replyInSecret("Invalid reply message, please provide at least one valid character.");
+			}
+		}
 
 		const newAutoThreadConfig = new AutothreadChannelConfig(
 			oldAutoThreadConfig,
@@ -122,25 +138,23 @@ export default class AutoThreadCommand extends NeedleCommand {
 		}
 
 		this.bot.configs.set(guildId, guildConfig);
-		// TODO: Fix bug with success_thread_create (if empty msg I think we should use that instead)
-		// TODO: If custom format and empty title format, do default format instead
 
 		// TODO: Make public when done
 		return replyInSecret(interactionReplyMessage);
 	}
 
-	// IMPORTANT TODO: Use safe-regex to make sure the regex we received is safe, code for extraction is in messageCreate atm
 	private async getTextInputFromModal(
 		modalName: string,
 		inputCustomId: string,
 		currentValue: Nullish<string>,
 		interaction: ModalOpenableInteraction,
 		context: InteractionContext
-	): Promise<string | undefined> {
+	): Promise<string> {
 		const customTitleModal = this.bot.getModal(modalName);
-		const submitInteraction = await customTitleModal?.openAndAwaitSubmit(interaction, currentValue);
+		if (!customTitleModal) throw new Error("Invalid modal name: " + modalName);
+		const submitInteraction = await customTitleModal.openAndAwaitSubmit(interaction, currentValue);
 		context.setInteractionToReplyTo(submitInteraction);
-		return submitInteraction?.fields.getTextInputValue(inputCustomId);
+		return submitInteraction.fields.getTextInputValue(inputCustomId);
 	}
 
 	public addOptions(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions {
