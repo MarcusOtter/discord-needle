@@ -1,6 +1,7 @@
 // TODO: Make all the imports into types that can be
 // TODO: Add license notices
 import {
+	ButtonInteraction,
 	ChannelType,
 	ChatInputCommandInteraction,
 	GuildMember,
@@ -23,6 +24,7 @@ export default class InteractionContext {
 		return this.interactionToReplyTo;
 	}
 
+	// TODO: Make private and make replyWithError method instead, and use variables in it
 	public get validationError(): string | undefined {
 		return this.latestErrorMessage;
 	}
@@ -74,6 +76,12 @@ export default class InteractionContext {
 
 	public isModalSubmit = (): this is ContextWithInteraction<ModalSubmitInteraction> => {
 		if (this.interaction.isModalSubmit()) return true;
+		this.latestErrorMessage = this.messages.ERR_UNKNOWN;
+		return false;
+	};
+
+	public isButtonPress = (): this is ContextWithInteraction<ButtonInteraction> => {
+		if (this.interaction.isButton()) return true;
 		this.latestErrorMessage = this.messages.ERR_UNKNOWN;
 		return false;
 	};

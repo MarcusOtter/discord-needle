@@ -56,6 +56,7 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 			return;
 		}
 
+		// TODO: Definitely clean this content first and remove all attempts of injecting message variables
 		const name = await this.getThreadName(message.content, channelConfig, messageVariables);
 		const thread = await message.startThread({
 			name,

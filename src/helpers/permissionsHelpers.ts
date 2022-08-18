@@ -45,7 +45,7 @@ export function getRequiredPermissions(slowmode?: number): bigint[] {
 }
 
 // TODO: use PermissionFlagsBits instead in the whole bot
-export function getDefaultPermissions(): bigint {
+export function getMinimumRequiredPermissions(): bigint {
 	return PermissionsBitField.Flags.UseApplicationCommands | PermissionsBitField.Flags.SendMessages;
 }
 

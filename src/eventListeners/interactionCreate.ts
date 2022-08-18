@@ -18,8 +18,6 @@ export default class InteractionCreateListener extends NeedleEventListener {
 	}
 
 	public async handle(...[interaction]: ClientEvents["interactionCreate"]): Promise<void> {
-		// TODO: Add message context to InteractionContext maybe
-
 		if (!interaction.isChatInputCommand() && !interaction.isModalSubmit() && !interaction.isButton()) {
 			return;
 		}

@@ -14,6 +14,9 @@ export default class AutothreadChannelConfig {
 	public readonly titleType: TitleType;
 	public readonly customTitle: string;
 
+	// TODO IMPORTANT: Fix bug where switching away from custom title type will break stuff
+	// Because I think I reset the custom title here like I do with message
+	// I guess it should be the same as message and not be stored for no reason......
 	constructor(
 		oldConfig: Nullish<AutothreadChannelConfig>,
 		channelId: string,
@@ -51,7 +54,7 @@ export default class AutothreadChannelConfig {
 
 	private getCustomTitle(oldConfig: Nullish<AutothreadChannelConfig>, incomingCustomTitle: Nullish<string>): string {
 		if (this.titleType === TitleType.Custom) return incomingCustomTitle ?? oldConfig?.customTitle ?? "";
-		if (oldConfig?.titleType === TitleType.Custom) return ""; // Reset if switching away from custom
+		if (oldConfig?.titleType === TitleType.Custom) return ""; // Reset if switching away from custom (TODO: I THINK THIS IS A BUG)
 		return this.getDefaultTitle(this.titleType);
 	}
 
