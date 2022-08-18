@@ -15,7 +15,7 @@ export function clampWithElipse(input: string, maxLength: number): string {
 
 // https://github.com/discord/discord-api-docs/discussions/5338#discussioncomment-3411282
 export function removeInvalidThreadNameChars(input: Nullish<string>): string {
-	return input?.replaceAll(/[<>/\\:#"]/gi, "").trim() ?? "";
+	return input?.replaceAll(/[<>/\\:#@"]/gi, "").trim() ?? "";
 }
 
 export function extractRegex(input: string): { inputWithRegexVariable: string; regex?: RegExp } {

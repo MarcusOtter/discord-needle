@@ -17,7 +17,7 @@
 		"ERR_CHANNEL_SLOWMODE": "The bot does not have permissions to Manage Threads in $CHANNEL. Change the permissions and try again.",
 		"ERR_AMBIGUOUS_THREAD_AUTHOR": "Could not determine the author of this thread, because the initial message was missing.",
 
-		"SUCCESS_THREAD_CREATE": "Thread automatically created by $USER in $CHANNEL.",
+		"SUCCESS_THREAD_CREATE": "Thread automatically created by $USER_NAME in $CHANNEL_MENTION.",
 		"SUCCESS_THREAD_ARCHIVE_IMMEDIATE": "Thread was archived by $USER. Anyone can send a message to unarchive it.",
 		"SUCCESS_THREAD_ARCHIVE_SLOW": "This thread will be archived automatically after 1 hour of inactivity as requested by $USER."
 	}

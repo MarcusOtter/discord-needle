@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import NeedleConfig from "../models/NeedleConfig";
-import * as defaultConfig from "../config.json";
+import DO_NOT_TOUCH_defaultConfig from "../config.json";
 import MessageKey from "../models/enums/MessageKey";
 
 export default class ConfigService {
@@ -56,8 +56,8 @@ export default class ConfigService {
 	}
 
 	public getDefault(): NeedleConfig {
-		// Return a clone so we don't mess with the actual default config
-		return JSON.parse(JSON.stringify(defaultConfig));
+		// Return a clone so we don't mess with the actual default config (touch the variable here and only here)
+		return JSON.parse(JSON.stringify(DO_NOT_TOUCH_defaultConfig));
 	}
 
 	private readFromFile(guildId: string): NeedleConfig | undefined {
@@ -65,7 +65,10 @@ export default class ConfigService {
 		if (!fs.existsSync(configPath)) return;
 
 		const fileContent = fs.readFileSync(configPath, { encoding: "utf-8" });
-		return JSON.parse(fileContent);
+		const config = JSON.parse(fileContent);
+		this.cache.set(guildId, config);
+
+		return config;
 	}
 
 	private getPath(guildId: string) {

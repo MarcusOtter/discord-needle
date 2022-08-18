@@ -40,32 +40,33 @@ export default class AutothreadChannelConfig {
 	}
 
 	private getCustomReply(oldConfig: Nullish<AutothreadChannelConfig>, incomingCustomReply: Nullish<string>): string {
-		const switchingAwayFromCustom =
-			oldConfig?.replyType !== this.replyType &&
-			(oldConfig?.replyType === ReplyType.CustomWithButtons ||
-				oldConfig?.replyType === ReplyType.CustomWithoutButtons);
-
+		const switchingAwayFromCustom = this.isCustom(oldConfig?.replyType) && !this.isCustom(this.replyType);
 		return switchingAwayFromCustom ? "" : incomingCustomReply ?? oldConfig?.customReply ?? "";
+	}
+
+	private isCustom(replyType: Nullish<ReplyType>): boolean {
+		if (!replyType) return false;
+		return replyType === ReplyType.CustomWithButtons || replyType === ReplyType.CustomWithoutButtons;
 	}
 
 	private getCustomTitle(oldConfig: Nullish<AutothreadChannelConfig>, incomingCustomTitle: Nullish<string>): string {
 		if (this.titleType === TitleType.Custom) return incomingCustomTitle ?? oldConfig?.customTitle ?? "";
 		if (oldConfig?.titleType === TitleType.Custom) return ""; // Reset if switching away from custom
-		return this.getDefaultRegex(this.titleType);
+		return this.getDefaultTitle(this.titleType);
 	}
 
-	private getDefaultRegex(titleType: TitleType): string {
+	private getDefaultTitle(titleType: TitleType): string {
 		switch (titleType) {
 			case TitleType.FirstLineOfMessage:
 				return "/.*/";
 			case TitleType.FirstFourtyChars:
 				return "/^((.|\\s){0,40})/ig";
 			case TitleType.NicknameDate:
-				return "$USER ($DATE)";
-
-			default:
+				return "$USER_NAME ($DATE_UTC)";
 			case TitleType.Custom:
 				return "";
+			default:
+				throw new Error("Unhandled default title: " + titleType);
 		}
 	}
 }

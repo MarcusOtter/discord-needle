@@ -30,7 +30,6 @@ export default class AutoThreadCommand extends NeedleCommand {
 		// TODO: Handle error if we try to set slowmode but bot does not have manage threads perm
 
 		// TODO: Handle error if channel is not a channel that can be auto-threaded, like a thread or text voice chat
-
 		const channelId = options.getChannel("channel")?.id ?? interaction.channel.id;
 		const guildConfig = this.bot.configs.get(guildId);
 		const oldConfigIndex = guildConfig.threadChannels.findIndex(c => c.channelId === channelId);
@@ -68,7 +67,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 				context
 			);
 
-			// TODO: Message variables below
+			// TODO: Message keys below
 
 			const hasMoreThanTwoSlashes = newCustomTitle.split("/").length - 1 > 2;
 			if (hasMoreThanTwoSlashes) {

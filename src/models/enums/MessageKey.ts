@@ -1,3 +1,4 @@
+// TODO: Make sure to remove old keys from the config.json file
 enum MessageKey {
 	ERR_UNKNOWN,
 	ERR_ONLY_IN_SERVER,

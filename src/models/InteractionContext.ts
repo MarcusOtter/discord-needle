@@ -11,11 +11,14 @@ import {
 } from "discord.js";
 import { Overwrite } from "../helpers/typeHelpers";
 import type NeedleBot from "../NeedleBot";
+import MessageVariables from "./MessageVariables";
 import NeedleConfig from "./NeedleConfig";
 
 export default class InteractionContext {
 	public readonly bot: NeedleBot;
 	public readonly messages: NeedleConfig["messages"];
+	public readonly messageVariables: MessageVariables;
+
 	public get interaction(): NeedleInteraction {
 		return this.interactionToReplyTo;
 	}
@@ -30,10 +33,11 @@ export default class InteractionContext {
 	constructor(bot: NeedleBot, interaction: NeedleInteraction) {
 		this.bot = bot;
 		this.interactionToReplyTo = interaction;
-
-		// Actually, we could be cheeky and inject the message variables here, if we had the context!
-		// Even more actually, maybe we can construct the context from here? But it would depend on interaction I think.
 		this.messages = bot.configs.get(interaction.guildId ?? "").messages;
+		this.messageVariables = new MessageVariables().setUser(interaction.user);
+
+		if (!this.isInGuild()) return;
+		this.messageVariables.setUser(this.interaction.member).setChannel(this.interaction.channel);
 	}
 
 	public setInteractionToReplyTo = (interaction: NeedleInteraction | undefined) => {
@@ -76,14 +80,16 @@ export default class InteractionContext {
 
 	// TODO: Implement behavior on what happens if content longer than 2k (pagination or multiple messages?)
 	// Should this be some kind of message sender? So we always send messages with the same safe guards
-	private async reply(content: string | undefined, ephemeral: boolean): Promise<void> {
+	// Because not everything uses interaction context
+	private reply = async (content: string | undefined, ephemeral: boolean): Promise<void> => {
+		content = await this.messageVariables.replace(content ?? "");
 		if (!content || content.length === 0) {
 			console.warn("Tried sending empty message");
 			return;
 		}
 
 		await this.interaction.reply({ content: content, ephemeral: ephemeral });
-	}
+	};
 }
 
 // TODO: These types can and should be interfaces instead, I think.

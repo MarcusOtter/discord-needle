@@ -8,7 +8,6 @@ import {
 import InteractionContext from "../models/InteractionContext";
 import NeedleModal from "../models/NeedleModal";
 
-// TODO: Maybe we just remove custom modals and let them live in the command/button they came from with awaitModalSubmit
 export default class ConfirmFactoryResetModal extends NeedleModal {
 	public readonly customId = "confirm-factory-reset";
 	public get builder(): ModalBuilder {
@@ -38,6 +37,8 @@ export default class ConfirmFactoryResetModal extends NeedleModal {
 			return replyInSecret("Action cancelled."); // TODO: Add message for this
 		}
 
+		// TODO: Maybe add a kick button or something
+		// In that case add an ephemeral reply with those buttons and a public one stating the reset
 		const success = this.bot.configs.delete(interaction.guildId);
 		return success
 			? replyInPublic("Successfully reset Needle to factory settings.")

@@ -23,6 +23,7 @@ export default class CloseCommand extends NeedleCommand {
 		if (!userHasPermission) return replyInSecret(messages.ERR_INSUFFICIENT_PERMS);
 		if (!botHasPermission) return replyInSecret("Oh nooo"); // TODO: Make message key for bot not having permissions to change title in thread
 
+		context.messageVariables.setThread(thread);
 		const config = this.bot.configs.get(thread.guildId);
 		const threadConfig = config.threadChannels.find(c => c.channelId === thread.parentId);
 		const shouldArchiveImmediately = threadConfig?.archiveImmediately ?? true;

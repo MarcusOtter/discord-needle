@@ -2,8 +2,8 @@ import {
 	ActionRowBuilder,
 	ButtonBuilder,
 	ButtonStyle,
+	ChannelType,
 	ClientEvents,
-	Message,
 	NewsChannel,
 	PermissionsBitField,
 	TextChannel,
@@ -15,11 +15,15 @@ import { clampWithElipse, extractRegex, plural } from "../helpers/stringHelpers"
 import AutothreadChannelConfig from "../models/AutothreadChannelConfig";
 import ListenerRunType from "../models/enums/ListenerRunType";
 import TitleType from "../models/enums/TitleFormat";
+import MessageVariables from "../models/MessageVariables";
 import NeedleEventListener from "../models/NeedleEventListener";
 
 export default class MessageCreateEventListener extends NeedleEventListener {
 	public readonly name = "messageCreate";
 	public readonly runType = ListenerRunType.EveryTime;
+
+	// TODO: Double check we don't have instance variables on commands or event listeners as storage,
+	// Because the listeners and commands themselves are not instantiated per request, only once when imported.
 
 	public async handle(...[message]: ClientEvents["messageCreate"]): Promise<void> {
 		if (message.system || !message.channel.isTextBased() || !message.inGuild()) return;
@@ -35,6 +39,7 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 
 		const { author, member, guild, channel } = message;
 		const botMember = await guild.members.fetchMe();
+		const messageVariables = new MessageVariables().setChannel(channel).setUser(member ?? author);
 
 		// TODO: If message is in a thread, change the emoji and remove new emoji
 		// if (!message.author.bot && message.channel.type === ChannelType.GuildPublicThread) {
@@ -51,21 +56,15 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 			return;
 		}
 
-		// addMessageContext(requestId, {
-		// 	user: authorUser,
-		// 	channel: channel,
-		// 	message: message,
-		// });
-
-		// const creationDate = message.createdAt.toISOString().slice(0, 10);
-		// const authorName = member?.nickname ?? author.username;
-
-		const name = this.getThreadName(message, channelConfig);
+		const name = await this.getThreadName(message.content, channelConfig, messageVariables);
 		const thread = await message.startThread({
 			name,
 			rateLimitPerUser: channelConfig.slowmode,
 			autoArchiveDuration: channel.defaultAutoArchiveDuration ?? ThreadAutoArchiveDuration.OneDay,
 		});
+		if (thread.type === ChannelType.GuildPublicThread) {
+			messageVariables.setThread(thread);
+		}
 
 		const closeButton = new ButtonBuilder()
 			.setCustomId("close")
@@ -78,18 +77,15 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 
 		const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(closeButton, helpButton);
 
-		const msgContent =
+		const rawMessageContent =
 			channelConfig.customReply.length > 0
 				? channelConfig.customReply
 				: guildConfig.messages.SUCCESS_THREAD_CREATE;
-
-		// ? replaceMessageVariables(overrideMessageContent, requestId)
-		// : getMessage("SUCCESS_THREAD_CREATE", requestId);
-
+		const messageContent = await messageVariables.replace(rawMessageContent);
 		// TODO: Use correct amount of buttons and all that
-		if (msgContent && msgContent.length > 0) {
+		if (messageContent.length > 0) {
 			const msg = await thread.send({
-				content: msgContent,
+				content: messageContent,
 				components: [buttonRow],
 			});
 
@@ -99,19 +95,22 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 				await thread.lastMessage?.delete();
 			}
 		}
-
-		// resetMessageContext(requestId);
 	}
 
-	private getThreadName(message: Message, config: AutothreadChannelConfig): string {
+	private async getThreadName(
+		message: string,
+		config: AutothreadChannelConfig,
+		variables: MessageVariables
+	): Promise<string> {
 		const result = extractRegex(config.customTitle);
-		const regexResult = result.regex && message.content.match(result.regex);
-		const title = result.inputWithRegexVariable
+		const regexResult = result.regex && message.match(result.regex);
+		const rawTitle = result.inputWithRegexVariable
 			.replace("$REGEXRESULT", regexResult?.join("") ?? "")
 			.replaceAll("\n", " ");
 
+		const title = await variables.replace(rawTitle);
 		if (config.titleType === TitleType.FirstFourtyChars) {
-			return message.content.length > 40 ? title + "..." : title;
+			return message.length > 40 ? title + "..." : title;
 		}
 
 		return clampWithElipse(title, 100);
