@@ -150,7 +150,6 @@ export default class AutoThreadCommand extends NeedleCommand {
 		context: InteractionContext
 	): Promise<string> {
 		const customTitleModal = this.bot.getModal(modalName);
-		if (!customTitleModal) throw new Error("Invalid modal name: " + modalName);
 		const submitInteraction = await customTitleModal.openAndAwaitSubmit(interaction, currentValue);
 		context.setInteractionToReplyTo(submitInteraction);
 		return submitInteraction.fields.getTextInputValue(inputCustomId);

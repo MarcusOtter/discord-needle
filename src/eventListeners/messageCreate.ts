@@ -68,13 +68,11 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 
 		const closeButton = new ButtonBuilder()
 			.setCustomId("close")
-			.setLabel("Archive thread") // TODO: Message variable
+			.setLabel("Archive thread") // TODO: Message key
 			.setStyle(ButtonStyle.Success)
 			.setEmoji("937932140014866492"); // :archive:
 
-		const helpButton = await this.bot.getButton("help")?.getBuilder();
-		if (!helpButton) return;
-
+		const helpButton = await this.bot.getButton("help").getBuilder();
 		const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(closeButton, helpButton);
 
 		const rawMessageContent =
@@ -85,7 +83,7 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 		// TODO: Use correct amount of buttons and all that
 		if (messageContent.length > 0) {
 			const msg = await thread.send({
-				content: messageContent,
+				content: clampWithElipse(messageContent, 2000),
 				components: [buttonRow],
 			});
 

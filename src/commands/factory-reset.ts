@@ -13,10 +13,8 @@ export default class FactoryResetCommand extends NeedleCommand {
 		if (!context.isSlashCommand() || !context.isInGuild()) {
 			return context.replyInSecret(context.validationError);
 		}
-		const { replyInSecret, interaction, messages } = context;
 
 		const confirmationModal = this.bot.getModal("confirm-factory-reset");
-		if (!confirmationModal) return replyInSecret(messages.ERR_UNKNOWN);
-		await interaction.showModal(confirmationModal.builder);
+		await context.interaction.showModal(confirmationModal.builder);
 	}
 }

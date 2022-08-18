@@ -57,10 +57,8 @@ export default class NeedleBot {
 		console.log("Destroyed client");
 	}
 
-	public getCommand(commandName: string): NeedleCommand | undefined {
+	public getCommand(commandName: string): NeedleCommand {
 		const Command = this.commandsService.get(commandName);
-		if (!Command) return;
-
 		const id = this.commandsService.getId(commandName);
 		return new Command(id, this);
 	}
@@ -70,14 +68,14 @@ export default class NeedleBot {
 		return importedCommands.map(c => new c.Class(this.commandsService.getId(c.fileName), this));
 	}
 
-	public getButton(customId: string): NeedleButton | undefined {
+	public getButton(customId: string): NeedleButton {
 		const Button = this.buttonsService.get(customId);
-		return Button ? new Button(customId, this) : undefined;
+		return new Button(customId, this);
 	}
 
-	public getModal(customId: string): NeedleModal | undefined {
+	public getModal(customId: string): NeedleModal {
 		const Modal = this.modalsService.get(customId);
-		return Modal ? new Modal(this) : undefined;
+		return new Modal(this);
 	}
 
 	private async registerEventListeners(): Promise<void> {

@@ -4,7 +4,6 @@ import type NeedleBot from "../NeedleBot";
 import type InformationService from "../services/InformationService";
 import ObjectFactory from "../ObjectFactory";
 import { plural } from "../helpers/stringHelpers";
-import { Nullish } from "../helpers/typeHelpers";
 import CommandCategory from "../models/enums/CommandCategory";
 import { EmbedBuilder } from "discord.js";
 
@@ -15,7 +14,7 @@ export default class InfoCommand extends NeedleCommand {
 
 	private readonly infoService: InformationService;
 
-	constructor(id: Nullish<string>, bot: NeedleBot) {
+	constructor(id: string, bot: NeedleBot) {
 		super(id, bot);
 		this.infoService = ObjectFactory.createInformationService();
 	}

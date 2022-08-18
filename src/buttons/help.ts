@@ -23,6 +23,7 @@ export default class HelpButton extends NeedleButton {
 
 	public async press(context: InteractionContext): Promise<void> {
 		const helpCommand = this.bot.getCommand(this.customId);
+		context.interaction.guild?.commands.permissions.fetch({ command: helpCommand.id });
 		this.commandExecutor.execute(helpCommand, context);
 	}
 }

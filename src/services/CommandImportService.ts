@@ -13,8 +13,10 @@ export default class CommandImportService extends DynamicImportService<typeof Ne
 		return super.load(skipCache);
 	}
 
-	public getId(commandName: string): string | undefined {
-		return this.idCache.find(cmd => cmd.name === commandName)?.id;
+	public getId(commandName: string): string {
+		const id = this.idCache.find(cmd => cmd.name === commandName)?.id;
+		if (!id) throw new Error("Command missing in cache: " + commandName);
+		return id;
 	}
 
 	private async fetchGlobalApplicationCommands(): Promise<{ id: string; name: string }[]> {

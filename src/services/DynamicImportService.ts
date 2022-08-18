@@ -18,8 +18,10 @@ export default class DynamicImportService<T extends Newable> {
 		return this.cache;
 	}
 
-	public get(name: string): Concretize<T> | undefined {
-		return this.cache.find(x => x.fileName === name)?.Class;
+	public get(name: string): Concretize<T> {
+		const output = this.cache.find(x => x.fileName === name)?.Class;
+		if (!output) throw new Error(`Could not find ${name} in cache.`);
+		return output;
 	}
 
 	private async importClassesInDirectory(directoryPath: string): Promise<ImportedClass<T>[]> {

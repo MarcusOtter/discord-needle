@@ -33,12 +33,12 @@ export default class InteractionCreateListener extends NeedleEventListener {
 
 		if (interaction.isButton()) {
 			const button = this.bot.getButton(interaction.customId);
-			await button?.press(context);
+			await button.press(context);
 		}
 
 		if (interaction.isModalSubmit()) {
 			const modal = this.bot.getModal(interaction.customId);
-			await modal?.submit(context);
+			await modal.submit(context);
 		}
 	}
 }
