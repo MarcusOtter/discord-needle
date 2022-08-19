@@ -31,6 +31,9 @@ export default class TitleCommand extends NeedleCommand {
 		}
 
 		const { channel: thread, member } = context.interaction;
+		if (!this.bot.isAllowedToRename(thread.id)) {
+			return replyInSecret(settings.ErrorMaxThreadRenames);
+		}
 
 		let newThreadName = "";
 		if (context.isSlashCommand()) {
@@ -50,6 +53,7 @@ export default class TitleCommand extends NeedleCommand {
 		if (thread.name === newThreadName) return replyInSecret(settings.ErrorNoEffect);
 
 		await thread.setName(newThreadName);
+		this.bot.reportThreadRenamed(thread.id);
 		await replyInSecret("Success!"); // TODO: Remove pointless success (edit interaction instead or smthn)
 	}
 }

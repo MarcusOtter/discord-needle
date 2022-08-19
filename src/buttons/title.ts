@@ -25,6 +25,10 @@ export default class TitleButton extends NeedleButton {
 	public async press(context: InteractionContext): Promise<void> {
 		if (!context.isInGuild()) return;
 
+		if (!context.bot.isAllowedToRename(context.interaction.channel.id)) {
+			return context.replyInSecret(context.settings.ErrorMaxThreadRenames);
+		}
+
 		const titleCommand = this.bot.getCommand(this.customId);
 		const { interaction, settings, replyInSecret } = context;
 		const { member, channel } = interaction;

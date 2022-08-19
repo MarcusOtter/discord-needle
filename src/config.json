@@ -7,6 +7,7 @@
 		"ErrorNoEffect": "This action will have no effect.",
 		"ErrorInsufficientUserPerms": "You do not have permission to perform this action.",
 		"ErrorInsufficientBotPerms": "The bot is missing the following permissions:",
+		"ErrorMaxThreadRenames": "You can only rename a thread twice every 10 minutes. Please try again later.",
 
 		"SuccessThreadCreate": "Thread automatically created by $USER_NAME in $CHANNEL_MENTION",
 		"SuccessThreadArchiveImmediate": "Thread was archived by $USER_NAME. Anyone can send a message to unarchive it.",

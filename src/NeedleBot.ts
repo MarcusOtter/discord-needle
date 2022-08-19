@@ -7,12 +7,14 @@ import type NeedleEventListener from "./models/NeedleEventListener";
 import ConfigService from "./services/ConfigService";
 import CommandImportService from "./services/CommandImportService";
 import NeedleModal from "./models/NeedleModal";
+import CooldownService from "./services/CooldownService";
 
 export default class NeedleBot {
 	public readonly client: Client;
 	public readonly configs: ConfigService;
 
 	private readonly commandsService: CommandImportService;
+	private readonly cooldownService: CooldownService;
 	private readonly eventsService: DynamicImportService<typeof NeedleEventListener>;
 	private readonly buttonsService: DynamicImportService<typeof NeedleButton>;
 	private readonly modalsService: DynamicImportService<typeof NeedleModal>;
@@ -25,7 +27,8 @@ export default class NeedleBot {
 		eventsService: DynamicImportService<typeof NeedleEventListener>,
 		buttonsService: DynamicImportService<typeof NeedleButton>,
 		modalsService: DynamicImportService<typeof NeedleModal>,
-		configService: ConfigService
+		configService: ConfigService,
+		cooldownService: CooldownService
 	) {
 		this.client = discordClient;
 
@@ -34,6 +37,7 @@ export default class NeedleBot {
 		this.buttonsService = buttonsService;
 		this.modalsService = modalsService;
 		this.configs = configService;
+		this.cooldownService = cooldownService;
 	}
 
 	public async loadDynamicImports(): Promise<void> {
@@ -76,6 +80,14 @@ export default class NeedleBot {
 	public getModal(customId: string): NeedleModal {
 		const Modal = this.modalsService.get(customId);
 		return new Modal(this);
+	}
+
+	public isAllowedToRename(threadId: string): boolean {
+		return !this.cooldownService.willBeRateLimited(threadId);
+	}
+
+	public reportThreadRenamed(threadId: string): void {
+		this.cooldownService.reportThreadRenamed(threadId);
 	}
 
 	private async registerEventListeners(): Promise<void> {

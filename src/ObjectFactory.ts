@@ -6,6 +6,7 @@ import NeedleBot from "./NeedleBot";
 import CommandExecutorService from "./services/CommandExecutorService";
 import CommandImportService from "./services/CommandImportService";
 import ConfigService from "./services/ConfigService";
+import CooldownService from "./services/CooldownService";
 import DynamicImportService from "./services/DynamicImportService";
 import InformationService from "./services/InformationService";
 
@@ -32,7 +33,8 @@ export default class ObjectFactory {
 			this.createEventListenersService(),
 			this.createButtonsService(),
 			this.createModalsService(),
-			this.createConfigService()
+			this.createConfigService(),
+			this.createCooldownService()
 		);
 
 		return this.bot;
@@ -68,6 +70,10 @@ export default class ObjectFactory {
 				threads: sweepSettings,
 			},
 		});
+	}
+
+	private static createCooldownService(): CooldownService {
+		return new CooldownService();
 	}
 
 	private static createCommandsService(): CommandImportService {
