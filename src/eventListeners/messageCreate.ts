@@ -68,10 +68,12 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 		}
 
 		const closeButtonText = clampWithElipse(await messageVariables.replace(settings.ButtonTextClose), 80);
+		const titleButtonText = clampWithElipse(await messageVariables.replace(settings.ButtonTextTitle), 80);
 		const helpButtonText = clampWithElipse(await messageVariables.replace(settings.ButtonTextHelp), 80);
 		const closeButton = this.bot.getButton("close").getBuilder(closeButtonText);
+		const titleButton = this.bot.getButton("title").getBuilder(titleButtonText);
 		const helpButton = this.bot.getButton("help").getBuilder(helpButtonText);
-		const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(closeButton, helpButton);
+		const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(closeButton, titleButton, helpButton);
 
 		const rawMessageContent =
 			channelConfig.customReply.length > 0 ? channelConfig.customReply : settings.SuccessThreadCreate;

@@ -11,6 +11,7 @@ export default class SettingCommand extends NeedleCommand {
 	protected readonly defaultPermissions = PermissionFlagsBits.ManageThreads;
 
 	public addOptions(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions {
+		// TODO: Make some helper function that builds choices out of an enum type (Setting)
 		// const choices = [];
 		return builder.addIntegerOption(
 			option =>
@@ -21,7 +22,8 @@ export default class SettingCommand extends NeedleCommand {
 		);
 	}
 
-	public execute(context: InteractionContext): Promise<void> {
+	public async execute(context: InteractionContext): Promise<void> {
 		throw new Error("Method not implemented.");
+		//  Open modal with text box and then save value
 	}
 }

@@ -15,7 +15,7 @@ export default class CommandImportService extends DynamicImportService<typeof Ne
 
 	public getId(commandName: string): string {
 		const id = this.idCache.find(cmd => cmd.name === commandName)?.id;
-		if (!id) throw new Error("Command missing in cache: " + commandName);
+		if (!id) throw new Error("Command probably undeployed: " + commandName);
 		return id;
 	}
 

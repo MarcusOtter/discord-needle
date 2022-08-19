@@ -5,8 +5,8 @@ import NeedleBot from "../NeedleBot";
 import ObjectFactory from "../ObjectFactory";
 import CommandExecutorService from "../services/CommandExecutorService";
 
-export default class CloseButton extends NeedleButton {
-	public readonly customId = "close";
+export default class TitleButton extends NeedleButton {
+	public customId = "title";
 	private readonly commandExecutor: CommandExecutorService;
 
 	constructor(bot: NeedleBot) {
@@ -18,21 +18,21 @@ export default class CloseButton extends NeedleButton {
 		return new ButtonBuilder()
 			.setCustomId(this.customId)
 			.setLabel(text)
-			.setStyle(ButtonStyle.Success)
-			.setEmoji("937932140014866492"); // :archive:
+			.setStyle(ButtonStyle.Primary) // TODO: I have a feeling I'm gonna have to make this configurable too
+			.setEmoji("1010055524999499798"); // :title:
 	}
 
 	public async press(context: InteractionContext): Promise<void> {
 		if (!context.isInGuild()) return;
 
-		const closeCommand = this.bot.getCommand(this.customId);
+		const titleCommand = this.bot.getCommand(this.customId);
 		const { interaction, settings, replyInSecret } = context;
 		const { member, channel } = interaction;
-		const hasPermission = await closeCommand.hasPermissionToExecuteHere(member, channel);
+		const hasPermission = await titleCommand.hasPermissionToExecuteHere(member, channel);
 		if (!hasPermission) {
 			return replyInSecret(settings.ErrorInsufficientUserPerms);
 		}
 
-		await this.commandExecutor.execute(closeCommand, context);
+		await this.commandExecutor.execute(titleCommand, context);
 	}
 }
