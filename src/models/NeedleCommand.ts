@@ -8,7 +8,7 @@ import {
 	SlashCommandBuilder,
 } from "discord.js";
 import { getMinimumRequiredPermissions } from "../helpers/permissionsHelpers";
-import { SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
+import { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
 import type NeedleBot from "../NeedleBot";
 import CommandCategory from "./enums/CommandCategory";
 import type InteractionContext from "./InteractionContext";
@@ -36,7 +36,11 @@ export default abstract class NeedleCommand {
 	public addOptions?(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions;
 	public abstract execute(context: InteractionContext): Promise<void>;
 
-	public hasPermissionToExecute = async (member: GuildMember, channel: GuildTextBasedChannel): Promise<boolean> => {
+	public async hasPermissionToExecuteHere(
+		member: Nullish<GuildMember>,
+		channel: Nullish<GuildTextBasedChannel>
+	): Promise<boolean> {
+		if (!member || !channel) return this.category === CommandCategory.Info;
 		if (member.permissionsIn(channel).has(PermissionFlagsBits.Administrator)) return true;
 
 		const channelId = channel.isThread() ? channel.parentId : channel.id;
@@ -59,7 +63,7 @@ export default abstract class NeedleCommand {
 
 		// Use command default permissions because there are no server overrides
 		return member.permissionsIn(channel).has(getMinimumRequiredPermissions() | (this.defaultPermissions ?? 0n));
-	};
+	}
 
 	private async isAllowed(member: GuildMember, channelId: string, permissions: ApplicationCommandPermissions[]) {
 		const guildId = BigInt(member.guild.id);

@@ -42,6 +42,7 @@ export default class InteractionContext {
 		this.messageVariables.setUser(this.interaction.member).setChannel(this.interaction.channel);
 	}
 
+	// TODO: Stop making all these into weird functions unless I really need to (replies would be nice to keep)
 	public setInteractionToReplyTo = (interaction: NeedleInteraction | undefined) => {
 		if (!interaction) return;
 		this.interactionToReplyTo = interaction;

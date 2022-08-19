@@ -1,7 +1,6 @@
 import {
 	ActionRowBuilder,
 	ButtonBuilder,
-	ButtonStyle,
 	ChannelType,
 	ClientEvents,
 	NewsChannel,
@@ -67,13 +66,8 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 			messageVariables.setThread(thread);
 		}
 
-		const closeButton = new ButtonBuilder()
-			.setCustomId("close")
-			.setLabel("Archive thread") // TODO: Message key
-			.setStyle(ButtonStyle.Success)
-			.setEmoji("937932140014866492"); // :archive:
-
-		const helpButton = await this.bot.getButton("help").getBuilder();
+		const closeButton = this.bot.getButton("close").getBuilder();
+		const helpButton = this.bot.getButton("help").getBuilder();
 		const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(closeButton, helpButton);
 
 		const rawMessageContent =

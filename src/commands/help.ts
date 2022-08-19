@@ -1,5 +1,5 @@
-import { EmbedBuilder, GuildMember, GuildTextBasedChannel } from "discord.js";
-import { Nullish } from "../helpers/typeHelpers";
+import { EmbedBuilder, GuildMember, GuildTextBasedChannel, SlashCommandBuilder } from "discord.js";
+import { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
 import CommandCategory from "../models/enums/CommandCategory";
 import InteractionContext from "../models/InteractionContext";
 import NeedleCommand from "../models/NeedleCommand";
@@ -9,11 +9,25 @@ export default class HelpCommand extends NeedleCommand {
 	public readonly description = "See Needle's commands";
 	public readonly category = CommandCategory.Info;
 
+	public addOptions(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions {
+		return builder.addStringOption(option =>
+			option
+				.setName("filter")
+				.setDescription("Which commands do you want to see?")
+				.addChoices(
+					{ name: "Available to you in current channel (ᴅᴇꜰᴀᴜʟᴛ)", value: "default" },
+					{ name: "All Needle commands", value: "all" }
+				)
+		);
+	}
+
 	public async execute(context: InteractionContext): Promise<void> {
 		const isInGuild = context.isInGuild();
 		const member = isInGuild ? context.interaction.member : null;
 		const channel = isInGuild ? context.interaction.channel : null;
-		const commandsEmbed = await this.getCommandsEmbed(isInGuild, member, channel);
+		const showAll = context.isSlashCommand() && context.interaction.options.getString("filter") === "all";
+
+		const commandsEmbed = await this.getCommandsEmbed(member, channel, showAll);
 
 		await context.interaction.reply({
 			content: "Need more help with Needle? Join us in the [support server](https://discord.gg/8BmnndXHp6)!",
@@ -23,9 +37,9 @@ export default class HelpCommand extends NeedleCommand {
 	}
 
 	private async getCommandsEmbed(
-		isInGuild: boolean,
 		member: Nullish<GuildMember>,
-		channel: Nullish<GuildTextBasedChannel>
+		channel: Nullish<GuildTextBasedChannel>,
+		showAll: boolean
 	): Promise<EmbedBuilder> {
 		const commands = await this.bot.getAllCommands();
 
@@ -33,7 +47,7 @@ export default class HelpCommand extends NeedleCommand {
 		let seeingAllCommands = true;
 		for (const category of Object.values(CommandCategory)) {
 			const commandsInCategory = commands.filter(cmd => cmd.category === category);
-			const descriptions = await this.getCommandDescriptions(commandsInCategory, member, channel);
+			const descriptions = await this.getCommandDescriptions(commandsInCategory, member, channel, showAll);
 
 			if (commandsInCategory.length !== descriptions.length) {
 				seeingAllCommands = false;
@@ -47,12 +61,14 @@ export default class HelpCommand extends NeedleCommand {
 		if (fields.length === 0) {
 			return new EmbedBuilder()
 				.setColor("#2f3136")
-				.setDescription("You do not have permission to use any Needle commands");
+				.setDescription("You do not have permission to use any Needle commands here.");
 		}
 
 		const builder = new EmbedBuilder().setColor("#2f3136").setFields(fields);
-		if (isInGuild && !seeingAllCommands) {
-			builder.setFooter({ text: "Only showing commands available to you in this channel 🔒" });
+		if (!seeingAllCommands) {
+			builder.setFooter({
+				text: '👉 Use "/help filter: all" to see all commands',
+			});
 		}
 
 		return builder;
@@ -61,15 +77,18 @@ export default class HelpCommand extends NeedleCommand {
 	private async getCommandDescriptions(
 		commands: NeedleCommand[],
 		member: Nullish<GuildMember>,
-		channel: Nullish<GuildTextBasedChannel>
+		channel: Nullish<GuildTextBasedChannel>,
+		showAll: boolean
 	): Promise<string[]> {
 		const output = [];
-		for (const { description, name, hasPermissionToExecute } of commands) {
-			const hasPermission = member && channel && (await hasPermissionToExecute(member, channel));
-			if (hasPermission === false) continue;
+		for (const command of commands) {
+			const { description, name } = command;
 
-			const command = `\`/${name}\``;
-			output.push(`${command} — ${description}`);
+			const hasPermission = await command.hasPermissionToExecuteHere(member, channel);
+			if (!showAll && hasPermission === false) continue;
+
+			const commandSyntax = `\`/${name}\``;
+			output.push(`${commandSyntax} — ${description}`);
 		}
 
 		return output;

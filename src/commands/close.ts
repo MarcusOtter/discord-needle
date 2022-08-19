@@ -1,4 +1,4 @@
-import { ThreadAutoArchiveDuration } from "discord.js";
+import { ChannelType, GuildMember, GuildTextBasedChannel, ThreadAutoArchiveDuration } from "discord.js";
 import { isAllowedToArchiveThread } from "../helpers/permissionsHelpers";
 import CommandCategory from "../models/enums/CommandCategory";
 import InteractionContext from "../models/InteractionContext";
@@ -8,6 +8,14 @@ export default class CloseCommand extends NeedleCommand {
 	public readonly name = "close";
 	public readonly description = "Close a thread";
 	public readonly category = CommandCategory.ThreadOnly;
+
+	public async hasPermissionToExecuteHere(member: GuildMember, channel: GuildTextBasedChannel): Promise<boolean> {
+		const hasBasePermissions = await super.hasPermissionToExecuteHere(member, channel);
+		if (!hasBasePermissions) return false;
+
+		if (channel.type !== ChannelType.GuildPublicThread) return false;
+		return isAllowedToArchiveThread(channel, member);
+	}
 
 	public async execute(context: InteractionContext): Promise<void> {
 		const { messages, replyInSecret, replyInPublic } = context;

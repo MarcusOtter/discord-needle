@@ -1,3 +1,5 @@
+// TODO: Rename this to something like "settings" and give them a value of visible name to show in options.
+// The enum can be turned into normal pascal case
 // TODO: Make sure to remove old keys from the config.json file
 enum MessageKey {
 	ERR_UNKNOWN,

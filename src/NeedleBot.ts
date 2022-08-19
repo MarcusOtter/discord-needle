@@ -70,7 +70,7 @@ export default class NeedleBot {
 
 	public getButton(customId: string): NeedleButton {
 		const Button = this.buttonsService.get(customId);
-		return new Button(customId, this);
+		return new Button(this);
 	}
 
 	public getModal(customId: string): NeedleModal {

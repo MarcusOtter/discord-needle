@@ -6,14 +6,8 @@ import ObjectFactory from "../ObjectFactory";
 import type CommandExecutorService from "../services/CommandExecutorService";
 
 export default class HelpButton extends NeedleButton {
-	private readonly commandExecutor: CommandExecutorService;
-
-	constructor(customId: string, bot: NeedleBot) {
-		super(customId, bot);
-		this.commandExecutor = ObjectFactory.createCommandExecutorService();
-	}
-
-	public async getBuilder(): Promise<ButtonBuilder> {
+	public readonly customId = "help";
+	public getBuilder(): ButtonBuilder {
 		return new ButtonBuilder()
 			.setCustomId(this.customId)
 			.setLabel("Commands")
@@ -21,18 +15,25 @@ export default class HelpButton extends NeedleButton {
 			.setEmoji("937931337942306877"); // :slash_commands:
 	}
 
+	private readonly commandExecutor: CommandExecutorService;
+
+	constructor(bot: NeedleBot) {
+		super(bot);
+		this.commandExecutor = ObjectFactory.createCommandExecutorService();
+	}
+
 	public async press(context: InteractionContext): Promise<void> {
 		const helpCommand = this.bot.getCommand(this.customId);
-		if (!context.isInGuild() || !context.isButtonPress()) return; // some better message
+		if (!context.isInGuild()) {
+			await this.commandExecutor.execute(helpCommand, context);
+			return;
+		}
 
-		const { interaction, replyInSecret, messages } = context;
-		const { channel, member } = interaction;
-		const hasPermission = await helpCommand.hasPermissionToExecute(member, channel);
+		const { messages, interaction, replyInSecret } = context;
+		const { member, channel } = interaction;
+		const hasPermission = await helpCommand.hasPermissionToExecuteHere(member, channel);
 		if (!hasPermission) {
-			// TODO: Message key
-			return replyInSecret(
-				"You do not have permission to perform this action. Contact an admin if you think this is a mistake."
-			);
+			return replyInSecret(messages.ERR_INSUFFICIENT_PERMS);
 		}
 
 		await this.commandExecutor.execute(helpCommand, context);
