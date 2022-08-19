@@ -25,14 +25,16 @@ export default class HelpButton extends NeedleButton {
 		const helpCommand = this.bot.getCommand(this.customId);
 		if (!context.isInGuild() || !context.isButtonPress()) return; // some better message
 
-		const { interaction } = context;
+		const { interaction, replyInSecret, messages } = context;
 		const { channel, member } = interaction;
 		const hasPermission = await helpCommand.hasPermissionToExecute(member, channel);
+		if (!hasPermission) {
+			// TODO: Message key
+			return replyInSecret(
+				"You do not have permission to perform this action. Contact an admin if you think this is a mistake."
+			);
+		}
 
-		await context.interaction.reply({
-			content: `${context.interaction.member.displayName} has permission for /help: ${hasPermission}`,
-			ephemeral: true,
-		});
-		// this.commandExecutor.execute(helpCommand, context);
+		await this.commandExecutor.execute(helpCommand, context);
 	}
 }

@@ -36,7 +36,7 @@ export default abstract class NeedleCommand {
 	public addOptions?(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions;
 	public abstract execute(context: InteractionContext): Promise<void>;
 
-	public async hasPermissionToExecute(member: GuildMember, channel: GuildTextBasedChannel): Promise<boolean> {
+	public hasPermissionToExecute = async (member: GuildMember, channel: GuildTextBasedChannel): Promise<boolean> => {
 		if (member.permissionsIn(channel).has(PermissionFlagsBits.Administrator)) return true;
 
 		const channelId = channel.isThread() ? channel.parentId : channel.id;
@@ -59,7 +59,7 @@ export default abstract class NeedleCommand {
 
 		// Use command default permissions because there are no server overrides
 		return member.permissionsIn(channel).has(getMinimumRequiredPermissions() | (this.defaultPermissions ?? 0n));
-	}
+	};
 
 	private async isAllowed(member: GuildMember, channelId: string, permissions: ApplicationCommandPermissions[]) {
 		const guildId = BigInt(member.guild.id);
