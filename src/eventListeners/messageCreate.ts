@@ -13,7 +13,7 @@ import { wait } from "../helpers/promiseHelpers";
 import { clampWithElipse, extractRegex, plural } from "../helpers/stringHelpers";
 import AutothreadChannelConfig from "../models/AutothreadChannelConfig";
 import ListenerRunType from "../models/enums/ListenerRunType";
-import TitleType from "../models/enums/TitleFormat";
+import TitleType from "../models/enums/TitleType";
 import MessageVariables from "../models/MessageVariables";
 import NeedleEventListener from "../models/NeedleEventListener";
 

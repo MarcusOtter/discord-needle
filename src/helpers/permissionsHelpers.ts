@@ -24,7 +24,10 @@ export async function isAllowedToChangeThreadTitle(
 }
 
 export async function getThreadAuthor(thread: PublicThreadChannel): Promise<User | undefined> {
-	const starterMessage = await thread.fetchStarterMessage().catch(e => console.error(e));
+	const starterMessage = await thread
+		.fetchStarterMessage()
+		.catch(() => console.log(`Could not find starter message for ${thread.id}`));
+
 	return starterMessage?.author;
 }
 

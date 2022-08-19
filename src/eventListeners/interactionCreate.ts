@@ -6,7 +6,7 @@ import NeedleBot from "../NeedleBot";
 import CommandExecutorService from "../services/CommandExecutorService";
 import ObjectFactory from "../ObjectFactory";
 
-export default class InteractionCreateListener extends NeedleEventListener {
+export default class InteractionCreateEventListener extends NeedleEventListener {
 	public readonly name = "interactionCreate";
 	public readonly runType = ListenerRunType.EveryTime;
 

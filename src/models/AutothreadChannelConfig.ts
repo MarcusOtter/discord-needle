@@ -1,10 +1,12 @@
 import { Nullish } from "../helpers/typeHelpers";
+import DeleteBehavior from "./enums/DeleteBehavior";
 import ReplyType from "./enums/ReplyType";
-import TitleType from "./enums/TitleFormat";
+import TitleType from "./enums/TitleType";
 import ToggleOption from "./enums/ToggleOption";
 
 export default class AutothreadChannelConfig {
 	public readonly channelId: string;
+	public readonly deleteBehavior: DeleteBehavior;
 	public readonly archiveImmediately: ToggleOption;
 	public readonly replyType: ReplyType;
 	public readonly customReply: string;
@@ -20,6 +22,7 @@ export default class AutothreadChannelConfig {
 	constructor(
 		oldConfig: Nullish<AutothreadChannelConfig>,
 		channelId: string,
+		deleteBehavior: Nullish<DeleteBehavior>,
 		archiveImmediately: Nullish<ToggleOption>,
 		includeBots: Nullish<ToggleOption>,
 		slowmode: Nullish<number>,
@@ -30,6 +33,7 @@ export default class AutothreadChannelConfig {
 		customTitle: Nullish<string>
 	) {
 		this.channelId = channelId;
+		this.deleteBehavior = deleteBehavior ?? oldConfig?.deleteBehavior ?? DeleteBehavior.DeleteIfEmptyElseArchive;
 		this.archiveImmediately = archiveImmediately ?? oldConfig?.archiveImmediately ?? ToggleOption.On;
 		this.includeBots = includeBots ?? oldConfig?.includeBots ?? ToggleOption.Off;
 		this.slowmode = slowmode ?? oldConfig?.slowmode ?? 0;

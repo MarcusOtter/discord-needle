@@ -3,13 +3,14 @@ import { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHelpers"
 import AutothreadChannelConfig from "../models/AutothreadChannelConfig";
 import CommandCategory from "../models/enums/CommandCategory";
 import ReplyType from "../models/enums/ReplyType";
-import TitleType from "../models/enums/TitleFormat";
+import TitleType from "../models/enums/TitleType";
 import ToggleOption from "../models/enums/ToggleOption";
 import InteractionContext from "../models/InteractionContext";
 import NeedleCommand from "../models/NeedleCommand";
 import { ModalOpenableInteraction } from "../models/NeedleModal";
 import safe_regex from "safe-regex";
 import { extractRegex, removeInvalidThreadNameChars } from "../helpers/stringHelpers";
+import DeleteBehavior from "../models/enums/DeleteBehavior";
 
 export default class AutoThreadCommand extends NeedleCommand {
 	public readonly name = "auto-thread";
@@ -108,6 +109,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 		const newAutoThreadConfig = new AutothreadChannelConfig(
 			oldAutoThreadConfig,
 			channelId,
+			options.getInteger("delete-behavior"),
 			options.getInteger("archive-behavior"),
 			options.getInteger("include-bots"),
 			options.getInteger("slowmode"),
@@ -193,6 +195,20 @@ export default class AutoThreadCommand extends NeedleCommand {
 					.addChoices(
 						{ name: "Exclude bots (ᴅᴇꜰᴀᴜʟᴛ)", value: ToggleOption.Off },
 						{ name: "Include bots", value: ToggleOption.On }
+					)
+			)
+			.addIntegerOption(option =>
+				option
+					.setName("delete-behavior")
+					.setDescription("What should happen to the thread if the start message is deleted? 🆕")
+					.addChoices(
+						{
+							name: "Delete if empty thread, otherwise archive (ᴅᴇꜰᴀᴜʟᴛ)",
+							value: DeleteBehavior.DeleteIfEmptyElseArchive,
+						},
+						{ name: "Always archive", value: DeleteBehavior.Archive },
+						{ name: "Always delete ❗", value: DeleteBehavior.Delete },
+						{ name: "Do nothing", value: DeleteBehavior.Nothing }
 					)
 			)
 			.addIntegerOption(option =>
