@@ -7,7 +7,7 @@ export default class FactoryResetCommand extends NeedleCommand {
 	public readonly name = "factory-reset";
 	public readonly description = "Reset Needle to factory settings";
 	public readonly category = CommandCategory.Configuration;
-	public readonly permissions = PermissionFlagsBits.ManageThreads;
+	public readonly defaultPermissions = PermissionFlagsBits.ManageThreads;
 
 	public async execute(context: InteractionContext): Promise<void> {
 		if (!context.isSlashCommand() || !context.isInGuild()) {

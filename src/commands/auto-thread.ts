@@ -15,7 +15,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 	public readonly name = "auto-thread";
 	public readonly description = "Configure automatic creation of threads in a channel";
 	public readonly category = CommandCategory.Configuration;
-	public readonly permissions = PermissionFlagsBits.ManageThreads;
+	public readonly defaultPermissions = PermissionFlagsBits.ManageThreads;
 
 	public async execute(context: InteractionContext): Promise<void> {
 		if (!context.isInGuild() || !context.isSlashCommand()) {

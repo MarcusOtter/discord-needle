@@ -25,16 +25,18 @@ export default class HelpCommand extends NeedleCommand {
 		const commands = await this.bot.getAllCommands();
 
 		const fields = [];
-		let seeingAllCommands = true;
+		// let seeingAllCommands = true;
 		for (const category of Object.values(CommandCategory)) {
 			const commandsInCategory = commands.filter(cmd => cmd.category === category);
 
 			let value = "";
-			for (const { description, name, permissions } of commandsInCategory) {
-				if (isInGuild && !memberPermissions?.has(permissions ?? 0n, true)) {
-					seeingAllCommands = false;
-					continue;
-				}
+			// TODO: Use actual permissions, not only the default override like here
+			// Should change naming to be more clear
+			for (const { description, name, hasPermissionToExecute } of commandsInCategory) {
+				// if (isInGuild && !memberPermissions?.has(permissions ?? 0n, true)) {
+				// 	seeingAllCommands = false;
+				// 	continue;
+				// }
 				const command = `\`/${name}\``;
 				value += `${command} — ${description}\n`;
 			}
@@ -51,9 +53,9 @@ export default class HelpCommand extends NeedleCommand {
 		}
 
 		const builder = new EmbedBuilder().setColor("#2f3136").setFields(fields);
-		if (isInGuild && !seeingAllCommands) {
-			builder.setFooter({ text: "Moderator commands are hidden 🔒" });
-		}
+		// if (isInGuild && !seeingAllCommands) {
+		// 	builder.setFooter({ text: "Moderator commands are hidden 🔒" });
+		// }
 
 		return builder;
 	}
