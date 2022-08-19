@@ -26,11 +26,11 @@ export default class CloseButton extends NeedleButton {
 		if (!context.isInGuild()) return;
 
 		const closeCommand = this.bot.getCommand(this.customId);
-		const { interaction, messages, replyInSecret } = context;
+		const { interaction, settings: messages, replyInSecret } = context;
 		const { member, channel } = interaction;
 		const hasPermission = await closeCommand.hasPermissionToExecuteHere(member, channel);
 		if (!hasPermission) {
-			return replyInSecret(messages.ERR_INSUFFICIENT_PERMS);
+			return replyInSecret(messages.ErrorInsufficientUserPerms);
 		}
 
 		await this.commandExecutor.execute(closeCommand, context);

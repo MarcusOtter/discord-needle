@@ -2,14 +2,14 @@
 // TODO: Remove "Needle" prefix for these types, kinda redundant
 
 import AutothreadChannelConfig from "./AutothreadChannelConfig";
-import MessageKey from "./enums/MessageKey";
+import Setting from "./enums/Setting";
 
 export default interface NeedleConfig {
 	threadChannels: AutothreadChannelConfig[];
 	emojisEnabled: boolean;
-	messages: {
-		[K in MessageKeys]: string;
+	settings: {
+		[K in SettingKeys]: string;
 	};
 }
 
-type MessageKeys = keyof typeof MessageKey;
+type SettingKeys = keyof typeof Setting;

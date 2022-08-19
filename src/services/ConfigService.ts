@@ -2,7 +2,7 @@ import * as path from "path";
 import * as fs from "fs";
 import NeedleConfig from "../models/NeedleConfig";
 import DO_NOT_TOUCH_defaultConfig from "../config.json";
-import MessageKey from "../models/enums/MessageKey";
+import Setting from "../models/enums/Setting";
 
 export default class ConfigService {
 	private readonly directoryPath: string;
@@ -17,7 +17,7 @@ export default class ConfigService {
 		const defaultConfigCopy = this.getDefault();
 
 		if (guildConfig) {
-			guildConfig.messages = Object.assign({}, defaultConfigCopy.messages, guildConfig?.messages);
+			guildConfig.settings = Object.assign({}, defaultConfigCopy.settings, guildConfig?.settings);
 		}
 
 		return Object.assign({}, defaultConfigCopy, guildConfig);
@@ -32,10 +32,10 @@ export default class ConfigService {
 
 		// Only save messages that are different from the defaults
 		const defaultConfigCopy = this.getDefault();
-		if (defaultConfigCopy.messages && config.messages) {
-			for (const [key, message] of Object.entries(config.messages)) {
-				if (message !== defaultConfigCopy.messages[key as keyof typeof MessageKey]) continue;
-				delete config.messages[key as keyof typeof MessageKey];
+		if (defaultConfigCopy.settings && config.settings) {
+			for (const [key, message] of Object.entries(config.settings)) {
+				if (message !== defaultConfigCopy.settings[key as keyof typeof Setting]) continue;
+				delete config.settings[key as keyof typeof Setting];
 			}
 		}
 

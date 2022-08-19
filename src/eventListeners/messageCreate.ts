@@ -71,9 +71,7 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 		const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(closeButton, helpButton);
 
 		const rawMessageContent =
-			channelConfig.customReply.length > 0
-				? channelConfig.customReply
-				: guildConfig.messages.SUCCESS_THREAD_CREATE;
+			channelConfig.customReply.length > 0 ? channelConfig.customReply : guildConfig.settings.SuccessThreadCreate;
 		const messageContent = await messageVariables.replace(rawMessageContent);
 		// TODO: Use correct amount of buttons and all that
 		if (messageContent.length > 0) {

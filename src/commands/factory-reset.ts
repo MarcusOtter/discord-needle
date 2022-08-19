@@ -7,13 +7,10 @@ export default class FactoryResetCommand extends NeedleCommand {
 	public readonly name = "factory-reset";
 	public readonly description = "Reset Needle to factory settings";
 	public readonly category = CommandCategory.Configuration;
-	public readonly defaultPermissions = PermissionFlagsBits.ManageThreads;
+	protected readonly defaultPermissions = PermissionFlagsBits.ManageThreads;
 
 	public async execute(context: InteractionContext): Promise<void> {
-		if (!context.isSlashCommand() || !context.isInGuild()) {
-			return context.replyInSecret(context.validationError);
-		}
-
+		if (!context.isSlashCommand() || !context.isInGuild()) return;
 		const confirmationModal = this.bot.getModal("confirm-factory-reset");
 		await context.interaction.showModal(confirmationModal.builder);
 	}

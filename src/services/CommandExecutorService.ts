@@ -9,7 +9,7 @@ export default class CommandExecutorService {
 		} catch (e) {
 			// TODO: Button to support server and bug report
 			context.interaction.reply({
-				content: context.messages.ERR_UNKNOWN,
+				content: context.settings.ErrorUnknown,
 				ephemeral: true,
 			});
 

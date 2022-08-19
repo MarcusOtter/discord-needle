@@ -29,11 +29,11 @@ export default class HelpButton extends NeedleButton {
 			return;
 		}
 
-		const { messages, interaction, replyInSecret } = context;
+		const { settings: messages, interaction, replyInSecret } = context;
 		const { member, channel } = interaction;
 		const hasPermission = await helpCommand.hasPermissionToExecuteHere(member, channel);
 		if (!hasPermission) {
-			return replyInSecret(messages.ERR_INSUFFICIENT_PERMS);
+			return replyInSecret(messages.ErrorInsufficientUserPerms);
 		}
 
 		await this.commandExecutor.execute(helpCommand, context);

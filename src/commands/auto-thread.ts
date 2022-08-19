@@ -15,14 +15,12 @@ export default class AutoThreadCommand extends NeedleCommand {
 	public readonly name = "auto-thread";
 	public readonly description = "Configure automatic creation of threads in a channel";
 	public readonly category = CommandCategory.Configuration;
-	public readonly defaultPermissions = PermissionFlagsBits.ManageThreads;
+	protected readonly defaultPermissions = PermissionFlagsBits.ManageThreads;
 
 	public async execute(context: InteractionContext): Promise<void> {
-		if (!context.isInGuild() || !context.isSlashCommand()) {
-			return context.replyInSecret(context.validationError);
-		}
+		if (!context.isInGuild() || !context.isSlashCommand()) return;
 
-		const { interaction, messages, replyInSecret, replyInPublic } = context;
+		const { interaction, settings, replyInSecret, replyInPublic } = context;
 		const { guildId, options } = interaction;
 
 		// TODO: Handle channel visibility error if bot cannot see
@@ -41,7 +39,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 
 		if (options.getInteger("toggle") === ToggleOption.Off) {
 			if (!oldAutoThreadConfig) {
-				return replyInSecret(messages.ERR_NO_EFFECT);
+				return replyInSecret(settings.ErrorNoEffect);
 			}
 
 			guildConfig.threadChannels.splice(oldConfigIndex, 1);
@@ -90,7 +88,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 			const wasUsingDefaultReply =
 				oldReplyType === ReplyType.DefaultWithButtons || oldReplyType === ReplyType.DefaultWithoutButtons;
 			const oldValue = wasUsingDefaultReply
-				? messages.SUCCESS_THREAD_CREATE
+				? settings.SuccessThreadCreate
 				: oldAutoThreadConfig?.customReply ?? "";
 			newCustomReply = await this.getTextInputFromModal(
 				"custom-reply-message",
@@ -124,7 +122,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 		console.dir(oldAutoThreadConfig);
 
 		if (JSON.stringify(oldAutoThreadConfig) === JSON.stringify(newAutoThreadConfig)) {
-			return replyInSecret(messages.ERR_NO_EFFECT);
+			return replyInSecret(settings.ErrorNoEffect);
 		}
 
 		let interactionReplyMessage;

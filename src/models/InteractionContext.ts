@@ -17,7 +17,7 @@ import NeedleConfig from "./NeedleConfig";
 
 export default class InteractionContext {
 	public readonly bot: NeedleBot;
-	public readonly messages: NeedleConfig["messages"];
+	public readonly settings: NeedleConfig["settings"];
 	public readonly messageVariables: MessageVariables;
 
 	public get interaction(): NeedleInteraction {
@@ -35,7 +35,7 @@ export default class InteractionContext {
 	constructor(bot: NeedleBot, interaction: NeedleInteraction) {
 		this.bot = bot;
 		this.interactionToReplyTo = interaction;
-		this.messages = bot.configs.get(interaction.guildId ?? "").messages;
+		this.settings = bot.configs.get(interaction.guildId ?? "").settings;
 		this.messageVariables = new MessageVariables().setUser(interaction.user);
 
 		if (!this.isInGuild()) return;
@@ -58,32 +58,29 @@ export default class InteractionContext {
 
 	public isInPublicThread = (): this is ContextWithInteraction<GuildInteraction & PublicThreadInteraction> => {
 		if (this.interaction.channel?.type === ChannelType.GuildPublicThread) return true;
-		this.latestErrorMessage = this.messages.ERR_ONLY_IN_THREAD;
+		this.latestErrorMessage = this.settings.ErrorOnlyInThread;
 		return false;
 	};
 
 	public isInGuild = (): this is ContextWithInteraction<GuildInteraction> => {
-		const { channel } = this.interaction;
-		if (channel && !channel?.isDMBased()) return true;
-		this.latestErrorMessage = this.messages.ERR_ONLY_IN_SERVER;
-		return false;
+		return !this.interaction.channel?.isDMBased();
 	};
 
 	public isSlashCommand = (): this is ContextWithInteraction<ChatInputCommandInteraction> => {
 		if (this.interaction.isChatInputCommand()) return true;
-		this.latestErrorMessage = this.messages.ERR_UNKNOWN;
+		this.latestErrorMessage = this.settings.ErrorUnknown;
 		return false;
 	};
 
 	public isModalSubmit = (): this is ContextWithInteraction<ModalSubmitInteraction> => {
 		if (this.interaction.isModalSubmit()) return true;
-		this.latestErrorMessage = this.messages.ERR_UNKNOWN;
+		this.latestErrorMessage = this.settings.ErrorUnknown;
 		return false;
 	};
 
 	public isButtonPress = (): this is ContextWithInteraction<ButtonInteraction> => {
 		if (this.interaction.isButton()) return true;
-		this.latestErrorMessage = this.messages.ERR_UNKNOWN;
+		this.latestErrorMessage = this.settings.ErrorUnknown;
 		return false;
 	};
 

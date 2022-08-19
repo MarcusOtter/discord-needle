@@ -26,12 +26,10 @@ export default class ConfirmFactoryResetModal extends NeedleModal {
 			.addComponents(row);
 	}
 
-	public submit(context: InteractionContext): Promise<void> {
-		if (!context.isInGuild() || !context.isModalSubmit()) {
-			return context.replyInSecret(context.validationError);
-		}
-		const { replyInSecret, replyInPublic, interaction, messages } = context;
+	public async submit(context: InteractionContext): Promise<void> {
+		if (!context.isInGuild() || !context.isModalSubmit()) return;
 
+		const { replyInSecret, replyInPublic, interaction, settings } = context;
 		const isConfirmed = interaction.fields.getTextInputValue("confirm").toLowerCase() === "yes";
 		if (!isConfirmed) {
 			return replyInSecret("Action cancelled."); // TODO: Add message for this
@@ -42,6 +40,6 @@ export default class ConfirmFactoryResetModal extends NeedleModal {
 		const success = this.bot.configs.delete(interaction.guildId);
 		return success
 			? replyInPublic("Successfully reset Needle to factory settings.")
-			: replyInSecret(messages.ERR_NO_EFFECT);
+			: replyInSecret(settings.ErrorNoEffect);
 	}
 }

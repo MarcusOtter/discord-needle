@@ -25,7 +25,7 @@ export default class TitleCommand extends NeedleCommand {
 	}
 
 	public async execute(context: InteractionContext): Promise<void> {
-		const { messages, replyInSecret } = context;
+		const { settings, replyInSecret } = context;
 		if (!context.isInPublicThread() || !context.isSlashCommand()) {
 			return replyInSecret(context.validationError);
 		}
@@ -35,9 +35,9 @@ export default class TitleCommand extends NeedleCommand {
 		const userHasPermission = await isAllowedToChangeThreadTitle(channel, member);
 		const botHasPermission = await isAllowedToChangeThreadTitle(channel, channel.guild.members.me);
 
-		if (!userHasPermission) return replyInSecret(messages.ERR_INSUFFICIENT_PERMS);
-		if (!botHasPermission) return replyInSecret("Oh nooo"); // TODO: Make message key for bot not having permissions to change title in thread
-		if (channel.name === newThreadName) return replyInSecret(messages.ERR_NO_EFFECT);
+		if (!userHasPermission) return replyInSecret(settings.ErrorInsufficientUserPerms);
+		if (!botHasPermission) return replyInSecret(settings.ErrorInsufficientBotPerms); // TODO: make sure it works (untested)
+		if (channel.name === newThreadName) return replyInSecret(settings.ErrorNoEffect);
 
 		await channel.setName(newThreadName);
 		await replyInSecret("Success!");
