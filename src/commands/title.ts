@@ -26,12 +26,19 @@ export default class TitleCommand extends NeedleCommand {
 
 	public async execute(context: InteractionContext): Promise<void> {
 		const { settings, replyInSecret } = context;
-		if (!context.isInPublicThread() || !context.isSlashCommand()) {
+		if (!context.isInPublicThread()) {
 			return replyInSecret(context.validationError);
 		}
 
-		const { channel, member, options } = context.interaction;
-		const newThreadName = options.getString("value", true);
+		const { channel, member } = context.interaction;
+
+		let newThreadName = "";
+		if (context.isSlashCommand()) {
+			newThreadName = context.interaction.options.getString("value", true);
+		} else if (context.isButtonPress()) {
+			newThreadName = "TODO: GETT FROM MODAL";
+		}
+
 		const userHasPermission = await isAllowedToChangeThreadTitle(channel, member);
 		const botHasPermission = await isAllowedToChangeThreadTitle(channel, channel.guild.members.me);
 
@@ -40,6 +47,6 @@ export default class TitleCommand extends NeedleCommand {
 		if (channel.name === newThreadName) return replyInSecret(settings.ErrorNoEffect);
 
 		await channel.setName(newThreadName);
-		await replyInSecret("Success!");
+		await replyInSecret("Success!"); // TODO: Remove pointless success (edit interaction instead or smthn)
 	}
 }

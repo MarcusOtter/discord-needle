@@ -10,6 +10,7 @@ enum Setting {
 	SuccessThreadArchiveImmediate,
 	SuccessThreadArchiveSlow,
 
+	// TODO: Get these from /auto-thread reply-buttons instead
 	ButtonTextClose,
 	ButtonTextTitle,
 	ButtonTextHelp,

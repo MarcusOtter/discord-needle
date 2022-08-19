@@ -19,7 +19,7 @@ export default class CloseButton extends NeedleButton {
 			.setCustomId(this.customId)
 			.setLabel(text)
 			.setStyle(ButtonStyle.Success)
-			.setEmoji("937932140014866492"); // :archive:
+			.setEmoji("1010182198923636797"); // :archive-3.0: // TODO: move all emojis to private server
 	}
 
 	public async press(context: InteractionContext): Promise<void> {

@@ -174,6 +174,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 				option
 					.setName("reply-message")
 					.setDescription("How should Needle reply in the thread? 🔥")
+					// Let's remove the "no buttons" options and just do message. Buttons will be reply-buttons
 					.addChoices(
 						{ name: "Default message with buttons (ᴅᴇꜰᴀᴜʟᴛ)", value: ReplyType.DefaultWithButtons },
 						{ name: "Default message without buttons", value: ReplyType.DefaultWithoutButtons },

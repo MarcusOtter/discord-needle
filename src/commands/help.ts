@@ -67,7 +67,7 @@ export default class HelpCommand extends NeedleCommand {
 		const builder = new EmbedBuilder().setColor("#2f3136").setFields(fields);
 		if (!seeingAllCommands) {
 			builder.setFooter({
-				text: '👉 Use "/help filter: all" to see all commands',
+				text: 'Only showing commands available to you in this channel.\nUse "/help filter: all" to see all commands 👈',
 			});
 		}
 

@@ -19,7 +19,7 @@ export default class TitleButton extends NeedleButton {
 			.setCustomId(this.customId)
 			.setLabel(text)
 			.setStyle(ButtonStyle.Primary) // TODO: I have a feeling I'm gonna have to make this configurable too
-			.setEmoji("1010055524999499798"); // :title:
+			.setEmoji("1010182200018350111"); // :title-3.0:
 	}
 
 	public async press(context: InteractionContext): Promise<void> {
