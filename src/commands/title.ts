@@ -30,23 +30,26 @@ export default class TitleCommand extends NeedleCommand {
 			return replyInSecret(context.validationError);
 		}
 
-		const { channel, member } = context.interaction;
+		const { channel: thread, member } = context.interaction;
 
 		let newThreadName = "";
 		if (context.isSlashCommand()) {
 			newThreadName = context.interaction.options.getString("value", true);
 		} else if (context.isButtonPress()) {
-			newThreadName = "TODO: GETT FROM MODAL";
+			const titleModal = this.bot.getModal("title");
+			const modalSubmitInteraction = await titleModal.openAndAwaitSubmit(context.interaction, thread.name);
+			newThreadName = modalSubmitInteraction.fields.getTextInputValue("title");
+			context.setInteractionToReplyTo(modalSubmitInteraction);
 		}
 
-		const userHasPermission = await isAllowedToChangeThreadTitle(channel, member);
-		const botHasPermission = await isAllowedToChangeThreadTitle(channel, channel.guild.members.me);
+		const userHasPermission = await isAllowedToChangeThreadTitle(thread, member);
+		const botHasPermission = await isAllowedToChangeThreadTitle(thread, thread.guild.members.me);
 
 		if (!userHasPermission) return replyInSecret(settings.ErrorInsufficientUserPerms);
 		if (!botHasPermission) return replyInSecret(settings.ErrorInsufficientBotPerms); // TODO: make sure it works (untested)
-		if (channel.name === newThreadName) return replyInSecret(settings.ErrorNoEffect);
+		if (thread.name === newThreadName) return replyInSecret(settings.ErrorNoEffect);
 
-		await channel.setName(newThreadName);
+		await thread.setName(newThreadName);
 		await replyInSecret("Success!"); // TODO: Remove pointless success (edit interaction instead or smthn)
 	}
 }

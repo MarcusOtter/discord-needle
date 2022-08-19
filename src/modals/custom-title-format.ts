@@ -9,6 +9,7 @@ import NeedleModal from "../models/NeedleModal";
 
 export default class CustomTitleFormatModal extends NeedleModal {
 	public readonly customId = "custom-title-format";
+	// Idea: What if we add a max length parameter to this modal and add elipsis if content goes over that
 	public get builder(): ModalBuilder {
 		const titleInput = new TextInputBuilder()
 			.setCustomId("title")

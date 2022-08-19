@@ -17,6 +17,8 @@ export default class AutoThreadCommand extends NeedleCommand {
 	public readonly category = CommandCategory.Configuration;
 	protected readonly defaultPermissions = PermissionFlagsBits.ManageThreads;
 
+	// TODO: "Has permission to execute override -> not in threads or voice chats for configuration commands"
+
 	public async execute(context: InteractionContext): Promise<void> {
 		if (!context.isInGuild() || !context.isSlashCommand()) return;
 
