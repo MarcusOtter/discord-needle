@@ -7,10 +7,10 @@ import type CommandExecutorService from "../services/CommandExecutorService";
 
 export default class HelpButton extends NeedleButton {
 	public readonly customId = "help";
-	public getBuilder(): ButtonBuilder {
+	public getBuilder(text: string): ButtonBuilder {
 		return new ButtonBuilder()
 			.setCustomId(this.customId)
-			.setLabel("Commands")
+			.setLabel(text)
 			.setStyle(ButtonStyle.Secondary)
 			.setEmoji("937931337942306877"); // :slash_commands:
 	}

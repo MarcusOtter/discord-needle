@@ -36,6 +36,7 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 		if (!channelConfig) return;
 		if (!channelConfig.includeBots && message.author.bot) return;
 
+		const { settings } = guildConfig;
 		const { author, member, guild, channel } = message;
 		const botMember = await guild.members.fetchMe();
 		const messageVariables = new MessageVariables().setChannel(channel).setUser(member ?? author);
@@ -66,12 +67,14 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 			messageVariables.setThread(thread);
 		}
 
-		const closeButton = this.bot.getButton("close").getBuilder();
-		const helpButton = this.bot.getButton("help").getBuilder();
+		const closeButtonText = clampWithElipse(await messageVariables.replace(settings.ButtonTextClose), 80);
+		const helpButtonText = clampWithElipse(await messageVariables.replace(settings.ButtonTextHelp), 80);
+		const closeButton = this.bot.getButton("close").getBuilder(closeButtonText);
+		const helpButton = this.bot.getButton("help").getBuilder(helpButtonText);
 		const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(closeButton, helpButton);
 
 		const rawMessageContent =
-			channelConfig.customReply.length > 0 ? channelConfig.customReply : guildConfig.settings.SuccessThreadCreate;
+			channelConfig.customReply.length > 0 ? channelConfig.customReply : settings.SuccessThreadCreate;
 		const messageContent = await messageVariables.replace(rawMessageContent);
 		// TODO: Use correct amount of buttons and all that
 		if (messageContent.length > 0) {

@@ -44,7 +44,6 @@ export default class MessageVariables {
 	}
 }
 
-// TODO: Message content
 enum MessageVariable {
 	ChannelMention = "$CHANNEL_MENTION",
 	ChannelName = "$CHANNEL_NAME",

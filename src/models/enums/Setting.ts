@@ -1,3 +1,4 @@
+// IMPORTANT: Remember to change config.json when you are changing anything here
 enum Setting {
 	ErrorUnknown,
 	ErrorOnlyInThread,
@@ -9,9 +10,9 @@ enum Setting {
 	SuccessThreadArchiveImmediate,
 	SuccessThreadArchiveSlow,
 
-	ButtonArchive,
-	ButtonEditTitle,
-	ButtonCommands,
+	ButtonTextClose,
+	ButtonTextTitle,
+	ButtonTextHelp,
 }
 
 export default Setting;

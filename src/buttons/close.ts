@@ -7,10 +7,10 @@ import CommandExecutorService from "../services/CommandExecutorService";
 
 export default class CloseButton extends NeedleButton {
 	public readonly customId = "close";
-	public getBuilder(): ButtonBuilder {
+	public getBuilder(text: string): ButtonBuilder {
 		return new ButtonBuilder()
 			.setCustomId(this.customId)
-			.setLabel("Archive thread") // TODO: Message key
+			.setLabel(text)
 			.setStyle(ButtonStyle.Success)
 			.setEmoji("937932140014866492"); // :archive:
 	}

@@ -10,6 +10,6 @@ export default abstract class NeedleButton {
 		this.bot = bot;
 	}
 
-	public abstract getBuilder(): ButtonBuilder;
+	public abstract getBuilder(text: string): ButtonBuilder;
 	public abstract press(context: InteractionContext): Promise<void>;
 }
