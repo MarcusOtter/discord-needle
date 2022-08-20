@@ -12,7 +12,12 @@ export default class TitleCommand extends NeedleCommand {
 
 	public addOptions(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions {
 		return builder.addStringOption(option =>
-			option.setName("value").setDescription("The new title of the thread").setRequired(true)
+			option
+				.setName("value")
+				.setDescription("The new title of the thread")
+				.setMinLength(1)
+				.setMaxLength(100)
+				.setRequired(true)
 		);
 	}
 
