@@ -176,6 +176,17 @@ export default class AutoThreadCommand extends NeedleCommand {
 			)
 			.addIntegerOption(option =>
 				option
+					.setName("title-format")
+					.setDescription("How should the thread title look? 🆕🔥")
+					.addChoices(
+						{ name: "First 40 characters of message (ᴅᴇꜰᴀᴜʟᴛ)", value: TitleType.FirstFourtyChars },
+						{ name: "Nickname (yyyy-MM-dd) 🔥", value: TitleType.NicknameDate },
+						{ name: "First line of message", value: TitleType.FirstLineOfMessage },
+						{ name: "Custom 🔥", value: TitleType.Custom }
+					)
+			)
+			.addIntegerOption(option =>
+				option
 					.setName("reply-message")
 					.setDescription("How should Needle reply in the thread? 🔥")
 					// Let's remove the "no buttons" options and just do message. Buttons will be reply-buttons
@@ -218,17 +229,6 @@ export default class AutoThreadCommand extends NeedleCommand {
 					.addChoices(
 						{ name: "Archive immediately (ᴅᴇꜰᴀᴜʟᴛ)", value: ToggleOption.On },
 						{ name: "Archive after 1 hour of inactivity", value: ToggleOption.Off }
-					)
-			)
-			.addIntegerOption(option =>
-				option
-					.setName("title-format")
-					.setDescription("How should the thread title look? 🆕🔥")
-					.addChoices(
-						{ name: "First 40 characters of message (ᴅᴇꜰᴀᴜʟᴛ)", value: TitleType.FirstFourtyChars },
-						{ name: "Nickname (yyyy-MM-dd) 🔥", value: TitleType.NicknameDate },
-						{ name: "First line of message", value: TitleType.FirstLineOfMessage },
-						{ name: "Custom 🔥", value: TitleType.Custom }
 					)
 			)
 			.addIntegerOption(option =>
