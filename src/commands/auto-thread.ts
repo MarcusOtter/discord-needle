@@ -11,6 +11,7 @@ import { ModalOpenableInteraction } from "../models/NeedleModal";
 import safe_regex from "safe-regex";
 import { extractRegex, removeInvalidThreadNameChars } from "../helpers/stringHelpers";
 import DeleteBehavior from "../models/enums/DeleteBehavior";
+import ReplyButtonsOptions from "../models/enums/ReplyButtonsOptions";
 
 export default class AutoThreadCommand extends NeedleCommand {
 	public readonly name = "auto-thread";
@@ -201,6 +202,18 @@ export default class AutoThreadCommand extends NeedleCommand {
 			)
 			.addIntegerOption(option =>
 				option
+					.setName("reply-buttons")
+					.setDescription("What should the buttons of the reply look like? 🆕")
+					.addChoices(
+						{
+							name: "Archive blue, Edit green (ᴅᴇꜰᴀᴜʟᴛ)",
+							value: ReplyButtonsOptions.Default,
+						},
+						{ name: "Custom 🔥", value: ReplyButtonsOptions.Custom }
+					)
+			)
+			.addIntegerOption(option =>
+				option
 					.setName("include-bots")
 					.setDescription("Should threads be created on bot messages?")
 					.addChoices(
@@ -214,7 +227,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 					.setDescription("What should happen to the thread if the start message is deleted? 🆕")
 					.addChoices(
 						{
-							name: "Delete if empty thread, otherwise archive (ᴅᴇꜰᴀᴜʟᴛ)",
+							name: "Delete if thread is empty, otherwise archive (ᴅᴇꜰᴀᴜʟᴛ)",
 							value: DeleteBehavior.DeleteIfEmptyElseArchive,
 						},
 						{ name: "Always archive", value: DeleteBehavior.Archive },

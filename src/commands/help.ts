@@ -82,12 +82,12 @@ export default class HelpCommand extends NeedleCommand {
 	): Promise<string[]> {
 		const output = [];
 		for (const command of commands) {
-			const { description, name } = command;
+			const { id, description, name } = command;
 
 			const hasPermission = await command.hasPermissionToExecuteHere(member, channel);
 			if (!showAll && hasPermission === false) continue;
 
-			const commandSyntax = `\`/${name}\``;
+			const commandSyntax = `</${name}:${id}>`;
 			output.push(`${commandSyntax} — ${description}`);
 		}
 
