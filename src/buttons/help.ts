@@ -14,10 +14,9 @@ export default class HelpButton extends NeedleButton {
 		this.commandExecutor = ObjectFactory.createCommandExecutorService();
 	}
 
-	public getBuilder(text: string): ButtonBuilder {
+	public getBuilder(): ButtonBuilder {
 		return new ButtonBuilder()
 			.setCustomId(this.customId)
-			.setLabel(text)
 			.setStyle(ButtonStyle.Secondary)
 			.setEmoji("937931337942306877"); // :slash_commands:
 	}

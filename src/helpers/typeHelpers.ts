@@ -8,6 +8,8 @@ export type SlashCommandBuilderWithOptions = Omit<SlashCommandBuilder, "addSubco
 export type Newable = abstract new (...args: never[]) => unknown;
 export type Concretize<T extends Newable> = new (...args: ConstructorParameters<T>) => InstanceType<T>;
 
+export type SameLengthTuple<TTuple, TType> = { [I in keyof TTuple]: TType };
+
 export type ImportedClass<T extends Newable> = {
 	fileName: string;
 	Class: Concretize<T>;

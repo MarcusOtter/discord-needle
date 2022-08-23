@@ -1,7 +1,7 @@
 import { ButtonInteraction, ChatInputCommandInteraction, ModalBuilder, ModalSubmitInteraction } from "discord.js";
-import { Nullish } from "../helpers/typeHelpers";
 import NeedleBot from "../NeedleBot";
 import InteractionContext, { GuildInteraction } from "./InteractionContext";
+import { ModalTextInput } from "./ModalTextInput";
 
 export default abstract class NeedleModal {
 	public abstract readonly customId: string;
@@ -17,14 +17,18 @@ export default abstract class NeedleModal {
 
 	public async openAndAwaitSubmit(
 		interaction: ModalOpenableInteraction,
-		firstTextInputValue: Nullish<string> = undefined
+		defaultValues: ModalTextInput[]
 	): Promise<ModalSubmitInteraction> {
-		let builder = this.builder;
-		if (firstTextInputValue) {
-			const row = this.builder.components[0];
-			const firstComponent = row.components[0];
-			builder = this.builder.setComponents(row.setComponents(firstComponent.setValue(firstTextInputValue)));
-		}
+		const builder = this.builder;
+		builder.setComponents(
+			builder.components.map(row =>
+				row.setComponents(
+					row.components[0].setValue(
+						defaultValues.find(s => s.customId === row.components[0].data.custom_id)?.value ?? ""
+					)
+				)
+			)
+		);
 
 		await interaction.showModal(builder);
 		return interaction.awaitModalSubmit({

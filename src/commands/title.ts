@@ -45,7 +45,9 @@ export default class TitleCommand extends NeedleCommand {
 			newThreadName = context.interaction.options.getString("value", true);
 		} else if (context.isButtonPress()) {
 			const titleModal = this.bot.getModal("title");
-			const modalSubmitInteraction = await titleModal.openAndAwaitSubmit(context.interaction, thread.name);
+			const modalSubmitInteraction = await titleModal.openAndAwaitSubmit(context.interaction, [
+				{ customId: "title", value: thread.name },
+			]);
 			newThreadName = modalSubmitInteraction.fields.getTextInputValue("title");
 			context.setInteractionToReplyTo(modalSubmitInteraction);
 		}

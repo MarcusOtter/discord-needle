@@ -6,6 +6,7 @@ import {
 	ChatInputCommandInteraction,
 	GuildMember,
 	GuildTextBasedChannel,
+	InteractionType,
 	MessageComponentInteraction,
 	ModalSubmitInteraction,
 	PublicThreadChannel,
@@ -14,6 +15,7 @@ import { Overwrite } from "../helpers/typeHelpers";
 import type NeedleBot from "../NeedleBot";
 import MessageVariables from "./MessageVariables";
 import NeedleConfig from "./NeedleConfig";
+import { ModalOpenableInteraction } from "./NeedleModal";
 
 export default class InteractionContext {
 	public readonly bot: NeedleBot;
@@ -60,6 +62,10 @@ export default class InteractionContext {
 		if (this.interaction.channel?.type === ChannelType.GuildPublicThread) return true;
 		this.latestErrorMessage = this.settings.ErrorOnlyInThread;
 		return false;
+	};
+
+	public isModalOpenable = (): this is ContextWithInteraction<ModalOpenableInteraction> => {
+		return this.isInGuild() && (this.isSlashCommand() || this.isButtonPress());
 	};
 
 	public isInGuild = (): this is ContextWithInteraction<GuildInteraction> => {

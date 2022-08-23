@@ -1,5 +1,5 @@
 import { ChannelType, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
-import { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
+import { SlashCommandBuilderWithOptions, SameLengthTuple } from "../helpers/typeHelpers";
 import AutothreadChannelConfig from "../models/AutothreadChannelConfig";
 import CommandCategory from "../models/enums/CommandCategory";
 import ReplyType from "../models/enums/ReplyType";
@@ -7,11 +7,11 @@ import TitleType from "../models/enums/TitleType";
 import ToggleOption from "../models/enums/ToggleOption";
 import InteractionContext from "../models/InteractionContext";
 import NeedleCommand from "../models/NeedleCommand";
-import { ModalOpenableInteraction } from "../models/NeedleModal";
 import safe_regex from "safe-regex";
 import { extractRegex, removeInvalidThreadNameChars } from "../helpers/stringHelpers";
 import DeleteBehavior from "../models/enums/DeleteBehavior";
 import ReplyButtonsOptions from "../models/enums/ReplyButtonsOptions";
+import { ModalTextInput } from "../models/ModalTextInput";
 
 export default class AutoThreadCommand extends NeedleCommand {
 	public readonly name = "auto-thread";
@@ -37,6 +37,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 		const oldConfigIndex = guildConfig.threadChannels.findIndex(c => c.channelId === channelId);
 		const oldAutoThreadConfig = oldConfigIndex > -1 ? guildConfig.threadChannels[oldConfigIndex] : undefined;
 		const openTitleModal = options.getInteger("title-format") === TitleType.Custom;
+		const openReplyButtonsModal = options.getInteger("reply-buttons") === ReplyButtonsOptions.Custom;
 		const replyType = options.getInteger("reply-message");
 		const openReplyMessageModal =
 			replyType === ReplyType.CustomWithButtons || replyType === ReplyType.CustomWithoutButtons;
@@ -51,21 +52,17 @@ export default class AutoThreadCommand extends NeedleCommand {
 			return replyInPublic(`Removed auto-threading in <#${channelId}>`);
 		}
 
-		if (openTitleModal && openReplyMessageModal) {
+		if (+openTitleModal + +openReplyMessageModal + +openReplyButtonsModal > 1) {
 			// TODO: Add message key for this
-			return replyInSecret(
-				"If you want to set both a custom title and custom reply message, please do it one at a time."
-			);
+			return replyInSecret("Please set one option to Custom at a time.");
 		}
 
 		let newCustomTitle;
 		if (openTitleModal) {
 			const oldValue = oldAutoThreadConfig?.customTitle ?? "";
-			newCustomTitle = await this.getTextInputFromModal(
+			[newCustomTitle] = await this.getTextInputsFromModal(
 				"custom-title-format",
-				"title",
-				oldValue,
-				interaction,
+				[{ customId: "title", value: oldValue }],
 				context
 			);
 
@@ -94,17 +91,45 @@ export default class AutoThreadCommand extends NeedleCommand {
 			const oldValue = wasUsingDefaultReply
 				? settings.SuccessThreadCreate
 				: oldAutoThreadConfig?.customReply ?? "";
-			newCustomReply = await this.getTextInputFromModal(
+			[newCustomReply] = await this.getTextInputsFromModal(
 				"custom-reply-message",
-				"message",
-				oldValue,
-				interaction,
+				[{ customId: "message", value: oldValue }],
 				context
 			);
 
 			if (newCustomReply.trim().length === 0) {
 				return replyInSecret("Invalid reply message, please provide at least one valid character.");
 			}
+		}
+
+		let newCloseButtonText;
+		let newCloseButtonStyle;
+		let newTitleButtonText;
+		let newTitleButtonStyle;
+		if (openReplyButtonsModal) {
+			const oldCloseText = oldAutoThreadConfig?.closeButtonText ?? "Archive thread";
+			const oldCloseStyle = oldAutoThreadConfig?.closeButtonStyle ?? "green";
+			const oldTitleText = oldAutoThreadConfig?.titleButtonText ?? "Edit title";
+			const oldTitleStyle = oldAutoThreadConfig?.titleButtonStyle ?? "blurple";
+
+			[newCloseButtonText, newCloseButtonStyle, newTitleButtonText, newTitleButtonStyle] =
+				await this.getTextInputsFromModal(
+					"custom-reply-buttons",
+					[
+						{ customId: "closeText", value: oldCloseText },
+						{ customId: "closeStyle", value: oldCloseStyle },
+						{ customId: "titleText", value: oldTitleText },
+						{ customId: "titleStyle", value: oldTitleStyle },
+					],
+					context
+				);
+		}
+
+		if (
+			openReplyButtonsModal &&
+			(!this.isValidButtonStyle(newCloseButtonStyle) || !this.isValidButtonStyle(newTitleButtonStyle))
+		) {
+			return replyInSecret("Invalid button style. Allowed values: blurple/grey/green/red"); // TODO: Message key
 		}
 
 		const newAutoThreadConfig = new AutothreadChannelConfig(
@@ -118,7 +143,11 @@ export default class AutoThreadCommand extends NeedleCommand {
 			options.getInteger("reply-message"), // TODO: change name to reply-type
 			newCustomReply,
 			options.getInteger("title-format"), // TODO: Rename to title-type
-			newCustomTitle
+			newCustomTitle,
+			newCloseButtonText,
+			newCloseButtonStyle,
+			newTitleButtonText,
+			newTitleButtonStyle
 		);
 
 		console.dir("NEW:");
@@ -145,17 +174,30 @@ export default class AutoThreadCommand extends NeedleCommand {
 		return replyInSecret(interactionReplyMessage);
 	}
 
-	private async getTextInputFromModal(
+	private async getTextInputsFromModal<T extends ModalTextInput[]>(
 		modalName: string,
-		inputCustomId: string,
-		currentValue: Nullish<string>,
-		interaction: ModalOpenableInteraction,
+		inputs: [...T],
 		context: InteractionContext
-	): Promise<string> {
+	): Promise<SameLengthTuple<T, string>> {
+		if (!context.isModalOpenable()) return inputs.map(() => "") as SameLengthTuple<T, string>;
+
 		const customTitleModal = this.bot.getModal(modalName);
-		const submitInteraction = await customTitleModal.openAndAwaitSubmit(interaction, currentValue);
+		const submitInteraction = await customTitleModal.openAndAwaitSubmit(context.interaction, inputs);
 		context.setInteractionToReplyTo(submitInteraction);
-		return submitInteraction.fields.getTextInputValue(inputCustomId);
+		return inputs.map(x => submitInteraction.fields.getTextInputValue(x.customId)) as SameLengthTuple<T, string>;
+	}
+
+	// Temporary thing before we get dropdowns in modals
+	private isValidButtonStyle(setting: string | undefined): boolean {
+		switch (setting?.toLowerCase()) {
+			case "blurple":
+			case "green":
+			case "grey":
+			case "red":
+				return true;
+			default:
+				return false;
+		}
 	}
 
 	public addOptions(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions {

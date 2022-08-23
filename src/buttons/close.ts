@@ -14,12 +14,12 @@ export default class CloseButton extends NeedleButton {
 		this.commandExecutor = ObjectFactory.createCommandExecutorService();
 	}
 
-	public getBuilder(text: string): ButtonBuilder {
+	public getBuilder(): ButtonBuilder {
 		return new ButtonBuilder()
 			.setCustomId(this.customId)
-			.setLabel(text)
+			.setLabel("Archive thread")
 			.setStyle(ButtonStyle.Success)
-			.setEmoji("1010182198923636797"); // :archive-3.0: // TODO: move all emojis to private server
+			.setEmoji("1010182198923636797"); // :archive_3_0:
 	}
 
 	public async press(context: InteractionContext): Promise<void> {

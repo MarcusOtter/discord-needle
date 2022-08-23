@@ -56,5 +56,5 @@ enum MessageVariable {
 	TimeAgo = "$TIME_AGO",
 	UserMention = "$USER_MENTION",
 	UserName = "$USER_NAME",
-	UserTag = "$USER_DISCRIMINATOR",
+	UserTag = "$USER_TAG",
 }

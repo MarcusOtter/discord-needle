@@ -1,6 +1,7 @@
 import {
 	ActionRowBuilder,
 	ButtonBuilder,
+	ButtonStyle,
 	ChannelType,
 	ClientEvents,
 	NewsChannel,
@@ -67,13 +68,17 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 			messageVariables.setThread(thread);
 		}
 
-		const closeButtonText = clampWithElipse(await messageVariables.replace(settings.ButtonTextClose), 80);
-		const titleButtonText = clampWithElipse(await messageVariables.replace(settings.ButtonTextTitle), 80);
-		const helpButtonText = clampWithElipse(await messageVariables.replace(settings.ButtonTextHelp), 80);
-		const closeButton = this.bot.getButton("close").getBuilder(closeButtonText);
-		const titleButton = this.bot.getButton("title").getBuilder(titleButtonText);
-		const helpButton = this.bot.getButton("help").getBuilder(helpButtonText);
-		const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(closeButton, titleButton, helpButton);
+		const closeButtonText = clampWithElipse(await messageVariables.replace(channelConfig.closeButtonText), 80);
+		const titleButtonText = clampWithElipse(await messageVariables.replace(channelConfig.titleButtonText), 80);
+		const closeButtonStyle = this.getButtonStyle(channelConfig.closeButtonStyle);
+		const titleButtonStyle = this.getButtonStyle(channelConfig.titleButtonStyle);
+		const closeButton = ButtonBuilder.from(this.bot.getButton("close").getBuilder())
+			.setStyle(closeButtonStyle)
+			.setLabel(closeButtonText);
+		const titleButton = ButtonBuilder.from(this.bot.getButton("title").getBuilder())
+			.setStyle(titleButtonStyle)
+			.setLabel(titleButtonText);
+		const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(closeButton, titleButton);
 
 		const rawMessageContent =
 			channelConfig.customReply.length > 0 ? channelConfig.customReply : settings.SuccessThreadCreate;
@@ -110,5 +115,21 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 		}
 
 		return clampWithElipse(title, 100);
+	}
+
+	// Temporary thing before we get dropdowns in modals
+	private getButtonStyle(setting: string): ButtonStyle {
+		switch (setting.toLowerCase()) {
+			case "blurple":
+				return ButtonStyle.Primary;
+			case "green":
+				return ButtonStyle.Success;
+			case "grey":
+				return ButtonStyle.Secondary;
+			case "red":
+				return ButtonStyle.Danger;
+			default:
+				throw new Error("Invalid button color: " + setting.toLowerCase());
+		}
 	}
 }

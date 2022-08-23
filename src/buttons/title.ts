@@ -14,12 +14,12 @@ export default class TitleButton extends NeedleButton {
 		this.commandExecutor = ObjectFactory.createCommandExecutorService();
 	}
 
-	public getBuilder(text: string): ButtonBuilder {
+	public getBuilder(): ButtonBuilder {
 		return new ButtonBuilder()
 			.setCustomId(this.customId)
-			.setLabel(text)
-			.setStyle(ButtonStyle.Primary) // TODO: I have a feeling I'm gonna have to make this configurable too
-			.setEmoji("1010182200018350111"); // :title-3.0:
+			.setLabel("Edit title")
+			.setStyle(ButtonStyle.Primary)
+			.setEmoji("1010182200018350111"); // :title_3_0:
 	}
 
 	public async press(context: InteractionContext): Promise<void> {

@@ -15,6 +15,10 @@ export default class AutothreadChannelConfig {
 	public readonly statusReactions: ToggleOption;
 	public readonly titleType: TitleType;
 	public readonly customTitle: string;
+	public readonly closeButtonText: string;
+	public readonly closeButtonStyle: string;
+	public readonly titleButtonText: string;
+	public readonly titleButtonStyle: string;
 
 	// TODO IMPORTANT: Fix bug where switching away from custom title type will break stuff
 	// Because I think I reset the custom title here like I do with message
@@ -30,7 +34,11 @@ export default class AutothreadChannelConfig {
 		replyType: Nullish<ReplyType>,
 		customReply: Nullish<string>,
 		titleType: Nullish<TitleType>,
-		customTitle: Nullish<string>
+		customTitle: Nullish<string>,
+		closeButtonText: Nullish<string>,
+		closeButtonStyle: Nullish<string>,
+		titleButtonText: Nullish<string>,
+		titleButtonStyle: Nullish<string>
 	) {
 		this.channelId = channelId;
 		this.deleteBehavior = deleteBehavior ?? oldConfig?.deleteBehavior ?? DeleteBehavior.DeleteIfEmptyElseArchive;
@@ -38,6 +46,11 @@ export default class AutothreadChannelConfig {
 		this.includeBots = includeBots ?? oldConfig?.includeBots ?? ToggleOption.Off;
 		this.slowmode = slowmode ?? oldConfig?.slowmode ?? 0;
 		this.statusReactions = statusReactions ?? oldConfig?.statusReactions ?? ToggleOption.Off;
+
+		this.closeButtonText = closeButtonText ?? oldConfig?.closeButtonText ?? "Archive thread";
+		this.closeButtonStyle = closeButtonStyle?.toLowerCase() ?? oldConfig?.closeButtonStyle ?? "green";
+		this.titleButtonText = titleButtonText ?? oldConfig?.titleButtonText ?? "Edit title";
+		this.titleButtonStyle = titleButtonStyle?.toLowerCase() ?? oldConfig?.titleButtonStyle ?? "blurple";
 
 		this.replyType = replyType ?? oldConfig?.replyType ?? ReplyType.DefaultWithButtons;
 		this.customReply = this.getCustomReply(oldConfig, customReply);
