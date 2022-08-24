@@ -67,7 +67,6 @@ export default class AutothreadChannelConfig {
 
 	private getCustomTitle(oldConfig: Nullish<AutothreadChannelConfig>, incomingCustomTitle: Nullish<string>): string {
 		if (this.titleType === TitleType.Custom) return incomingCustomTitle ?? oldConfig?.customTitle ?? "";
-		if (oldConfig?.titleType === TitleType.Custom) return ""; // Reset if switching away from custom (TODO: I THINK THIS IS A BUG)
 		return this.getDefaultTitle(this.titleType);
 	}
 
