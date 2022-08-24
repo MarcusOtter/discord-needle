@@ -1,5 +1,5 @@
 enum TitleType {
-	FirstFourtyChars = 0,
+	FirstFiftyChars = 0,
 	NicknameDate,
 	FirstLineOfMessage,
 	Custom,

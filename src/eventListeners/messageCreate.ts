@@ -93,7 +93,6 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 				? settings.SuccessThreadCreate
 				: channelConfig.customReply;
 		const messageContent = await messageVariables.replace(rawMessageContent);
-		// TODO: Use correct amount of buttons and all that
 		if (messageContent.length > 0) {
 			const msg = await thread.send({
 				content: clampWithElipse(messageContent, 2000),
@@ -102,7 +101,7 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 
 			if (botMember.permissionsIn(thread.id).has(PermissionsBitField.Flags.ManageMessages)) {
 				await msg.pin();
-				await wait(50); // Let's wait a few ms here to ensure the latest message is actually the pin message
+				await wait(100); // Let's wait a few ms here to ensure the latest message is actually the pin message
 				await thread.lastMessage?.delete();
 			}
 		}
@@ -120,12 +119,7 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 			.replaceAll("\n", " ");
 
 		const title = await variables.replace(rawTitle);
-		let output = clampWithElipse(title, 100);
-
-		if (config.titleType === TitleType.FirstFourtyChars) {
-			output = message.length > 40 ? title + "..." : title;
-		}
-
+		const output = clampWithElipse(title, config.titleMaxLength);
 		return output.length > 0 ? output : "New Thread";
 	}
 

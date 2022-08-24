@@ -57,15 +57,26 @@ export default class AutoThreadCommand extends NeedleCommand {
 		}
 
 		let newCustomTitle;
+		let newMaxTitleLength;
 		if (openTitleModal) {
-			const oldValue = oldAutoThreadConfig?.customTitle ?? "";
-			[newCustomTitle] = await this.getTextInputsFromModal(
+			const oldTitle = oldAutoThreadConfig?.customTitle ?? "";
+			const oldMaxLength = oldAutoThreadConfig?.titleMaxLength ?? 60;
+			let newMaxLengthString;
+			[newCustomTitle, newMaxLengthString] = await this.getTextInputsFromModal(
 				"custom-title-format",
-				[{ customId: "title", value: oldValue }],
+				[
+					{ customId: "title", value: oldTitle },
+					{ customId: "maxTitleLength", value: oldMaxLength.toString() },
+				],
 				context
 			);
 
-			// TODO: Message keys below
+			// TODO: Message keys below (maybe? if we even do that for config stuff?)
+
+			newMaxTitleLength = Number.parseInt(newMaxLengthString);
+			if (Number.isNaN(newMaxTitleLength) || newMaxTitleLength < 1 || newMaxTitleLength > 100) {
+				return replyInSecret(newMaxLengthString + " is not a number between 1-100.");
+			}
 
 			const hasMoreThanTwoSlashes = newCustomTitle.split("/").length - 1 > 2;
 			if (hasMoreThanTwoSlashes) {
@@ -82,6 +93,10 @@ export default class AutoThreadCommand extends NeedleCommand {
 			}
 		}
 
+		if (options.getInteger("title-format") !== TitleType.Custom) {
+			newMaxTitleLength = 50;
+		}
+
 		let newReplyMessage;
 		if (openReplyMessageModal) {
 			const oldReplyType = oldAutoThreadConfig?.replyType;
@@ -94,6 +109,10 @@ export default class AutoThreadCommand extends NeedleCommand {
 				[{ customId: "message", value: oldValue }],
 				context
 			);
+		}
+
+		if (replyType === ReplyMessageOption.Default) {
+			newReplyMessage = "";
 		}
 
 		let newCloseButtonText;
@@ -118,17 +137,10 @@ export default class AutoThreadCommand extends NeedleCommand {
 					],
 					context
 				);
-		}
 
-		if (
-			openReplyButtonsModal &&
-			(!this.isValidButtonStyle(newCloseButtonStyle) || !this.isValidButtonStyle(newTitleButtonStyle))
-		) {
-			return replyInSecret("Invalid button style. Allowed values: blurple/grey/green/red"); // TODO: Message key
-		}
-
-		if (replyType === ReplyMessageOption.Default) {
-			newReplyMessage = "";
+			if (!this.isValidButtonStyle(newCloseButtonStyle) || !this.isValidButtonStyle(newTitleButtonStyle)) {
+				return replyInSecret("Invalid button style. Allowed values: blurple/grey/green/red."); // TODO: Message key
+			}
 		}
 
 		if (options.getInteger("reply-buttons") === ReplyButtonsOption.Default) {
@@ -149,6 +161,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 			options.getInteger("reply-message"), // TODO: change name to reply-type
 			newReplyMessage,
 			options.getInteger("title-format"), // TODO: Rename to title-type
+			newMaxTitleLength,
 			newCustomTitle,
 			newCloseButtonText,
 			newCloseButtonStyle,
@@ -228,7 +241,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 					.setName("title-format")
 					.setDescription("How should the thread title look? 🆕🔥")
 					.addChoices(
-						{ name: "First 40 characters of message (ᴅᴇꜰᴀᴜʟᴛ)", value: TitleType.FirstFourtyChars },
+						{ name: "First 50 characters of message (ᴅᴇꜰᴀᴜʟᴛ)", value: TitleType.FirstFiftyChars },
 						{ name: "Nickname (yyyy-MM-dd) 🔥", value: TitleType.NicknameDate },
 						{ name: "First line of message", value: TitleType.FirstLineOfMessage },
 						{ name: "Custom 🔥", value: TitleType.Custom }

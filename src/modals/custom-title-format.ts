@@ -9,16 +9,25 @@ import NeedleModal from "../models/NeedleModal";
 
 export default class CustomTitleFormatModal extends NeedleModal {
 	public readonly customId = "custom-title-format";
-	// Idea: What if we add a max length parameter to this modal and add elipsis if content goes over that
 	public get builder(): ModalBuilder {
 		const titleInput = new TextInputBuilder()
 			.setCustomId("title")
 			.setLabel("Title format (RegEx supported)")
 			.setRequired(true)
-			.setPlaceholder("/^((.|\\s){0,40})/ig")
+			.setPlaceholder("/^[\\S\\s]/g")
 			.setStyle(TextInputStyle.Short);
-		const row = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(titleInput);
-		return new ModalBuilder().setCustomId(this.customId).setTitle("Set a custom title format").addComponents(row);
+		const maxTitleLength = new TextInputBuilder()
+			.setCustomId("maxTitleLength")
+			.setLabel("Max title length (number between 1-100)")
+			.setRequired(true)
+			.setPlaceholder("50")
+			.setStyle(TextInputStyle.Short);
+		const row1 = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(titleInput);
+		const row2 = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(maxTitleLength);
+		return new ModalBuilder()
+			.setCustomId(this.customId)
+			.setTitle("Set a custom title format")
+			.addComponents(row1, row2);
 	}
 
 	public async submit(): Promise<void> {

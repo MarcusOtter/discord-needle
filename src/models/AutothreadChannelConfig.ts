@@ -14,6 +14,7 @@ export default class AutothreadChannelConfig {
 	public readonly slowmode: number;
 	public readonly statusReactions: ToggleOption;
 	public readonly titleType: TitleType;
+	public readonly titleMaxLength: number;
 	public readonly customTitle: string;
 	public readonly closeButtonText: string;
 	public readonly closeButtonStyle: string;
@@ -34,6 +35,7 @@ export default class AutothreadChannelConfig {
 		replyType: Nullish<ReplyMessageOption>,
 		customReply: Nullish<string>,
 		titleType: Nullish<TitleType>,
+		titleMaxLength: Nullish<number>,
 		customTitle: Nullish<string>,
 		closeButtonText: Nullish<string>,
 		closeButtonStyle: Nullish<string>,
@@ -55,7 +57,8 @@ export default class AutothreadChannelConfig {
 		this.replyType = replyType ?? oldConfig?.replyType ?? ReplyMessageOption.Default;
 		this.customReply = this.getCustomReply(oldConfig, customReply);
 
-		this.titleType = titleType ?? oldConfig?.titleType ?? TitleType.FirstFourtyChars;
+		this.titleType = titleType ?? oldConfig?.titleType ?? TitleType.FirstFiftyChars;
+		this.titleMaxLength = titleMaxLength ?? oldConfig?.titleMaxLength ?? 50;
 		this.customTitle = this.getCustomTitle(oldConfig, customTitle);
 	}
 
@@ -74,8 +77,8 @@ export default class AutothreadChannelConfig {
 		switch (titleType) {
 			case TitleType.FirstLineOfMessage:
 				return "/.*/";
-			case TitleType.FirstFourtyChars:
-				return "/^((.|\\s){0,40})/ig";
+			case TitleType.FirstFiftyChars:
+				return "/^[\\S\\s]*/g";
 			case TitleType.NicknameDate:
 				return "$USER_NAME ($DATE_UTC)";
 			case TitleType.Custom:
