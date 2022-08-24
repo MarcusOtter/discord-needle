@@ -2,7 +2,7 @@ import { ChannelType, PermissionFlagsBits, SlashCommandBuilder } from "discord.j
 import { SlashCommandBuilderWithOptions, SameLengthTuple } from "../helpers/typeHelpers";
 import AutothreadChannelConfig from "../models/AutothreadChannelConfig";
 import CommandCategory from "../models/enums/CommandCategory";
-import ReplyType from "../models/enums/ReplyType";
+import ReplyMessageOption from "../models/enums/ReplyMessageOption";
 import TitleType from "../models/enums/TitleType";
 import ToggleOption from "../models/enums/ToggleOption";
 import InteractionContext from "../models/InteractionContext";
@@ -10,7 +10,7 @@ import NeedleCommand from "../models/NeedleCommand";
 import safe_regex from "safe-regex";
 import { extractRegex, removeInvalidThreadNameChars } from "../helpers/stringHelpers";
 import DeleteBehavior from "../models/enums/DeleteBehavior";
-import ReplyButtonsOptions from "../models/enums/ReplyButtonsOptions";
+import ReplyButtonsOption from "../models/enums/ReplyButtonsOption";
 import { ModalTextInput } from "../models/ModalTextInput";
 
 export default class AutoThreadCommand extends NeedleCommand {
@@ -37,10 +37,9 @@ export default class AutoThreadCommand extends NeedleCommand {
 		const oldConfigIndex = guildConfig.threadChannels.findIndex(c => c.channelId === channelId);
 		const oldAutoThreadConfig = oldConfigIndex > -1 ? guildConfig.threadChannels[oldConfigIndex] : undefined;
 		const openTitleModal = options.getInteger("title-format") === TitleType.Custom;
-		const openReplyButtonsModal = options.getInteger("reply-buttons") === ReplyButtonsOptions.Custom;
+		const openReplyButtonsModal = options.getInteger("reply-buttons") === ReplyButtonsOption.Custom;
 		const replyType = options.getInteger("reply-message");
-		const openReplyMessageModal =
-			replyType === ReplyType.CustomWithButtons || replyType === ReplyType.CustomWithoutButtons;
+		const openReplyMessageModal = replyType === ReplyMessageOption.Custom;
 
 		if (options.getInteger("toggle") === ToggleOption.Off) {
 			if (!oldAutoThreadConfig) {
@@ -86,8 +85,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 		let newCustomReply;
 		if (openReplyMessageModal) {
 			const oldReplyType = oldAutoThreadConfig?.replyType;
-			const wasUsingDefaultReply =
-				oldReplyType === ReplyType.DefaultWithButtons || oldReplyType === ReplyType.DefaultWithoutButtons;
+			const wasUsingDefaultReply = oldReplyType === ReplyMessageOption.Default;
 			const oldValue = wasUsingDefaultReply
 				? settings.SuccessThreadCreate
 				: oldAutoThreadConfig?.customReply ?? "";
@@ -96,10 +94,6 @@ export default class AutoThreadCommand extends NeedleCommand {
 				[{ customId: "message", value: oldValue }],
 				context
 			);
-
-			if (newCustomReply.trim().length === 0) {
-				return replyInSecret("Invalid reply message, please provide at least one valid character.");
-			}
 		}
 
 		let newCloseButtonText;
@@ -130,6 +124,13 @@ export default class AutoThreadCommand extends NeedleCommand {
 			(!this.isValidButtonStyle(newCloseButtonStyle) || !this.isValidButtonStyle(newTitleButtonStyle))
 		) {
 			return replyInSecret("Invalid button style. Allowed values: blurple/grey/green/red"); // TODO: Message key
+		}
+
+		if (options.getInteger("reply-buttons") === ReplyButtonsOption.Default) {
+			newCloseButtonText = "Archive thread";
+			newCloseButtonStyle = "green";
+			newTitleButtonText = "Edit title";
+			newTitleButtonStyle = "blurple";
 		}
 
 		const newAutoThreadConfig = new AutothreadChannelConfig(
@@ -229,18 +230,13 @@ export default class AutoThreadCommand extends NeedleCommand {
 					)
 			)
 			.addIntegerOption(option =>
-				option
-					.setName("reply-message")
-					.setDescription("How should Needle reply in the thread? 🔥")
-					// Let's remove the "no buttons" options and just do message. Buttons will be reply-buttons
-					.addChoices(
-						{ name: "Default message with buttons (ᴅᴇꜰᴀᴜʟᴛ)", value: ReplyType.DefaultWithButtons },
-						{ name: "Default message without buttons", value: ReplyType.DefaultWithoutButtons },
-						{ name: "Only buttons, no message", value: ReplyType.NothingWithButtons },
-						{ name: "No reply at all, just create the thread 🔥", value: ReplyType.NothingWithoutButtons },
-						{ name: "Custom message with buttons 🔥", value: ReplyType.CustomWithButtons },
-						{ name: "Custom message without buttons", value: ReplyType.CustomWithoutButtons }
-					)
+				option.setName("reply-message").setDescription("How should Needle reply in the thread? 🔥").addChoices(
+					{
+						name: 'Use "SuccessThreadCreate" setting (ᴅᴇꜰᴀᴜʟᴛ)',
+						value: ReplyMessageOption.Default,
+					},
+					{ name: "Custom message 🔥", value: ReplyMessageOption.Custom }
+				)
 			)
 			.addIntegerOption(option =>
 				option
@@ -248,10 +244,10 @@ export default class AutoThreadCommand extends NeedleCommand {
 					.setDescription("What should the buttons of the reply look like? 🆕")
 					.addChoices(
 						{
-							name: "Archive blue, Edit green (ᴅᴇꜰᴀᴜʟᴛ)",
-							value: ReplyButtonsOptions.Default,
+							name: "Green archive button, Blurple edit button (ᴅᴇꜰᴀᴜʟᴛ)",
+							value: ReplyButtonsOption.Default,
 						},
-						{ name: "Custom 🔥", value: ReplyButtonsOptions.Custom }
+						{ name: "Custom 🔥", value: ReplyButtonsOption.Custom }
 					)
 			)
 			.addIntegerOption(option =>

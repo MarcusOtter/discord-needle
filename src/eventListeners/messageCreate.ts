@@ -72,13 +72,20 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 		const titleButtonText = clampWithElipse(await messageVariables.replace(channelConfig.titleButtonText), 80);
 		const closeButtonStyle = this.getButtonStyle(channelConfig.closeButtonStyle);
 		const titleButtonStyle = this.getButtonStyle(channelConfig.titleButtonStyle);
-		const closeButton = ButtonBuilder.from(this.bot.getButton("close").getBuilder())
-			.setStyle(closeButtonStyle)
-			.setLabel(closeButtonText);
-		const titleButton = ButtonBuilder.from(this.bot.getButton("title").getBuilder())
-			.setStyle(titleButtonStyle)
-			.setLabel(titleButtonText);
-		const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(closeButton, titleButton);
+
+		const buttonRow = new ActionRowBuilder<ButtonBuilder>();
+		if (closeButtonText.length > 0) {
+			const closeButton = ButtonBuilder.from(this.bot.getButton("close").getBuilder())
+				.setStyle(closeButtonStyle)
+				.setLabel(closeButtonText);
+			buttonRow.addComponents(closeButton);
+		}
+		if (titleButtonText.length > 0) {
+			const titleButton = ButtonBuilder.from(this.bot.getButton("title").getBuilder())
+				.setStyle(titleButtonStyle)
+				.setLabel(titleButtonText);
+			buttonRow.addComponents(titleButton);
+		}
 
 		const rawMessageContent =
 			channelConfig.customReply.length > 0 ? channelConfig.customReply : settings.SuccessThreadCreate;
@@ -87,7 +94,7 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 		if (messageContent.length > 0) {
 			const msg = await thread.send({
 				content: clampWithElipse(messageContent, 2000),
-				components: [buttonRow],
+				components: buttonRow.components.length > 0 ? [buttonRow] : undefined,
 			});
 
 			if (botMember.permissionsIn(thread.id).has(PermissionsBitField.Flags.ManageMessages)) {
@@ -110,11 +117,13 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 			.replaceAll("\n", " ");
 
 		const title = await variables.replace(rawTitle);
+		let output = clampWithElipse(title, 100);
+
 		if (config.titleType === TitleType.FirstFourtyChars) {
-			return message.length > 40 ? title + "..." : title;
+			output = message.length > 40 ? title + "..." : title;
 		}
 
-		return clampWithElipse(title, 100);
+		return output.length > 0 ? output : "New Thread";
 	}
 
 	// Temporary thing before we get dropdowns in modals

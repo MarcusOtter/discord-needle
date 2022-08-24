@@ -1,6 +1,6 @@
 import { Nullish } from "../helpers/typeHelpers";
 import DeleteBehavior from "./enums/DeleteBehavior";
-import ReplyType from "./enums/ReplyType";
+import ReplyMessageOption from "./enums/ReplyMessageOption";
 import TitleType from "./enums/TitleType";
 import ToggleOption from "./enums/ToggleOption";
 
@@ -8,7 +8,7 @@ export default class AutothreadChannelConfig {
 	public readonly channelId: string;
 	public readonly deleteBehavior: DeleteBehavior;
 	public readonly archiveImmediately: ToggleOption;
-	public readonly replyType: ReplyType;
+	public readonly replyType: ReplyMessageOption;
 	public readonly customReply: string;
 	public readonly includeBots: ToggleOption;
 	public readonly slowmode: number;
@@ -31,7 +31,7 @@ export default class AutothreadChannelConfig {
 		includeBots: Nullish<ToggleOption>,
 		slowmode: Nullish<number>,
 		statusReactions: Nullish<ToggleOption>,
-		replyType: Nullish<ReplyType>,
+		replyType: Nullish<ReplyMessageOption>,
 		customReply: Nullish<string>,
 		titleType: Nullish<TitleType>,
 		customTitle: Nullish<string>,
@@ -52,7 +52,7 @@ export default class AutothreadChannelConfig {
 		this.titleButtonText = titleButtonText ?? oldConfig?.titleButtonText ?? "Edit title";
 		this.titleButtonStyle = titleButtonStyle?.toLowerCase() ?? oldConfig?.titleButtonStyle ?? "blurple";
 
-		this.replyType = replyType ?? oldConfig?.replyType ?? ReplyType.DefaultWithButtons;
+		this.replyType = replyType ?? oldConfig?.replyType ?? ReplyMessageOption.Default;
 		this.customReply = this.getCustomReply(oldConfig, customReply);
 
 		this.titleType = titleType ?? oldConfig?.titleType ?? TitleType.FirstFourtyChars;
@@ -60,13 +60,9 @@ export default class AutothreadChannelConfig {
 	}
 
 	private getCustomReply(oldConfig: Nullish<AutothreadChannelConfig>, incomingCustomReply: Nullish<string>): string {
-		const switchingAwayFromCustom = this.isCustom(oldConfig?.replyType) && !this.isCustom(this.replyType);
+		const switchingAwayFromCustom =
+			oldConfig?.replyType === ReplyMessageOption.Custom && this.replyType !== ReplyMessageOption.Custom;
 		return switchingAwayFromCustom ? "" : incomingCustomReply ?? oldConfig?.customReply ?? "";
-	}
-
-	private isCustom(replyType: Nullish<ReplyType>): boolean {
-		if (!replyType) return false;
-		return replyType === ReplyType.CustomWithButtons || replyType === ReplyType.CustomWithoutButtons;
 	}
 
 	private getCustomTitle(oldConfig: Nullish<AutothreadChannelConfig>, incomingCustomTitle: Nullish<string>): string {

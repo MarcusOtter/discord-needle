@@ -10,9 +10,9 @@ import NeedleModal from "../models/NeedleModal";
 export default class CustomReplyButtonsModal extends NeedleModal {
 	public customId = "custom-reply-buttons";
 	public get builder(): ModalBuilder {
-		const closeText = this.getTextInput("Close", "Archive thread");
+		const closeText = this.getTextInput("Close");
 		const closeStyle = this.getStyleInput("Close", "Green");
-		const titleText = this.getTextInput("Title", "Edit title");
+		const titleText = this.getTextInput("Title");
 		const titleStyle = this.getStyleInput("Title", "Blurple");
 
 		return new ModalBuilder()
@@ -34,12 +34,12 @@ export default class CustomReplyButtonsModal extends NeedleModal {
 		return new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(input);
 	}
 
-	private getTextInput(name: string, placeholder: string): TextInputBuilder {
+	private getTextInput(name: string): TextInputBuilder {
 		return new TextInputBuilder()
 			.setCustomId(name.toLowerCase() + "Text")
-			.setLabel(name + " button text")
+			.setLabel(name + " button text (empty = hidden)")
 			.setRequired(false)
-			.setPlaceholder(placeholder)
+			.setPlaceholder("Hidden")
 			.setStyle(TextInputStyle.Short)
 			.setMaxLength(80);
 	}
