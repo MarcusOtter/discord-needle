@@ -1,6 +1,6 @@
 // IMPORTANT: Remember to change config.json when you are changing anything here
 enum Setting {
-	ErrorUnknown,
+	ErrorUnknown = 0,
 	ErrorOnlyInThread,
 	ErrorNoEffect,
 	ErrorInsufficientUserPerms,

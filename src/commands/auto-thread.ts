@@ -1,5 +1,5 @@
-import { ChannelType, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
-import { SlashCommandBuilderWithOptions, SameLengthTuple } from "../helpers/typeHelpers";
+import { ChannelType, GuildMember, GuildTextBasedChannel, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilderWithOptions, SameLengthTuple, Nullish } from "../helpers/typeHelpers";
 import AutothreadChannelConfig from "../models/AutothreadChannelConfig";
 import CommandCategory from "../models/enums/CommandCategory";
 import ReplyMessageOption from "../models/enums/ReplyMessageOption";
@@ -19,7 +19,14 @@ export default class AutoThreadCommand extends NeedleCommand {
 	public readonly category = CommandCategory.Configuration;
 	protected readonly defaultPermissions = PermissionFlagsBits.ManageThreads;
 
-	// TODO: "Has permission to execute override -> not in threads or voice chats for configuration commands"
+	public async hasPermissionToExecuteHere(
+		member: Nullish<GuildMember>,
+		channel: Nullish<GuildTextBasedChannel>
+	): Promise<boolean> {
+		if (channel?.isThread()) return false;
+		if (channel?.isVoiceBased()) return false;
+		return super.hasPermissionToExecuteHere(member, channel);
+	}
 
 	public async execute(context: InteractionContext): Promise<void> {
 		if (!context.isInGuild() || !context.isSlashCommand()) return;

@@ -1,6 +1,7 @@
 import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import { SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
 import CommandCategory from "../models/enums/CommandCategory";
+import Setting from "../models/enums/Setting";
 import InteractionContext from "../models/InteractionContext";
 import NeedleCommand from "../models/NeedleCommand";
 
@@ -11,14 +12,17 @@ export default class SettingCommand extends NeedleCommand {
 	protected readonly defaultPermissions = PermissionFlagsBits.ManageThreads;
 
 	public addOptions(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions {
-		// TODO: Make some helper function that builds choices out of an enum type (Setting)
-		// const choices = [];
-		return builder.addIntegerOption(
-			option =>
-				option
-					.setName("name")
-					.setDescription("The name of the setting")
-					.setRequired(true) /* .setChoices(choices)*/
+		const keys = Object.keys(Setting).filter(v => isNaN(Number(v))) as (keyof typeof Setting)[];
+		const choices = keys.map(key => {
+			return { name: key, value: Setting[key] };
+		});
+
+		return builder.addIntegerOption(option =>
+			option
+				.setName("name")
+				.setDescription("The name of the setting")
+				.setRequired(true)
+				.setChoices(...choices)
 		);
 	}
 
