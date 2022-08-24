@@ -53,7 +53,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 
 		if (+openTitleModal + +openReplyMessageModal + +openReplyButtonsModal > 1) {
 			// TODO: Add message key for this
-			return replyInSecret("Please set one option to Custom at a time.");
+			return replyInSecret('Please set one option to "Custom" at a time.');
 		}
 
 		let newCustomTitle;
@@ -82,14 +82,14 @@ export default class AutoThreadCommand extends NeedleCommand {
 			}
 		}
 
-		let newCustomReply;
+		let newReplyMessage;
 		if (openReplyMessageModal) {
 			const oldReplyType = oldAutoThreadConfig?.replyType;
 			const wasUsingDefaultReply = oldReplyType === ReplyMessageOption.Default;
 			const oldValue = wasUsingDefaultReply
 				? settings.SuccessThreadCreate
 				: oldAutoThreadConfig?.customReply ?? "";
-			[newCustomReply] = await this.getTextInputsFromModal(
+			[newReplyMessage] = await this.getTextInputsFromModal(
 				"custom-reply-message",
 				[{ customId: "message", value: oldValue }],
 				context
@@ -101,6 +101,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 		let newTitleButtonText;
 		let newTitleButtonStyle;
 		if (openReplyButtonsModal) {
+			// TODO: This default is defined in like 3 places, need to have a default config somewhere probably..
 			const oldCloseText = oldAutoThreadConfig?.closeButtonText ?? "Archive thread";
 			const oldCloseStyle = oldAutoThreadConfig?.closeButtonStyle ?? "green";
 			const oldTitleText = oldAutoThreadConfig?.titleButtonText ?? "Edit title";
@@ -126,6 +127,10 @@ export default class AutoThreadCommand extends NeedleCommand {
 			return replyInSecret("Invalid button style. Allowed values: blurple/grey/green/red"); // TODO: Message key
 		}
 
+		if (replyType === ReplyMessageOption.Default) {
+			newReplyMessage = "";
+		}
+
 		if (options.getInteger("reply-buttons") === ReplyButtonsOption.Default) {
 			newCloseButtonText = "Archive thread";
 			newCloseButtonStyle = "green";
@@ -142,7 +147,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 			options.getInteger("slowmode"),
 			options.getInteger("status-reactions"),
 			options.getInteger("reply-message"), // TODO: change name to reply-type
-			newCustomReply,
+			newReplyMessage,
 			options.getInteger("title-format"), // TODO: Rename to title-type
 			newCustomTitle,
 			newCloseButtonText,
