@@ -4,7 +4,7 @@ enum Setting {
 	ErrorOnlyInThread,
 	ErrorNoEffect,
 	ErrorInsufficientUserPerms,
-	ErrorInsufficientBotPerms, // TODO: Append missing permissions to this msg
+	ErrorInsufficientBotPerms,
 	ErrorMaxThreadRenames,
 
 	SuccessThreadCreated,

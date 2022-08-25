@@ -1,4 +1,11 @@
-import { ChannelType, GuildMember, GuildTextBasedChannel, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
+import {
+	ChannelType,
+	GuildMember,
+	GuildTextBasedChannel,
+	PermissionFlagsBits,
+	PermissionsBitField,
+	SlashCommandBuilder,
+} from "discord.js";
 import { SlashCommandBuilderWithOptions, SameLengthTuple, Nullish } from "../helpers/typeHelpers";
 import AutothreadChannelConfig from "../models/AutothreadChannelConfig";
 import CommandCategory from "../models/enums/CommandCategory";
@@ -32,14 +39,26 @@ export default class AutoThreadCommand extends NeedleCommand {
 		if (!context.isInGuild() || !context.isSlashCommand()) return;
 
 		const { interaction, settings, replyInSecret, replyInPublic } = context;
-		const { guildId, options } = interaction;
+		const { guild, guildId, options, channel } = interaction;
 
-		// TODO: Handle channel visibility error if bot cannot see
-		// TODO: Handle error if bot cannot create threads in this channel
-		// TODO: Handle error if we try to set slowmode but bot does not have manage threads perm
+		const botMember = await guild?.members.fetchMe();
+		// TODO: Maybe remove config error messages and just have the user facing errors in settings.
+		const botPermissions = botMember?.permissionsIn(channel);
+		const botHasPermissions = botPermissions?.has(
+			PermissionFlagsBits.ViewChannel | PermissionFlagsBits.CreatePublicThreads
+		);
+
+		if (!botHasPermissions) {
+			return replyInSecret(settings.ErrorInsufficientBotPerms);
+		}
+
+		if ((options.getInteger("slowmode") ?? 0) > 0 && !botPermissions?.has(PermissionFlagsBits.ManageThreads)) {
+			return replyInSecret(settings.ErrorInsufficientBotPerms);
+		}
 
 		// TODO: Handle error if channel is not a channel that can be auto-threaded, like a thread or text voice chat
 		const channelId = options.getChannel("channel")?.id ?? interaction.channel.id;
+		const targetChannel = await guild?.channels.fetch(channelId);
 		const guildConfig = this.bot.configs.get(guildId);
 		const oldConfigIndex = guildConfig.threadChannels.findIndex(c => c.channelId === channelId);
 		const oldAutoThreadConfig = oldConfigIndex > -1 ? guildConfig.threadChannels[oldConfigIndex] : undefined;
@@ -47,6 +66,10 @@ export default class AutoThreadCommand extends NeedleCommand {
 		const openReplyButtonsModal = options.getInteger("reply-buttons") === ReplyButtonsOption.Custom;
 		const replyType = options.getInteger("reply-message");
 		const openReplyMessageModal = replyType === ReplyMessageOption.Custom;
+
+		if (targetChannel?.isThread() || targetChannel?.isVoiceBased()) {
+			return replyInSecret("Can not create threads in this type of channel.");
+		}
 
 		if (options.getInteger("toggle") === ToggleOption.Off) {
 			if (!oldAutoThreadConfig) {

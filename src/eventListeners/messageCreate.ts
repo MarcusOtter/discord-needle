@@ -42,6 +42,12 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 		const botMember = await guild.members.fetchMe();
 		const messageVariables = new MessageVariables().setChannel(channel).setUser(member ?? author);
 
+		const rawMessageContent =
+			channelConfig.replyType === ReplyMessageOption.Default
+				? settings.SuccessThreadCreated
+				: channelConfig.customReply;
+		const messageContent = await messageVariables.replace(rawMessageContent);
+
 		// TODO: If message is in a thread, change the emoji and remove new emoji
 		// if (!message.author.bot && message.channel.type === ChannelType.GuildPublicThread) {
 		// 	await updateTitle(message.channel, message);
@@ -49,7 +55,7 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 		// }
 
 		const botPermissions = botMember.permissionsIn(message.channel.id);
-		const requiredPermissions = getRequiredPermissions(channelConfig.slowmode);
+		const requiredPermissions = getRequiredPermissions(channelConfig.slowmode, messageContent);
 		if (!botPermissions.has(requiredPermissions)) {
 			const missing = botPermissions.missing(requiredPermissions);
 			const errorMessage = `Missing ${plural("permission", missing.length)}:`;
@@ -87,12 +93,7 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 			buttonRow.addComponents(titleButton);
 		}
 
-		const rawMessageContent =
-			channelConfig.replyType === ReplyMessageOption.Default
-				? settings.SuccessThreadCreated
-				: channelConfig.customReply;
-		const messageContent = await messageVariables.replace(rawMessageContent);
-		if (messageContent.length > 0) {
+		if (messageContent.trim().length > 0) {
 			const msg = await thread.send({
 				content: clampWithElipse(messageContent, 2000),
 				components: buttonRow.components.length > 0 ? [buttonRow] : undefined,

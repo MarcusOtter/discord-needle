@@ -31,17 +31,20 @@ export async function getThreadAuthor(thread: PublicThreadChannel): Promise<User
 	return starterMessage?.author;
 }
 
-export function getRequiredPermissions(slowmode?: number): bigint[] {
+export function getRequiredPermissions(slowmode?: number, threadMessage?: string): bigint[] {
 	const output = [
 		PermissionsBitField.Flags.ViewChannel,
 		PermissionsBitField.Flags.SendMessages,
-		PermissionsBitField.Flags.SendMessagesInThreads,
 		PermissionsBitField.Flags.CreatePublicThreads,
 		PermissionsBitField.Flags.ReadMessageHistory,
 	];
 
 	if (slowmode && slowmode > 0) {
 		output.push(PermissionsBitField.Flags.ManageThreads);
+	}
+
+	if (threadMessage && threadMessage.trim().length > 0) {
+		output.push(PermissionsBitField.Flags.SendMessagesInThreads);
 	}
 
 	return output;
