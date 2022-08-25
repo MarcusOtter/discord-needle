@@ -15,7 +15,6 @@ import { clampWithElipse, extractRegex, plural } from "../helpers/stringHelpers"
 import AutothreadChannelConfig from "../models/AutothreadChannelConfig";
 import ListenerRunType from "../models/enums/ListenerRunType";
 import ReplyMessageOption from "../models/enums/ReplyMessageOption";
-import TitleType from "../models/enums/TitleType";
 import MessageVariables from "../models/MessageVariables";
 import NeedleEventListener from "../models/NeedleEventListener";
 
@@ -90,7 +89,7 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 
 		const rawMessageContent =
 			channelConfig.replyType === ReplyMessageOption.Default
-				? settings.SuccessThreadCreate
+				? settings.SuccessThreadCreated
 				: channelConfig.customReply;
 		const messageContent = await messageVariables.replace(rawMessageContent);
 		if (messageContent.length > 0) {

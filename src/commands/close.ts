@@ -35,9 +35,7 @@ export default class CloseCommand extends NeedleCommand {
 		const config = this.bot.configs.get(thread.guildId);
 		const threadConfig = config.threadChannels.find(c => c.channelId === thread.parentId);
 		const shouldArchiveImmediately = threadConfig?.archiveImmediately ?? true;
-		const archiveMessage = await messageVariables.replace(
-			shouldArchiveImmediately ? settings.SuccessThreadArchiveImmediate : settings.SuccessThreadArchiveSlow
-		);
+		const archiveMessage = await messageVariables.replace(settings.SuccessThreadArchived);
 
 		// TODO: Do something with thread emojis here... maybe reactions...
 

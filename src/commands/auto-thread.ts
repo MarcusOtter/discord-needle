@@ -109,7 +109,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 			const oldReplyType = oldAutoThreadConfig?.replyType;
 			const wasUsingDefaultReply = oldReplyType === ReplyMessageOption.Default;
 			const oldValue = wasUsingDefaultReply
-				? settings.SuccessThreadCreate
+				? settings.SuccessThreadCreated
 				: oldAutoThreadConfig?.customReply ?? "";
 			[newReplyMessage] = await this.getTextInputsFromModal(
 				"custom-reply-message",

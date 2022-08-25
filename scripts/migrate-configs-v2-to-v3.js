@@ -5,3 +5,5 @@
 // Variables have changed, $USER should be $USER_MENTION, etc
 
 // Replace all \\n with actual \n
+
+// Merged SUCCESS_THREAD_ARCHIVE_IMMEDIATE and SLOW to just SuccessThreadArchived

@@ -17,7 +17,8 @@ export default abstract class NeedleModal {
 
 	public async openAndAwaitSubmit(
 		interaction: ModalOpenableInteraction,
-		defaultValues: ModalTextInput[]
+		defaultValues: ModalTextInput[],
+		titleOverride?: string
 	): Promise<ModalSubmitInteraction> {
 		const builder = this.builder;
 		builder.setComponents(
@@ -29,6 +30,9 @@ export default abstract class NeedleModal {
 				)
 			)
 		);
+		if (titleOverride && titleOverride.length > 0) {
+			builder.setTitle(titleOverride);
+		}
 
 		await interaction.showModal(builder);
 		return interaction.awaitModalSubmit({

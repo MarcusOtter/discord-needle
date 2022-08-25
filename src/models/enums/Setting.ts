@@ -7,9 +7,8 @@ enum Setting {
 	ErrorInsufficientBotPerms, // TODO: Append missing permissions to this msg
 	ErrorMaxThreadRenames,
 
-	SuccessThreadCreate,
-	SuccessThreadArchiveImmediate,
-	SuccessThreadArchiveSlow,
+	SuccessThreadCreated,
+	SuccessThreadArchived,
 }
 
 export default Setting;

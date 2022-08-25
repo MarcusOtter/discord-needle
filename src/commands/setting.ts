@@ -19,7 +19,7 @@ export default class SettingCommand extends NeedleCommand {
 
 		return builder.addIntegerOption(option =>
 			option
-				.setName("name")
+				.setName("setting-name")
 				.setDescription("The name of the setting")
 				.setRequired(true)
 				.setChoices(...choices)
@@ -27,7 +27,35 @@ export default class SettingCommand extends NeedleCommand {
 	}
 
 	public async execute(context: InteractionContext): Promise<void> {
-		throw new Error("Method not implemented.");
-		//  Open modal with text box and then save value
+		if (!context.isModalOpenable() || !context.isSlashCommand()) return;
+
+		const guildId = context.interaction.guildId;
+		const setting = context.interaction.options.getInteger("setting-name", true) as Setting;
+		const settingName = Setting[setting] as keyof typeof Setting;
+		const autoThreadConfig = this.bot.configs.get(guildId);
+		const oldValue = autoThreadConfig.settings[settingName];
+
+		const modal = this.bot.getModal("setting");
+		const submitInteraction = await modal.openAndAwaitSubmit(
+			context.interaction,
+			[{ customId: "setting", value: oldValue }],
+			`Setting ${settingName}`
+		);
+
+		context.setInteractionToReplyTo(submitInteraction);
+
+		const newValue = submitInteraction.fields.getTextInputValue("setting");
+		if (oldValue === newValue) {
+			return context.replyInSecret(context.settings.ErrorNoEffect);
+		}
+
+		if (newValue.trim().length === 0) {
+			return context.replyInSecret("Setting must be at least 1 non-whitespace character.");
+		}
+
+		autoThreadConfig.settings[settingName] = newValue;
+		this.bot.configs.set(guildId, autoThreadConfig);
+
+		await context.replyInSecret("Setting successfully changed.");
 	}
 }
