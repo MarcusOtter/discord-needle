@@ -326,7 +326,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 					.setDescription("What should happen when users close a thread?")
 					.addChoices(
 						{ name: "Archive immediately (ᴅᴇꜰᴀᴜʟᴛ)", value: ToggleOption.On },
-						{ name: "Archive after 1 hour of inactivity", value: ToggleOption.Off }
+						{ name: "Hide after 1 hour of inactivity", value: ToggleOption.Off }
 					)
 			)
 			.addIntegerOption(option =>
