@@ -7,7 +7,7 @@ import {
 	RESTPostAPIApplicationCommandsJSONBody,
 	SlashCommandBuilder,
 } from "discord.js";
-import { getMinimumRequiredPermissions } from "../helpers/permissionsHelpers";
+import { getMinimumRequiredPermissions } from "../helpers/djsHelpers";
 import { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
 import type NeedleBot from "../NeedleBot";
 import CommandCategory from "./enums/CommandCategory";

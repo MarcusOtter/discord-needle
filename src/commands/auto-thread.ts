@@ -1,11 +1,4 @@
-import {
-	ChannelType,
-	GuildMember,
-	GuildTextBasedChannel,
-	PermissionFlagsBits,
-	PermissionsBitField,
-	SlashCommandBuilder,
-} from "discord.js";
+import { ChannelType, GuildMember, GuildTextBasedChannel, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import { SlashCommandBuilderWithOptions, SameLengthTuple, Nullish } from "../helpers/typeHelpers";
 import AutothreadChannelConfig from "../models/AutothreadChannelConfig";
 import CommandCategory from "../models/enums/CommandCategory";
@@ -39,15 +32,19 @@ export default class AutoThreadCommand extends NeedleCommand {
 		if (!context.isInGuild() || !context.isSlashCommand()) return;
 
 		const { interaction, settings, replyInSecret, replyInPublic } = context;
-		const { guild, guildId, options, channel } = interaction;
+		const { guild, guildId, options } = interaction;
+		const channelId = options.getChannel("channel")?.id ?? interaction.channel.id;
+		const targetChannel = await guild?.channels.fetch(channelId);
+
+		if (!targetChannel) return;
 
 		const botMember = await guild?.members.fetchMe();
-		// TODO: Maybe remove config error messages and just have the user facing errors in settings.
-		const botPermissions = botMember?.permissionsIn(channel);
+		const botPermissions = botMember?.permissionsIn(targetChannel);
 		const botHasPermissions = botPermissions?.has(
 			PermissionFlagsBits.ViewChannel | PermissionFlagsBits.CreatePublicThreads
 		);
 
+		// TODO: Maybe remove config error messages and just have the user facing errors in settings.
 		if (!botHasPermissions) {
 			return replyInSecret(settings.ErrorInsufficientBotPerms);
 		}
@@ -56,9 +53,10 @@ export default class AutoThreadCommand extends NeedleCommand {
 			return replyInSecret(settings.ErrorInsufficientBotPerms);
 		}
 
-		// TODO: Handle error if channel is not a channel that can be auto-threaded, like a thread or text voice chat
-		const channelId = options.getChannel("channel")?.id ?? interaction.channel.id;
-		const targetChannel = await guild?.channels.fetch(channelId);
+		if (options.getInteger("status-reactions") && !botPermissions?.has(PermissionFlagsBits.AddReactions)) {
+			return replyInSecret(settings.ErrorInsufficientBotPerms);
+		}
+
 		const guildConfig = this.bot.configs.get(guildId);
 		const oldConfigIndex = guildConfig.threadChannels.findIndex(c => c.channelId === channelId);
 		const oldAutoThreadConfig = oldConfigIndex > -1 ? guildConfig.threadChannels[oldConfigIndex] : undefined;
@@ -199,6 +197,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 			newTitleButtonStyle
 		);
 
+		// TODO: Remove
 		console.dir("NEW:");
 		console.dir(newAutoThreadConfig);
 		console.dir("OLD:");

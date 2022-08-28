@@ -1,5 +1,5 @@
 import { GuildMember, GuildTextBasedChannel, PublicThreadChannel, User } from "discord.js";
-import { getThreadAuthor } from "../helpers/permissionsHelpers";
+import { getThreadAuthor } from "../helpers/djsHelpers";
 import { Nullish } from "../helpers/typeHelpers";
 
 // TODO: Rename to placeholders?

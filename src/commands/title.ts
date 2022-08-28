@@ -1,5 +1,5 @@
 import { ChannelType, GuildMember, GuildTextBasedChannel, SlashCommandBuilder } from "discord.js";
-import { isAllowedToChangeThreadTitle } from "../helpers/permissionsHelpers";
+import { isAllowedToChangeThreadTitle } from "../helpers/djsHelpers";
 import { SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
 import CommandCategory from "../models/enums/CommandCategory";
 import InteractionContext from "../models/InteractionContext";
@@ -22,10 +22,11 @@ export default class TitleCommand extends NeedleCommand {
 	}
 
 	public async hasPermissionToExecuteHere(member: GuildMember, channel: GuildTextBasedChannel): Promise<boolean> {
+		if (channel.type !== ChannelType.GuildPublicThread) return false;
+
 		const hasBasePermissions = await super.hasPermissionToExecuteHere(member, channel);
 		if (!hasBasePermissions) return false;
 
-		if (channel.type !== ChannelType.GuildPublicThread) return false;
 		return isAllowedToChangeThreadTitle(channel, member);
 	}
 

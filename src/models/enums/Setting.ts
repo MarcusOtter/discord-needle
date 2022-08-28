@@ -9,6 +9,11 @@ enum Setting {
 
 	SuccessThreadCreated,
 	SuccessThreadArchived,
+
+	EmojiUnanswered,
+	EmojiArchivedManually,
+	EmojiAutoArchived,
+	EmojiLocked,
 }
 
 export default Setting;

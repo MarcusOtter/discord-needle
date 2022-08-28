@@ -1,5 +1,12 @@
-import { GuildMember, PermissionsBitField, PublicThreadChannel, User } from "discord.js";
+import { GuildMember, Message, PermissionsBitField, PublicThreadChannel, User } from "discord.js";
 import { Nullish } from "./typeHelpers";
+
+export async function removeUserReactionsOnMessage(message: Message, userId: string) {
+	const userReactions = message.reactions.cache.filter(r => r.users.cache.has(userId));
+	for (const reaction of userReactions.values()) {
+		await reaction.users.remove(userId);
+	}
+}
 
 export async function isAllowedToChangeThreadTitle(
 	thread: PublicThreadChannel,

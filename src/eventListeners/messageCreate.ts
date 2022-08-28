@@ -9,12 +9,13 @@ import {
 	TextChannel,
 	ThreadAutoArchiveDuration,
 } from "discord.js";
-import { getRequiredPermissions } from "../helpers/permissionsHelpers";
+import { getRequiredPermissions, removeUserReactionsOnMessage } from "../helpers/djsHelpers";
 import { wait } from "../helpers/promiseHelpers";
 import { clampWithElipse, extractRegex, plural } from "../helpers/stringHelpers";
 import AutothreadChannelConfig from "../models/AutothreadChannelConfig";
 import ListenerRunType from "../models/enums/ListenerRunType";
 import ReplyMessageOption from "../models/enums/ReplyMessageOption";
+import ToggleOption from "../models/enums/ToggleOption";
 import MessageVariables from "../models/MessageVariables";
 import NeedleEventListener from "../models/NeedleEventListener";
 
@@ -28,18 +29,31 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 	public async handle(...[message]: ClientEvents["messageCreate"]): Promise<void> {
 		if (message.system || !message.channel.isTextBased() || !message.inGuild()) return;
 		if (!message.guild?.available) return;
-		if (!(message.channel instanceof TextChannel) && !(message.channel instanceof NewsChannel)) return;
 		if (message.author.id === message.client.user?.id) return;
 		if (message.hasThread) return;
 
+		const botMember = await message.guild.members.fetchMe();
 		const guildConfig = this.bot.configs.get(message.guildId);
-		const channelConfig = guildConfig.threadChannels?.find(c => c.channelId === message.channelId);
+		const channelConfig = guildConfig.threadChannels?.find(
+			c => c.channelId === message.channelId || c.channelId === message.channel.parentId
+		);
 		if (!channelConfig) return;
 		if (!channelConfig.includeBots && message.author.bot) return;
+		if (
+			message.channel.isThread() &&
+			!message.author.bot &&
+			channelConfig.statusReactions &&
+			channelConfig.archiveImmediately
+		) {
+			const startMessage = await message.channel.fetchStarterMessage();
+			if (!startMessage) return;
+			if (startMessage.author.id === message.author.id) return;
+			await removeUserReactionsOnMessage(startMessage, botMember.id);
+		}
+		if (!(message.channel instanceof TextChannel) && !(message.channel instanceof NewsChannel)) return;
 
+		const { author, member, channel } = message;
 		const { settings } = guildConfig;
-		const { author, member, guild, channel } = message;
-		const botMember = await guild.members.fetchMe();
 		const messageVariables = new MessageVariables().setChannel(channel).setUser(member ?? author);
 
 		const rawMessageContent =
@@ -47,12 +61,6 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 				? settings.SuccessThreadCreated
 				: channelConfig.customReply;
 		const messageContent = await messageVariables.replace(rawMessageContent);
-
-		// TODO: If message is in a thread, change the emoji and remove new emoji
-		// if (!message.author.bot && message.channel.type === ChannelType.GuildPublicThread) {
-		// 	await updateTitle(message.channel, message);
-		// 	return;
-		// }
 
 		const botPermissions = botMember.permissionsIn(message.channel.id);
 		const requiredPermissions = getRequiredPermissions(channelConfig.slowmode, messageContent);
@@ -70,8 +78,14 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 			rateLimitPerUser: channelConfig.slowmode,
 			autoArchiveDuration: channel.defaultAutoArchiveDuration ?? ThreadAutoArchiveDuration.OneDay,
 		});
+
+		// TODO: probably fix bug with news thread
 		if (thread.type === ChannelType.GuildPublicThread) {
 			messageVariables.setThread(thread);
+		}
+
+		if (channelConfig.statusReactions === ToggleOption.On) {
+			await message.react(settings.EmojiUnanswered);
 		}
 
 		const closeButtonText = clampWithElipse(await messageVariables.replace(channelConfig.closeButtonText), 80);
