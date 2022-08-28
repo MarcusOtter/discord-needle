@@ -60,6 +60,16 @@ export default class ConfigService {
 		return JSON.parse(JSON.stringify(DO_NOT_TOUCH_defaultConfig));
 	}
 
+	public getAll(skipCache = false): Iterable<[string, NeedleConfig]> {
+		if (!skipCache) return this.cache.entries();
+
+		const fileNames = fs.readdirSync(this.directoryPath);
+		return fileNames.map(fileName => {
+			const fileContent = fs.readFileSync(path.join(this.directoryPath, fileName), { encoding: "utf-8" });
+			return [fileName.split(".")[0], JSON.parse(fileContent) as NeedleConfig];
+		});
+	}
+
 	private readFromFile(guildId: string): NeedleConfig | undefined {
 		const configPath = this.getPath(guildId);
 		if (!fs.existsSync(configPath)) return;
