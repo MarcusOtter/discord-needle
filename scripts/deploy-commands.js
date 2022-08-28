@@ -22,9 +22,7 @@ const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord.js");
 const CommandImportService = require("../dist/services/CommandImportService").default;
 
-const API_TOKEN = process.env.DISCORD_API_TOKEN;
-const CLIENT_ID = process.env.CLIENT_ID;
-const GUILD_ID = process.env.GUILD_ID;
+const { API_TOKEN, CLIENT_ID, GUILD_ID } = process.env;
 
 const isGlobal = process.argv.some(x => x === "--global");
 const isUndeploy = process.argv.some(x => x === "--undeploy");
