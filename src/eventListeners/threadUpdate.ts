@@ -24,22 +24,12 @@ export default class ThreadUpdateEventListener extends NeedleEventListener {
 		if (threadWasLocked) {
 			await removeUserReactionsOnMessage(startMessage, botMember.id);
 			await startMessage.react(guildConfig.settings.EmojiLocked);
-			console.log("e");
 			return;
 		}
 
 		if (threadWasArchived) {
-			const tenMinutesInMs = 1000 * 60 * 10;
-			const timeSinceLastMessageInMs = Date.now() - (newThread.lastMessage?.createdAt.getTime() ?? 0);
-			const threadWasAutoArchived =
-				timeSinceLastMessageInMs + tenMinutesInMs > (newThread.autoArchiveDuration ?? 1440) * 60 * 1000;
-
-			if (threadWasAutoArchived && channelConfig.archiveImmediately) {
-				await removeUserReactionsOnMessage(startMessage, botMember.id);
-				await startMessage.react(guildConfig.settings.EmojiAutoArchived);
-			}
-
-			return;
+			await removeUserReactionsOnMessage(startMessage, botMember.id);
+			await startMessage.react(guildConfig.settings.EmojiArchived);
 		}
 
 		// Also applies for unlocked

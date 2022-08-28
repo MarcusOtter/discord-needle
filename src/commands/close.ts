@@ -54,15 +54,15 @@ export default class CloseCommand extends NeedleCommand {
 			await thread.setArchived(true);
 		} else {
 			await thread.setAutoArchiveDuration(ThreadAutoArchiveDuration.OneHour);
-		}
 
-		if (threadConfig?.statusReactions) {
-			const starterMessage = await thread.fetchStarterMessage();
-			if (!starterMessage) return;
+			if (threadConfig?.statusReactions) {
+				const starterMessage = await thread.fetchStarterMessage();
+				if (!starterMessage) return;
 
-			const botMember = await thread.guild.members.fetchMe();
-			await removeUserReactionsOnMessage(starterMessage, botMember.id);
-			await starterMessage?.react(config.settings.EmojiArchivedManually);
+				const botMember = await thread.guild.members.fetchMe();
+				await removeUserReactionsOnMessage(starterMessage, botMember.id);
+				await starterMessage?.react(config.settings.EmojiArchived);
+			}
 		}
 	}
 }

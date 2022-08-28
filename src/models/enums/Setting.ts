@@ -11,8 +11,7 @@ enum Setting {
 	SuccessThreadArchived,
 
 	EmojiUnanswered,
-	EmojiArchivedManually,
-	EmojiAutoArchived,
+	EmojiArchived,
 	EmojiLocked,
 }
 
