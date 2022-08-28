@@ -22,12 +22,12 @@ const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord.js");
 const CommandImportService = require("../dist/services/CommandImportService").default;
 
-const { API_TOKEN, CLIENT_ID, GUILD_ID } = process.env;
+const { DISCORD_API_TOKEN, CLIENT_ID, GUILD_ID } = process.env;
 
 const isGlobal = process.argv.some(x => x === "--global");
 const isUndeploy = process.argv.some(x => x === "--undeploy");
 
-if (!API_TOKEN || !CLIENT_ID) {
+if (!DISCORD_API_TOKEN || !CLIENT_ID) {
 	console.log("Aborting command deployment");
 	console.log("DISCORD_API_TOKEN or CLIENT_ID missing from the .env file.\n");
 	process.exit(1);
@@ -51,7 +51,7 @@ const route = isGlobal
 	? Routes.applicationCommands(CLIENT_ID)
 	: Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID ?? "");
 
-const rest = new REST({ version: "10" }).setToken(API_TOKEN);
+const rest = new REST({ version: "10" }).setToken(DISCORD_API_TOKEN);
 (async () => {
 	const builders = await getSlashCommandBuilders();
 
