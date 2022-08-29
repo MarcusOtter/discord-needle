@@ -24,9 +24,6 @@ export async function isAllowedToChangeThreadTitle(
 	const isThreadAuthor = threadAuthor?.id === member.id;
 	if (isThreadAuthor) return true;
 
-	// TODO: Implement https://github.com/MarcusOtter/discord-needle/issues/68
-	// Before we had some code here to determine thread author using pings (if starter msg was null)
-
 	return false;
 }
 

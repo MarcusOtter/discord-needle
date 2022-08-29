@@ -57,7 +57,7 @@ export default class TitleCommand extends NeedleCommand {
 		const botHasPermission = await isAllowedToChangeThreadTitle(thread, thread.guild.members.me);
 
 		if (!userHasPermission) return replyInSecret(settings.ErrorInsufficientUserPerms);
-		if (!botHasPermission) return replyInSecret(settings.ErrorInsufficientBotPerms); // TODO: make sure it works (untested)
+		if (!botHasPermission) return replyInSecret(settings.ErrorInsufficientBotPerms);
 		if (thread.name === newThreadName) return replyInSecret(settings.ErrorNoEffect);
 
 		await thread.setName(newThreadName);

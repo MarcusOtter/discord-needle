@@ -30,7 +30,7 @@ export default class CloseCommand extends NeedleCommand {
 		const botHasPermission = await isAllowedToArchiveThread(thread, thread.guild.members.me);
 
 		if (!userHasPermission) return replyInSecret(settings.ErrorInsufficientUserPerms);
-		if (!botHasPermission) return replyInSecret(settings.ErrorInsufficientBotPerms); // TODO: check if it works, untested
+		if (!botHasPermission) return replyInSecret(settings.ErrorInsufficientBotPerms);
 
 		messageVariables.setThread(thread);
 		const config = this.bot.configs.get(thread.guildId);

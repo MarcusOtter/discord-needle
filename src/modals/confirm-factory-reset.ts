@@ -32,7 +32,7 @@ export default class ConfirmFactoryResetModal extends NeedleModal {
 		const { replyInSecret, replyInPublic, interaction, settings } = context;
 		const isConfirmed = interaction.fields.getTextInputValue("confirm").toLowerCase() === "yes";
 		if (!isConfirmed) {
-			return replyInSecret("Action cancelled."); // TODO: Add message for this
+			return replyInSecret("Action cancelled.");
 		}
 
 		// TODO: Maybe add a kick button or something

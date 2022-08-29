@@ -44,17 +44,16 @@ export default class AutoThreadCommand extends NeedleCommand {
 			PermissionFlagsBits.ViewChannel | PermissionFlagsBits.CreatePublicThreads
 		);
 
-		// TODO: Maybe remove config error messages and just have the user facing errors in settings.
 		if (!botHasPermissions) {
 			return replyInSecret(settings.ErrorInsufficientBotPerms);
 		}
 
 		if ((options.getInteger("slowmode") ?? 0) > 0 && !botPermissions?.has(PermissionFlagsBits.ManageThreads)) {
-			return replyInSecret(settings.ErrorInsufficientBotPerms);
+			return replyInSecret('Needle needs the "Manage Threads" permission to set a slowmode in the thread');
 		}
 
 		if (options.getInteger("status-reactions") && !botPermissions?.has(PermissionFlagsBits.AddReactions)) {
-			return replyInSecret(settings.ErrorInsufficientBotPerms);
+			return replyInSecret('Needle needs the "Add Reactions" permission to add reactions to messages');
 		}
 
 		const guildConfig = this.bot.configs.get(guildId);
@@ -80,7 +79,6 @@ export default class AutoThreadCommand extends NeedleCommand {
 		}
 
 		if (+openTitleModal + +openReplyMessageModal + +openReplyButtonsModal > 1) {
-			// TODO: Add message key for this
 			return replyInSecret('Please set one option to "Custom" at a time.');
 		}
 
@@ -98,8 +96,6 @@ export default class AutoThreadCommand extends NeedleCommand {
 				],
 				context
 			);
-
-			// TODO: Message keys below (maybe? if we even do that for config stuff?)
 
 			newMaxTitleLength = Number.parseInt(newMaxLengthString);
 			if (Number.isNaN(newMaxTitleLength) || newMaxTitleLength < 1 || newMaxTitleLength > 100) {
@@ -217,9 +213,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 		}
 
 		this.bot.configs.set(guildId, guildConfig);
-
-		// TODO: Make public when done
-		return replyInSecret(interactionReplyMessage);
+		return replyInPublic(interactionReplyMessage);
 	}
 
 	private async getTextInputsFromModal<T extends ModalTextInput[]>(

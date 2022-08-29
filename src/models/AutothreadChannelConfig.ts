@@ -21,9 +21,6 @@ export default class AutothreadChannelConfig {
 	public readonly titleButtonText: string;
 	public readonly titleButtonStyle: string;
 
-	// TODO IMPORTANT: Fix bug where switching away from custom title type will break stuff
-	// Because I think I reset the custom title here like I do with message
-	// I guess it should be the same as message and not be stored for no reason......
 	constructor(
 		oldConfig: Nullish<AutothreadChannelConfig>,
 		channelId: string,

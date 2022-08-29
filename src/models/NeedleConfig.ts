@@ -1,5 +1,4 @@
 // TODO: Add license comments
-// TODO: Remove "Needle" prefix for these types, kinda redundant
 
 import AutothreadChannelConfig from "./AutothreadChannelConfig";
 import Setting from "./enums/Setting";

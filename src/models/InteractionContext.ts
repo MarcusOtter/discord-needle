@@ -3,7 +3,6 @@
 import {
 	AnyThreadChannel,
 	ButtonInteraction,
-	ChannelType,
 	ChatInputCommandInteraction,
 	GuildMember,
 	GuildTextBasedChannel,
@@ -89,9 +88,6 @@ export default class InteractionContext {
 		return false;
 	};
 
-	// TODO: Implement behavior on what happens if content longer than 2k (pagination or multiple messages?)
-	// Should this be some kind of message sender? So we always send messages with the same safe guards
-	// Because not everything uses interaction context
 	private reply = async (content: string | undefined, ephemeral: boolean): Promise<void> => {
 		content = await this.messageVariables.replace(content ?? "");
 		if (!content || content.length === 0) {
@@ -103,7 +99,6 @@ export default class InteractionContext {
 	};
 }
 
-// TODO: These types can and should be interfaces instead, I think.
 export type GuildInteraction = Overwrite<
 	NeedleInteraction,
 	{ member: GuildMember; guildId: string; channel: GuildTextBasedChannel }
