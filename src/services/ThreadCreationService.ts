@@ -108,7 +108,7 @@ export default class InformationService {
 		const result = extractRegex(config.customTitle);
 		const regexResult = result.regex && message.match(result.regex);
 		const rawTitle = result.inputWithRegexVariable
-			.replace("$REGEXRESULT", regexResult?.join("") ?? "")
+			.replace("$REGEXRESULT", regexResult?.join("") ?? "") // TODO: make join character configurable?
 			.replaceAll("\n", " ");
 
 		const title = await variables.replace(rawTitle);

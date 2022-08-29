@@ -1,6 +1,7 @@
+import { Locale } from "discord.js";
 import { Nullish } from "./typeHelpers";
 
-export function plural(word: string, count: number) {
+export function plural(word: string, count: number): string {
 	const output = `${count} ${word}`;
 	return count === 1 ? output : `${output}s`;
 }
@@ -16,6 +17,18 @@ export function clampWithElipse(input: string, maxLength: number): string {
 // https://github.com/discord/discord-api-docs/discussions/5338#discussioncomment-3411282
 export function removeInvalidThreadNameChars(input: Nullish<string>): string {
 	return input?.replaceAll(/[<>/\\:#@"]/gi, "").trim() ?? "";
+}
+
+export function formatNumber(input: number, locale: Locale = Locale.EnglishUS): string {
+	return input.toLocaleString(locale);
+}
+
+export function codeBlock(input: string | number): string {
+	if (typeof input === "number") {
+		input = formatNumber(input);
+	}
+
+	return "```\n" + input + "```";
 }
 
 export function extractRegex(input: string): { inputWithRegexVariable: string; regex?: RegExp } {
