@@ -1,4 +1,4 @@
-import { ChannelType, ClientEvents, PermissionFlagsBits } from "discord.js";
+import { ClientEvents, PermissionFlagsBits } from "discord.js";
 import DeleteBehavior from "../models/enums/DeleteBehavior";
 import ListenerRunType from "../models/enums/ListenerRunType";
 import NeedleEventListener from "../models/NeedleEventListener";
@@ -9,7 +9,7 @@ export default class MessageDeleteEventListener extends NeedleEventListener {
 
 	public async handle(...[message]: ClientEvents["messageDelete"]): Promise<void> {
 		const thread = message.thread;
-		if (!thread || thread.type !== ChannelType.GuildPublicThread) return;
+		if (!thread || !thread.isThread()) return;
 		if (!message.inGuild()) return;
 
 		const guildConfig = this.bot.configs.get(message.guildId);

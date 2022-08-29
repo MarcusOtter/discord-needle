@@ -1,11 +1,11 @@
-import { GuildMember, GuildTextBasedChannel, PublicThreadChannel, User } from "discord.js";
+import { AnyThreadChannel, GuildMember, GuildTextBasedChannel, User } from "discord.js";
 import { getThreadAuthor } from "../helpers/djsHelpers";
 import { Nullish } from "../helpers/typeHelpers";
 
 // TODO: Rename to placeholders?
 export default class MessageVariables {
 	private channel: Nullish<GuildTextBasedChannel>;
-	private thread: Nullish<PublicThreadChannel>;
+	private thread: Nullish<AnyThreadChannel>;
 	private user: Nullish<GuildMember | User>;
 
 	public setChannel(channel: Nullish<GuildTextBasedChannel>): MessageVariables {
@@ -13,7 +13,7 @@ export default class MessageVariables {
 		return this;
 	}
 
-	public setThread(thread: Nullish<PublicThreadChannel>): MessageVariables {
+	public setThread(thread: Nullish<AnyThreadChannel>): MessageVariables {
 		this.thread = thread;
 		return this;
 	}
@@ -43,6 +43,22 @@ export default class MessageVariables {
 			.replaceAll(MessageVariable.UserTag, user?.tag ?? "")
 			.replaceAll(MessageVariable.UserMention, this.user ? `<@${this.user.id}>` : "")
 			.replaceAll(MessageVariable.UserName, userName ?? "");
+	}
+
+	public removeFrom(input: string): string {
+		return input
+			.replaceAll(MessageVariable.ChannelMention, "")
+			.replaceAll(MessageVariable.ChannelName, "")
+			.replaceAll(MessageVariable.DateUtc, "")
+			.replaceAll(MessageVariable.ThreadMention, "")
+			.replaceAll(MessageVariable.ThreadName, "")
+			.replaceAll(MessageVariable.ThreadAuthorMention, "")
+			.replaceAll(MessageVariable.ThreadAuthorName, "")
+			.replaceAll(MessageVariable.ThreadAuthorTag, "")
+			.replaceAll(MessageVariable.TimeAgo, "")
+			.replaceAll(MessageVariable.UserTag, "")
+			.replaceAll(MessageVariable.UserMention, "")
+			.replaceAll(MessageVariable.UserName, "");
 	}
 }
 

@@ -1,4 +1,4 @@
-import { GuildMember, Message, PermissionsBitField, PublicThreadChannel, User } from "discord.js";
+import { AnyThreadChannel, GuildMember, Message, PermissionsBitField, User } from "discord.js";
 import { Nullish } from "./typeHelpers";
 
 export async function removeUserReactionsOnMessage(message: Message, userId: string) {
@@ -9,7 +9,7 @@ export async function removeUserReactionsOnMessage(message: Message, userId: str
 }
 
 export async function isAllowedToChangeThreadTitle(
-	thread: PublicThreadChannel,
+	thread: AnyThreadChannel,
 	member: Nullish<GuildMember>
 ): Promise<boolean> {
 	if (!member) return false;
@@ -30,7 +30,7 @@ export async function isAllowedToChangeThreadTitle(
 	return false;
 }
 
-export async function getThreadAuthor(thread: PublicThreadChannel): Promise<User | undefined> {
+export async function getThreadAuthor(thread: AnyThreadChannel): Promise<User | undefined> {
 	const starterMessage = await thread
 		.fetchStarterMessage()
 		.catch(() => console.log(`Could not find starter message for ${thread.id}`));
@@ -62,6 +62,6 @@ export function getMinimumRequiredPermissions(): bigint {
 	return PermissionsBitField.Flags.UseApplicationCommands | PermissionsBitField.Flags.SendMessages;
 }
 
-export function isAllowedToArchiveThread(thread: PublicThreadChannel, member: Nullish<GuildMember>): Promise<boolean> {
+export function isAllowedToArchiveThread(thread: AnyThreadChannel, member: Nullish<GuildMember>): Promise<boolean> {
 	return isAllowedToChangeThreadTitle(thread, member);
 }

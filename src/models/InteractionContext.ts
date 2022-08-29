@@ -1,15 +1,14 @@
 // TODO: Make all the imports into types that can be
 // TODO: Add license notices
 import {
+	AnyThreadChannel,
 	ButtonInteraction,
 	ChannelType,
 	ChatInputCommandInteraction,
 	GuildMember,
 	GuildTextBasedChannel,
-	InteractionType,
 	MessageComponentInteraction,
 	ModalSubmitInteraction,
-	PublicThreadChannel,
 } from "discord.js";
 import { Overwrite } from "../helpers/typeHelpers";
 import type NeedleBot from "../NeedleBot";
@@ -58,8 +57,8 @@ export default class InteractionContext {
 		return this.reply(content, false);
 	};
 
-	public isInPublicThread = (): this is ContextWithInteraction<GuildInteraction & PublicThreadInteraction> => {
-		if (this.interaction.channel?.type === ChannelType.GuildPublicThread) return true;
+	public isInThread = (): this is ContextWithInteraction<GuildInteraction & AnyThreadInteraction> => {
+		if (this.interaction.channel?.isThread()) return true;
 		this.latestErrorMessage = this.settings.ErrorOnlyInThread;
 		return false;
 	};
@@ -109,7 +108,7 @@ export type GuildInteraction = Overwrite<
 	NeedleInteraction,
 	{ member: GuildMember; guildId: string; channel: GuildTextBasedChannel }
 >;
-type PublicThreadInteraction = Overwrite<NeedleInteraction, { channel: PublicThreadChannel }>;
+type AnyThreadInteraction = Overwrite<NeedleInteraction, { channel: AnyThreadChannel }>;
 
 type ContextWithInteraction<TInteraction> = Overwrite<InteractionContext, { interaction: TInteraction }>;
 

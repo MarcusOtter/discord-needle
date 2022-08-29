@@ -9,6 +9,7 @@ import ConfigService from "./services/ConfigService";
 import CooldownService from "./services/CooldownService";
 import DynamicImportService from "./services/DynamicImportService";
 import InformationService from "./services/InformationService";
+import ThreadCreationService from "./services/ThreadCreationService";
 
 // This class acts as a composition root.
 // We new up all the dependencies and pass them along through constructor injection when possible.
@@ -46,6 +47,10 @@ export default class ObjectFactory {
 
 	public static createCommandExecutorService(): CommandExecutorService {
 		return new CommandExecutorService();
+	}
+
+	public static createThreadCreationService(): ThreadCreationService {
+		return new ThreadCreationService(this.bot);
 	}
 
 	private static createDiscordClient(): Client {

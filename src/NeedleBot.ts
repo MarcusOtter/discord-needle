@@ -97,9 +97,21 @@ export default class NeedleBot {
 			const listener = new Class(this);
 
 			if (listener.runType === ListenerRunType.EveryTime) {
-				this.client.on(listener.name, (...args) => listener.handle(...args).catch(this.handleError));
+				this.client.on(listener.name, (...args) => {
+					try {
+						listener.handle(...args).catch(this.handleError);
+					} catch (e) {
+						console.error(e);
+					}
+				});
 			} else if (listener.runType === ListenerRunType.OnlyOnce) {
-				this.client.once(listener.name, (...args) => listener.handle(...args).catch(this.handleError));
+				this.client.once(listener.name, (...args) => {
+					try {
+						listener.handle(...args).catch(this.handleError);
+					} catch (e) {
+						console.error(e);
+					}
+				});
 			}
 		}
 
