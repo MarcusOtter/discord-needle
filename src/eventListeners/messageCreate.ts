@@ -18,9 +18,6 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 		this.threadCreator = ObjectFactory.createThreadCreationService();
 	}
 
-	// TODO: Double check we don't have instance variables on commands or event listeners as storage,
-	// Because the listeners and commands themselves are not instantiated per request, only once when imported.
-
 	public async handle(...[message]: ClientEvents["messageCreate"]): Promise<void> {
 		const messageShouldHaveThread = await this.threadCreator.shouldHaveThread(message);
 		if (!messageShouldHaveThread) return;

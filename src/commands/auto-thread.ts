@@ -163,7 +163,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 				);
 
 			if (!this.isValidButtonStyle(newCloseButtonStyle) || !this.isValidButtonStyle(newTitleButtonStyle)) {
-				return replyInSecret("Invalid button style. Allowed values: blurple/grey/green/red."); // TODO: Message key
+				return replyInSecret("Invalid button style. Allowed values: blurple/grey/green/red.");
 			}
 		}
 

@@ -62,6 +62,6 @@ export default class TitleCommand extends NeedleCommand {
 
 		await thread.setName(newThreadName);
 		this.bot.reportThreadRenamed(thread.id);
-		await replyInSecret("Success!"); // TODO: Remove pointless success (edit interaction instead or smthn)
+		await replyInSecret("Success!");
 	}
 }
