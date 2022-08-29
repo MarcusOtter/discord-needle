@@ -41,8 +41,8 @@ export default class InfoCommand extends NeedleCommand {
 			{ name: "Servers", value: codeBlock(serverCount), inline: true },
 			{ name: "Users", value: codeBlock(userCount), inline: true },
 			{ name: "Largest server", value: codeBlock(largestServer), inline: true },
-			{ name: "Uptime", value: codeBlock(uptime), inline: true },
 			{ name: "Ping", value: codeBlock(ping), inline: true },
+			{ name: "Uptime", value: codeBlock(uptime), inline: true },
 			{ name: "Version", value: codeBlock(version), inline: true },
 		];
 
