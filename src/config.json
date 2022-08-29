@@ -1,6 +1,5 @@
 {
 	"threadChannels": [],
-	"emojisEnabled": true,
 	"settings": {
 		"ErrorUnknown": "An unexpected error occurred. Please try again later.",
 		"ErrorOnlyInThread": "You can only perform this action inside a thread.",
