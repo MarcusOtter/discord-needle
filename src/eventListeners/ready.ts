@@ -20,6 +20,11 @@ export default class ReadyEventListener extends NeedleEventListener {
 	public async handle(...[client]: ClientEvents["ready"]): Promise<void> {
 		// TODO: Delete unknown configs from servers
 
+		if (process.argv.includes("--skip-catch-up")) {
+			console.log("Ready!");
+			return;
+		}
+
 		try {
 			await this.createMissingThreads(client);
 		} catch {
