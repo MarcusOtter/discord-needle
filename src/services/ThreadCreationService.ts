@@ -56,12 +56,12 @@ export default class InformationService {
 
 		const botMember = await message.guild.members.fetchMe();
 		const useDefaultMessage = channelConfig.replyType === ReplyMessageOption.Default;
-		const rawMessageContent = useDefaultMessage
+		const rawReplyMessageContent = useDefaultMessage
 			? guildConfig.settings.SuccessThreadCreated
 			: channelConfig.customReply;
-		const messageContent = await messageVariables.replace(rawMessageContent);
+		const replyMessageContent = await messageVariables.replace(rawReplyMessageContent);
 		const botPermissions = botMember.permissionsIn(message.channel.id);
-		const requiredPermissions = getRequiredPermissions(channelConfig.slowmode, messageContent);
+		const requiredPermissions = getRequiredPermissions(channelConfig.slowmode, replyMessageContent);
 		if (!botPermissions.has(requiredPermissions)) {
 			const missing = botPermissions.missing(requiredPermissions);
 			const errorMessage = `Missing ${plural("permission", missing.length)}:`;
@@ -69,7 +69,7 @@ export default class InformationService {
 			return;
 		}
 
-		const name = await this.getThreadName(message.content, channelConfig, messageVariables);
+		const name = await this.getThreadName(message, channelConfig, messageVariables);
 		const thread = await message.startThread({
 			name,
 			rateLimitPerUser: channelConfig.slowmode,
@@ -82,10 +82,10 @@ export default class InformationService {
 			await message.react(guildConfig.settings.EmojiUnanswered);
 		}
 
-		if (messageContent.trim().length > 0) {
+		if (replyMessageContent.trim().length > 0) {
 			const buttonRow = await this.getButtonRow(channelConfig, messageVariables);
 			const msg = await thread.send({
-				content: clampWithElipse(messageContent, 2000),
+				content: clampWithElipse(replyMessageContent, 2000),
 				components: buttonRow.components.length > 0 ? [buttonRow] : undefined,
 			});
 
@@ -100,13 +100,13 @@ export default class InformationService {
 	}
 
 	private async getThreadName(
-		message: string,
+		message: Message,
 		config: AutothreadChannelConfig,
 		variables: MessageVariables
 	): Promise<string> {
-		message = variables.removeFrom(message);
+		const content = variables.removeFrom(message.content);
 		const result = extractRegex(config.customTitle);
-		const regexResult = result.regex && message.match(result.regex);
+		const regexResult = result.regex && content.match(result.regex);
 		const rawTitle = result.inputWithRegexVariable
 			.replace("$REGEXRESULT", regexResult?.join("") ?? "") // TODO: make join character configurable?
 			.replaceAll("\n", " ");
