@@ -22,9 +22,7 @@ const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord.js");
 const CommandImportService = require("../dist/services/CommandImportService").default;
 
-const { DISCORD_API_TOKEN, CLIENT_ID, GUILD_ID } = process.env;
-
-const isGlobal = process.argv.some(x => x === "--global");
+const { DISCORD_API_TOKEN, CLIENT_ID } = process.env;
 const isUndeploy = process.argv.some(x => x === "--undeploy");
 
 if (!DISCORD_API_TOKEN || !CLIENT_ID) {
@@ -33,24 +31,7 @@ if (!DISCORD_API_TOKEN || !CLIENT_ID) {
 	process.exit(1);
 }
 
-if (isUndeploy && !GUILD_ID) {
-	console.log("Aborting undeployment of guild commands");
-	console.log("GUILD_ID is missing from the .env file, assuming no guild commands need to be undeployed.\n");
-	process.exit(1);
-}
-
-// TODO: Remove non-global deployments and maybe Guild ID too if we don't use it.
-if (!isGlobal && !GUILD_ID) {
-	console.log("Aborting guild command deployment");
-	console.log("GUILD_ID is missing from the .env file.");
-	console.log('Hint: If you just want to start the bot without developing new commands, type "npm start" instead\n');
-	process.exit(1);
-}
-
-const route = isGlobal
-	? Routes.applicationCommands(CLIENT_ID)
-	: Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID ?? "");
-
+const route = Routes.applicationCommands(CLIENT_ID);
 const rest = new REST({ version: "10" }).setToken(DISCORD_API_TOKEN);
 (async () => {
 	const builders = await getSlashCommandBuilders();

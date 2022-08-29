@@ -6,9 +6,8 @@
 	"scripts": {
 		"build": "rd /s /q dist & tsc --sourceMap",
 		"start": "npm run build && node --enable-source-maps ./dist/index.js",
-		"dev": "npm run build && node ./scripts/deploy-commands.js && node --enable-source-maps ./dist/index.js",
 		"undeploy": "npm run build && node ./scripts/deploy-commands.js  --undeploy",
-		"deploy": "npm run undeploy && node ./scripts/deploy-commands.js --global",
+		"deploy": "npm run undeploy && node ./scripts/deploy-commands.js",
 		"lint": "eslint . && prettier --check .",
 		"lint:fix": "eslint --fix . && prettier --write ."
 	},
