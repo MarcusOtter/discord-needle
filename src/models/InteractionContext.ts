@@ -24,11 +24,6 @@ export default class InteractionContext {
 		return this.interactionToReplyTo;
 	}
 
-	// TODO: Make private and make replyWithError method instead, and use variables in it
-	public get validationError(): string | undefined {
-		return this.latestErrorMessage;
-	}
-
 	private interactionToReplyTo: NeedleInteraction;
 	private latestErrorMessage: string | undefined;
 
@@ -42,12 +37,7 @@ export default class InteractionContext {
 		this.messageVariables.setUser(this.interaction.member).setChannel(this.interaction.channel);
 	}
 
-	// TODO: Stop making all these into weird functions unless I really need to (replies would be nice to keep)
-	public setInteractionToReplyTo = (interaction: NeedleInteraction | undefined) => {
-		if (!interaction) return;
-		this.interactionToReplyTo = interaction;
-	};
-
+	// Keep reply methods as arrow functions to avoid losing "this" context
 	public replyInSecret = (content: string | undefined): Promise<void> => {
 		return this.reply(content, true);
 	};
@@ -56,39 +46,48 @@ export default class InteractionContext {
 		return this.reply(content, false);
 	};
 
-	public isInThread = (): this is ContextWithInteraction<GuildInteraction & AnyThreadInteraction> => {
+	public replyWithErrors = (): Promise<void> => {
+		return this.reply(this.latestErrorMessage, true);
+	};
+
+	public setInteractionToReplyTo(interaction: NeedleInteraction | undefined) {
+		if (!interaction) return;
+		this.interactionToReplyTo = interaction;
+	}
+
+	public isInThread(): this is ContextWithInteraction<GuildInteraction & AnyThreadInteraction> {
 		if (this.interaction.channel?.isThread()) return true;
 		this.latestErrorMessage = this.settings.ErrorOnlyInThread;
 		return false;
-	};
+	}
 
-	public isModalOpenable = (): this is ContextWithInteraction<ModalOpenableInteraction> => {
+	public isModalOpenable(): this is ContextWithInteraction<ModalOpenableInteraction> {
 		return this.isInGuild() && (this.isSlashCommand() || this.isButtonPress());
-	};
+	}
 
-	public isInGuild = (): this is ContextWithInteraction<GuildInteraction> => {
+	public isInGuild(): this is ContextWithInteraction<GuildInteraction> {
 		return !this.interaction.channel?.isDMBased();
-	};
+	}
 
-	public isSlashCommand = (): this is ContextWithInteraction<ChatInputCommandInteraction> => {
+	public isSlashCommand(): this is ContextWithInteraction<ChatInputCommandInteraction> {
 		if (this.interaction.isChatInputCommand()) return true;
 		this.latestErrorMessage = this.settings.ErrorUnknown;
 		return false;
-	};
+	}
 
-	public isModalSubmit = (): this is ContextWithInteraction<ModalSubmitInteraction> => {
+	public isModalSubmit(): this is ContextWithInteraction<ModalSubmitInteraction> {
 		if (this.interaction.isModalSubmit()) return true;
 		this.latestErrorMessage = this.settings.ErrorUnknown;
 		return false;
-	};
+	}
 
-	public isButtonPress = (): this is ContextWithInteraction<ButtonInteraction> => {
+	public isButtonPress(): this is ContextWithInteraction<ButtonInteraction> {
 		if (this.interaction.isButton()) return true;
 		this.latestErrorMessage = this.settings.ErrorUnknown;
 		return false;
-	};
+	}
 
-	private reply = async (content: string | undefined, ephemeral: boolean): Promise<void> => {
+	private async reply(content: string | undefined, ephemeral: boolean): Promise<void> {
 		content = await this.messageVariables.replace(content ?? "");
 		if (!content || content.length === 0) {
 			console.warn("Tried sending empty message");
@@ -96,7 +95,7 @@ export default class InteractionContext {
 		}
 
 		await this.interaction.reply({ content: content, ephemeral: ephemeral });
-	};
+	}
 }
 
 export type GuildInteraction = Overwrite<

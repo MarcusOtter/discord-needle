@@ -5,7 +5,7 @@ import {
 	ButtonStyle,
 	Message,
 	NewsChannel,
-	PermissionsBitField,
+	PermissionFlagsBits,
 	TextChannel,
 	ThreadAutoArchiveDuration,
 } from "discord.js";
@@ -89,7 +89,7 @@ export default class InformationService {
 				components: buttonRow.components.length > 0 ? [buttonRow] : undefined,
 			});
 
-			if (botMember.permissionsIn(thread.id).has(PermissionsBitField.Flags.ManageMessages)) {
+			if (botMember.permissionsIn(thread.id).has(PermissionFlagsBits.ManageMessages)) {
 				await msg.pin();
 				await wait(100); // Let's wait a few ms here to ensure the latest message is actually the pin message
 				await thread.lastMessage?.delete();

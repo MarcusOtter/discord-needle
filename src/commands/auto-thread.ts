@@ -182,9 +182,9 @@ export default class AutoThreadCommand extends NeedleCommand {
 			options.getInteger("include-bots"),
 			options.getInteger("slowmode"),
 			options.getInteger("status-reactions"),
-			options.getInteger("reply-message"), // TODO: change name to reply-type
+			options.getInteger("reply-message"),
 			newReplyMessage,
-			options.getInteger("title-format"), // TODO: Rename to title-type
+			options.getInteger("title-format"),
 			newMaxTitleLength,
 			newCustomTitle,
 			newCloseButtonText,

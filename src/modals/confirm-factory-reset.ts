@@ -35,8 +35,6 @@ export default class ConfirmFactoryResetModal extends NeedleModal {
 			return replyInSecret("Action cancelled.");
 		}
 
-		// TODO: Maybe add a kick button or something
-		// In that case add an ephemeral reply with those buttons and a public one stating the reset
 		const success = this.bot.configs.delete(interaction.guildId);
 		return success
 			? replyInPublic("Successfully reset Needle to factory settings.")

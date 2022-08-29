@@ -31,9 +31,9 @@ export default class TitleCommand extends NeedleCommand {
 	}
 
 	public async execute(context: InteractionContext): Promise<void> {
-		const { settings, replyInSecret } = context;
+		const { settings, replyInSecret, replyWithErrors } = context;
 		if (!context.isInThread()) {
-			return replyInSecret(context.validationError);
+			return replyWithErrors();
 		}
 
 		const { channel: thread, member } = context.interaction;

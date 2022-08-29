@@ -19,9 +19,9 @@ export default class CloseCommand extends NeedleCommand {
 	}
 
 	public async execute(context: InteractionContext): Promise<void> {
-		const { settings, replyInSecret, replyInPublic } = context;
+		const { settings, replyInSecret, replyInPublic, replyWithErrors } = context;
 		if (!context.isInThread()) {
-			return replyInSecret(context.validationError);
+			return replyWithErrors();
 		}
 
 		const { interaction, messageVariables } = context;

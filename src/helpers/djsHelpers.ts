@@ -1,4 +1,4 @@
-import { AnyThreadChannel, GuildMember, Message, PermissionsBitField, User } from "discord.js";
+import { AnyThreadChannel, GuildMember, Message, PermissionFlagsBits, User } from "discord.js";
 import { Nullish } from "./typeHelpers";
 
 export async function removeUserReactionsOnMessage(message: Message, userId: string) {
@@ -14,7 +14,7 @@ export async function isAllowedToChangeThreadTitle(
 ): Promise<boolean> {
 	if (!member) return false;
 
-	const hasManageThreads = member.permissionsIn(thread).has(PermissionsBitField.Flags.ManageThreads);
+	const hasManageThreads = member.permissionsIn(thread).has(PermissionFlagsBits.ManageThreads);
 	if (hasManageThreads) return true;
 
 	const isThreadOwner = thread.ownerId === member.id;
@@ -37,26 +37,25 @@ export async function getThreadAuthor(thread: AnyThreadChannel): Promise<User | 
 
 export function getRequiredPermissions(slowmode?: number, threadMessage?: string): bigint[] {
 	const output = [
-		PermissionsBitField.Flags.ViewChannel,
-		PermissionsBitField.Flags.SendMessages,
-		PermissionsBitField.Flags.CreatePublicThreads,
-		PermissionsBitField.Flags.ReadMessageHistory,
+		PermissionFlagsBits.ViewChannel,
+		PermissionFlagsBits.SendMessages,
+		PermissionFlagsBits.CreatePublicThreads,
+		PermissionFlagsBits.ReadMessageHistory,
 	];
 
 	if (slowmode && slowmode > 0) {
-		output.push(PermissionsBitField.Flags.ManageThreads);
+		output.push(PermissionFlagsBits.ManageThreads);
 	}
 
 	if (threadMessage && threadMessage.trim().length > 0) {
-		output.push(PermissionsBitField.Flags.SendMessagesInThreads);
+		output.push(PermissionFlagsBits.SendMessagesInThreads);
 	}
 
 	return output;
 }
 
-// TODO: use PermissionFlagsBits instead in the whole bot
 export function getMinimumRequiredPermissions(): bigint {
-	return PermissionsBitField.Flags.UseApplicationCommands | PermissionsBitField.Flags.SendMessages;
+	return PermissionFlagsBits.UseApplicationCommands | PermissionFlagsBits.SendMessages;
 }
 
 export function isAllowedToArchiveThread(thread: AnyThreadChannel, member: Nullish<GuildMember>): Promise<boolean> {
