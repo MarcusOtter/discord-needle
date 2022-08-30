@@ -6,6 +6,8 @@ export default class CommandExecutorService {
 		try {
 			return await command.execute(context).catch(e => console.error(e));
 		} catch (e) {
+			if (!context.interaction.isRepliable()) return;
+
 			// TODO: Button to support server and bug report
 			context.interaction.reply({
 				content: context.settings.ErrorUnknown,
