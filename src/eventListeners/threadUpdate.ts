@@ -1,4 +1,4 @@
-import { ClientEvents } from "discord.js";
+import type { ClientEvents } from "discord.js";
 import { removeUserReactionsOnMessage } from "../helpers/djsHelpers.js";
 import ListenerRunType from "../models/enums/ListenerRunType.js";
 import NeedleEventListener from "../models/NeedleEventListener.js";

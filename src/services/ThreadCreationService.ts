@@ -1,9 +1,9 @@
 import {
 	ActionRowBuilder,
-	AnyThreadChannel,
+	type AnyThreadChannel,
 	ButtonBuilder,
 	ButtonStyle,
-	Message,
+	type Message,
 	NewsChannel,
 	PermissionFlagsBits,
 	TextChannel,
@@ -12,10 +12,10 @@ import {
 import { getRequiredPermissions } from "../helpers/djsHelpers.js";
 import { wait } from "../helpers/promiseHelpers.js";
 import { clampWithElipse, extractRegex, plural } from "../helpers/stringHelpers.js";
-import AutothreadChannelConfig from "../models/AutothreadChannelConfig.js";
+import type AutothreadChannelConfig from "../models/AutothreadChannelConfig.js";
 import ReplyMessageOption from "../models/enums/ReplyMessageOption.js";
 import ToggleOption from "../models/enums/ToggleOption.js";
-import MessageVariables from "../models/MessageVariables.js";
+import type MessageVariables from "../models/MessageVariables.js";
 import type NeedleBot from "../NeedleBot.js";
 
 export default class InformationService {

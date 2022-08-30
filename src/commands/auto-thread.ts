@@ -1,17 +1,23 @@
-import { ChannelType, GuildMember, GuildTextBasedChannel, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
-import { SlashCommandBuilderWithOptions, SameLengthTuple, Nullish } from "../helpers/typeHelpers.js";
+import {
+	ChannelType,
+	type GuildMember,
+	type GuildTextBasedChannel,
+	PermissionFlagsBits,
+	type SlashCommandBuilder,
+} from "discord.js";
+import type { SlashCommandBuilderWithOptions, SameLengthTuple, Nullish } from "../helpers/typeHelpers.js";
 import AutothreadChannelConfig from "../models/AutothreadChannelConfig.js";
 import CommandCategory from "../models/enums/CommandCategory.js";
 import ReplyMessageOption from "../models/enums/ReplyMessageOption.js";
 import TitleType from "../models/enums/TitleType.js";
 import ToggleOption from "../models/enums/ToggleOption.js";
-import InteractionContext from "../models/InteractionContext.js";
+import type InteractionContext from "../models/InteractionContext.js";
 import NeedleCommand from "../models/NeedleCommand.js";
 import safe_regex from "safe-regex";
 import { extractRegex, removeInvalidThreadNameChars } from "../helpers/stringHelpers.js";
 import DeleteBehavior from "../models/enums/DeleteBehavior.js";
 import ReplyButtonsOption from "../models/enums/ReplyButtonsOption.js";
-import { ModalTextInput } from "../models/ModalTextInput.js";
+import type { ModalTextInput } from "../models/ModalTextInput.js";
 
 export default class AutoThreadCommand extends NeedleCommand {
 	public readonly name = "auto-thread";

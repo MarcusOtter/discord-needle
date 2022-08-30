@@ -1,14 +1,14 @@
 import {
-	ApplicationCommandPermissions,
+	type ApplicationCommandPermissions,
 	ApplicationCommandPermissionType,
-	GuildMember,
-	GuildTextBasedChannel,
+	type GuildMember,
+	type GuildTextBasedChannel,
 	PermissionFlagsBits,
-	RESTPostAPIApplicationCommandsJSONBody,
+	type RESTPostAPIApplicationCommandsJSONBody,
 	SlashCommandBuilder,
 } from "discord.js";
 import { getMinimumRequiredPermissions } from "../helpers/djsHelpers.js";
-import { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHelpers.js";
+import type { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHelpers.js";
 import type NeedleBot from "../NeedleBot.js";
 import CommandCategory from "./enums/CommandCategory.js";
 import type InteractionContext from "./InteractionContext.js";

@@ -1,7 +1,7 @@
 import { ActivityType, Client, GatewayIntentBits } from "discord.js";
 import type NeedleButton from "./models/NeedleButton.js";
 import type NeedleEventListener from "./models/NeedleEventListener.js";
-import NeedleModal from "./models/NeedleModal.js";
+import type NeedleModal from "./models/NeedleModal.js";
 import NeedleBot from "./NeedleBot.js";
 import CommandExecutorService from "./services/CommandExecutorService.js";
 import CommandImportService from "./services/CommandImportService.js";

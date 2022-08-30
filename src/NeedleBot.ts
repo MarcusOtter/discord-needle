@@ -4,10 +4,10 @@ import ListenerRunType from "./models/enums/ListenerRunType.js";
 import type NeedleButton from "./models/NeedleButton.js";
 import type DynamicImportService from "./services/DynamicImportService.js";
 import type NeedleEventListener from "./models/NeedleEventListener.js";
-import ConfigService from "./services/ConfigService.js";
-import CommandImportService from "./services/CommandImportService.js";
-import NeedleModal from "./models/NeedleModal.js";
-import CooldownService from "./services/CooldownService.js";
+import type ConfigService from "./services/ConfigService.js";
+import type CommandImportService from "./services/CommandImportService.js";
+import type NeedleModal from "./models/NeedleModal.js";
+import type CooldownService from "./services/CooldownService.js";
 
 export default class NeedleBot {
 	public readonly client: Client;

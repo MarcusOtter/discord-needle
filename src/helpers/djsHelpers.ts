@@ -1,5 +1,5 @@
-import { AnyThreadChannel, GuildMember, Message, PermissionFlagsBits, User } from "discord.js";
-import { Nullish } from "./typeHelpers.js";
+import { type AnyThreadChannel, type GuildMember, type Message, PermissionFlagsBits, type User } from "discord.js";
+import type { Nullish } from "./typeHelpers.js";
 
 export async function removeUserReactionsOnMessage(message: Message, userId: string) {
 	const userReactions = message.reactions.cache.filter(r => r.users.cache.has(userId));

@@ -1,6 +1,6 @@
 import type { ClientEvents } from "discord.js";
 import type NeedleBot from "../NeedleBot.js";
-import ListenerRunType from "./enums/ListenerRunType.js";
+import type ListenerRunType from "./enums/ListenerRunType.js";
 
 export default abstract class NeedleEventListener {
 	public abstract readonly name: keyof ClientEvents;

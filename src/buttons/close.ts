@@ -1,9 +1,9 @@
 import { ButtonBuilder, ButtonStyle } from "discord.js";
-import InteractionContext from "../models/InteractionContext.js";
+import type InteractionContext from "../models/InteractionContext.js";
 import NeedleButton from "../models/NeedleButton.js";
-import NeedleBot from "../NeedleBot.js";
+import type NeedleBot from "../NeedleBot.js";
 import ObjectFactory from "../ObjectFactory.js";
-import CommandExecutorService from "../services/CommandExecutorService.js";
+import type CommandExecutorService from "../services/CommandExecutorService.js";
 
 export default class CloseButton extends NeedleButton {
 	public readonly customId = "close";

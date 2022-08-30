@@ -1,6 +1,6 @@
 import {
 	ActionRowBuilder,
-	ModalActionRowComponentBuilder,
+	type ModalActionRowComponentBuilder,
 	ModalBuilder,
 	TextInputBuilder,
 	TextInputStyle,

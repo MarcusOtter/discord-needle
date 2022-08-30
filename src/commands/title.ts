@@ -1,8 +1,8 @@
-import { GuildMember, GuildTextBasedChannel, SlashCommandBuilder } from "discord.js";
+import type { GuildMember, GuildTextBasedChannel, SlashCommandBuilder } from "discord.js";
 import { isAllowedToChangeThreadTitle } from "../helpers/djsHelpers.js";
-import { SlashCommandBuilderWithOptions } from "../helpers/typeHelpers.js";
+import type { SlashCommandBuilderWithOptions } from "../helpers/typeHelpers.js";
 import CommandCategory from "../models/enums/CommandCategory.js";
-import InteractionContext from "../models/InteractionContext.js";
+import type InteractionContext from "../models/InteractionContext.js";
 import NeedleCommand from "../models/NeedleCommand.js";
 
 export default class TitleCommand extends NeedleCommand {

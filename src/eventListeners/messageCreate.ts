@@ -1,11 +1,11 @@
-import { ClientEvents, NewsChannel, TextChannel } from "discord.js";
+import { type ClientEvents, NewsChannel, TextChannel } from "discord.js";
 import { removeUserReactionsOnMessage } from "../helpers/djsHelpers.js";
 import ListenerRunType from "../models/enums/ListenerRunType.js";
 import MessageVariables from "../models/MessageVariables.js";
 import NeedleEventListener from "../models/NeedleEventListener.js";
-import NeedleBot from "../NeedleBot.js";
+import type NeedleBot from "../NeedleBot.js";
 import ObjectFactory from "../ObjectFactory.js";
-import ThreadCreationService from "../services/ThreadCreationService.js";
+import type ThreadCreationService from "../services/ThreadCreationService.js";
 
 export default class MessageCreateEventListener extends NeedleEventListener {
 	public readonly name = "messageCreate";

@@ -1,6 +1,5 @@
-// TODO: Make all the imports into types that can be
 // TODO: Add license notices
-import {
+import type {
 	AnyThreadChannel,
 	ButtonInteraction,
 	ChatInputCommandInteraction,
@@ -9,11 +8,11 @@ import {
 	MessageComponentInteraction,
 	ModalSubmitInteraction,
 } from "discord.js";
-import { Overwrite } from "../helpers/typeHelpers.js";
+import type { Overwrite } from "../helpers/typeHelpers.js";
 import type NeedleBot from "../NeedleBot.js";
 import MessageVariables from "./MessageVariables.js";
-import NeedleConfig from "./NeedleConfig.js";
-import { ModalOpenableInteraction } from "./NeedleModal.js";
+import type NeedleConfig from "./NeedleConfig.js";
+import type { ModalOpenableInteraction } from "./NeedleModal.js";
 
 export default class InteractionContext {
 	public readonly bot: NeedleBot;

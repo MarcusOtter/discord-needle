@@ -1,7 +1,7 @@
-import { GuildMember, GuildTextBasedChannel, ThreadAutoArchiveDuration } from "discord.js";
+import { type GuildMember, type GuildTextBasedChannel, ThreadAutoArchiveDuration } from "discord.js";
 import { isAllowedToArchiveThread, removeUserReactionsOnMessage } from "../helpers/djsHelpers.js";
 import CommandCategory from "../models/enums/CommandCategory.js";
-import InteractionContext from "../models/InteractionContext.js";
+import type InteractionContext from "../models/InteractionContext.js";
 import NeedleCommand from "../models/NeedleCommand.js";
 
 export default class CloseCommand extends NeedleCommand {

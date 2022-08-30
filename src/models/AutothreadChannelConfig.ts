@@ -1,4 +1,4 @@
-import { Nullish } from "../helpers/typeHelpers.js";
+import type { Nullish } from "../helpers/typeHelpers.js";
 import DeleteBehavior from "./enums/DeleteBehavior.js";
 import ReplyMessageOption from "./enums/ReplyMessageOption.js";
 import TitleType from "./enums/TitleType.js";

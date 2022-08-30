@@ -1,4 +1,4 @@
-import { ClientEvents, PermissionFlagsBits } from "discord.js";
+import { type ClientEvents, PermissionFlagsBits } from "discord.js";
 import DeleteBehavior from "../models/enums/DeleteBehavior.js";
 import ListenerRunType from "../models/enums/ListenerRunType.js";
 import NeedleEventListener from "../models/NeedleEventListener.js";

@@ -1,7 +1,7 @@
 // TODO: Add license comments
 
-import AutothreadChannelConfig from "./AutothreadChannelConfig.js";
-import Setting from "./enums/Setting.js";
+import type AutothreadChannelConfig from "./AutothreadChannelConfig.js";
+import type Setting from "./enums/Setting.js";
 
 export default interface NeedleConfig {
 	threadChannels: AutothreadChannelConfig[];

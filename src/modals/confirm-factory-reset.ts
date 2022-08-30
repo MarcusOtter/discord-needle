@@ -1,11 +1,11 @@
 import {
 	ActionRowBuilder,
-	ModalActionRowComponentBuilder,
+	type ModalActionRowComponentBuilder,
 	ModalBuilder,
 	TextInputBuilder,
 	TextInputStyle,
 } from "discord.js";
-import InteractionContext from "../models/InteractionContext.js";
+import type InteractionContext from "../models/InteractionContext.js";
 import NeedleModal from "../models/NeedleModal.js";
 
 export default class ConfirmFactoryResetModal extends NeedleModal {

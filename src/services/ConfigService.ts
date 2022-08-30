@@ -1,8 +1,9 @@
 import * as path from "path";
 import { fileURLToPath } from "url";
 import * as fs from "fs";
-import NeedleConfig, { defaultConfig as DO_NOT_TOUCH_defaultConfig } from "../models/NeedleConfig.js";
-import Setting from "../models/enums/Setting.js";
+import type NeedleConfig from "../models/NeedleConfig.js";
+import { defaultConfig as DO_NOT_TOUCH_defaultConfig } from "../models/NeedleConfig.js";
+import type Setting from "../models/enums/Setting.js";
 
 export default class ConfigService {
 	private readonly directoryPath: string;

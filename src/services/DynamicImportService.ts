@@ -1,7 +1,7 @@
 import { promises, existsSync } from "fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { Concretize, ImportedClass, Newable } from "../helpers/typeHelpers.js";
+import type { Concretize, ImportedClass, Newable } from "../helpers/typeHelpers.js";
 
 export default class DynamicImportService<T extends Newable> {
 	private readonly directoryPath: string;

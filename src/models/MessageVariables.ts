@@ -1,6 +1,6 @@
-import { AnyThreadChannel, GuildMember, GuildTextBasedChannel, User } from "discord.js";
+import { type AnyThreadChannel, GuildMember, type GuildTextBasedChannel, type User } from "discord.js";
 import { getThreadAuthor } from "../helpers/djsHelpers.js";
-import { Nullish } from "../helpers/typeHelpers.js";
+import type { Nullish } from "../helpers/typeHelpers.js";
 
 // TODO: Rename to placeholders?
 export default class MessageVariables {
