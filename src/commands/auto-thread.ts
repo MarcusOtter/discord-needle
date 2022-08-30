@@ -218,7 +218,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 
 	private async getTextInputsFromModal<T extends ModalTextInput[]>(
 		modalName: string,
-		inputs: [...T],
+		inputs: T,
 		context: InteractionContext
 	): Promise<SameLengthTuple<T, string>> {
 		if (!context.isModalOpenable()) return inputs.map(() => "") as SameLengthTuple<T, string>;
