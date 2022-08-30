@@ -17,7 +17,6 @@ import { type AnyThreadChannel, GuildMember, type GuildTextBasedChannel, type Us
 import { getThreadAuthor } from "../helpers/djsHelpers.js";
 import type { Nullish } from "../helpers/typeHelpers.js";
 
-// TODO: Rename to placeholders?
 export default class MessageVariables {
 	private channel: Nullish<GuildTextBasedChannel>;
 	private thread: Nullish<AnyThreadChannel>;
