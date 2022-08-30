@@ -114,19 +114,6 @@ export default class NeedleBot {
 				});
 			}
 		}
-
-		// this.discordClient.once("ready", () => {
-		// 	console.log("Ready!");
-		// 	deleteConfigsFromUnknownServers(this.discordClient);
-		// });
-
-		// this.discordClient.on("messageCreate", message => handleMessageCreate(message).catch(console.error));
-		// this.discordClient.on("interactionCreate", interaction => {
-		// 	handleInteractionCreate(interaction).catch(console.error);
-		// });
-		// this.discordClient.on("guildDelete", guild => {
-		// 	resetConfigToDefault(guild.id);
-		// });
 	}
 
 	private handleError(reason: unknown): void {
