@@ -7,7 +7,7 @@ export default class ThreadUpdateEventListener extends NeedleEventListener {
 	public readonly name = "threadUpdate";
 	public runType = ListenerRunType.EveryTime;
 
-	public async handle(...[oldThread, newThread]: ClientEvents["threadUpdate"]): Promise<void> {
+	public async handle([oldThread, newThread]: ClientEvents["threadUpdate"]): Promise<void> {
 		const threadWasArchived = !oldThread.archived && newThread.archived;
 		const threadWasUnarchived = oldThread.archived && !newThread.archived;
 		const threadWasLocked = !oldThread.locked && newThread.locked;

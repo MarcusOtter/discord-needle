@@ -17,7 +17,7 @@ export default class InteractionCreateEventListener extends NeedleEventListener 
 		this.commandExecutor = ObjectFactory.createCommandExecutorService();
 	}
 
-	public async handle(...[interaction]: ClientEvents["interactionCreate"]): Promise<void> {
+	public async handle([interaction]: ClientEvents["interactionCreate"]): Promise<void> {
 		if (!interaction.isChatInputCommand() && !interaction.isModalSubmit() && !interaction.isButton()) {
 			return;
 		}

@@ -7,7 +7,7 @@ export default class MessageDeleteEventListener extends NeedleEventListener {
 	public readonly name = "messageDelete";
 	public readonly runType = ListenerRunType.EveryTime;
 
-	public async handle(...[message]: ClientEvents["messageDelete"]): Promise<void> {
+	public async handle([message]: ClientEvents["messageDelete"]): Promise<void> {
 		const thread = message.thread;
 		if (!thread || !thread.isThread()) return;
 		if (!message.inGuild()) return;

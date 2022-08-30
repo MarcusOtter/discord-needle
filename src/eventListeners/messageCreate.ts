@@ -18,7 +18,7 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 		this.threadCreator = ObjectFactory.createThreadCreationService();
 	}
 
-	public async handle(...[message]: ClientEvents["messageCreate"]): Promise<void> {
+	public async handle([message]: ClientEvents["messageCreate"]): Promise<void> {
 		const messageShouldHaveThread = await this.threadCreator.shouldHaveThread(message);
 		if (!messageShouldHaveThread) return;
 		if (!message.inGuild()) return;

@@ -11,5 +11,5 @@ export default abstract class NeedleEventListener {
 		this.bot = bot;
 	}
 
-	public abstract handle(...[...args]: ClientEvents[keyof ClientEvents]): Promise<void>;
+	public abstract handle(args: ClientEvents[keyof ClientEvents]): Promise<void>;
 }

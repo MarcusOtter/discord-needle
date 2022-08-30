@@ -17,7 +17,7 @@ export default class ReadyEventListener extends NeedleEventListener {
 		this.threadCreator = ObjectFactory.createThreadCreationService();
 	}
 
-	public async handle(...[client]: ClientEvents["ready"]): Promise<void> {
+	public async handle([client]: ClientEvents["ready"]): Promise<void> {
 		// TODO: Delete unknown configs from servers
 
 		if (process.argv.includes("--skip-catch-up")) {

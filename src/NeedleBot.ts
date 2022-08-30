@@ -99,7 +99,7 @@ export default class NeedleBot {
 			if (listener.runType === ListenerRunType.EveryTime) {
 				this.client.on(listener.name, (...args) => {
 					try {
-						listener.handle(...args).catch(this.handleError);
+						listener.handle(args).catch(this.handleError);
 					} catch (e) {
 						console.error(e);
 					}
@@ -107,7 +107,7 @@ export default class NeedleBot {
 			} else if (listener.runType === ListenerRunType.OnlyOnce) {
 				this.client.once(listener.name, (...args) => {
 					try {
-						listener.handle(...args).catch(this.handleError);
+						listener.handle(args).catch(this.handleError);
 					} catch (e) {
 						console.error(e);
 					}
