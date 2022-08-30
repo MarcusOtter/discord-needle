@@ -77,14 +77,6 @@ export default class ObjectFactory {
 		return new Client({
 			intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
 			shards: "auto",
-			presence: {
-				activities: [
-					{
-						type: ActivityType.Listening,
-						name: "/help",
-					},
-				],
-			},
 			sweepers: {
 				messages: sweepSettings,
 				threads: sweepSettings,
