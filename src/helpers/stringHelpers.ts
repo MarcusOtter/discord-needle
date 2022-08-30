@@ -1,5 +1,5 @@
 import { Locale } from "discord.js";
-import { Nullish } from "./typeHelpers";
+import { Nullish } from "./typeHelpers.js";
 
 export function plural(word: string, count: number): string {
 	const output = `${count} ${word}`;

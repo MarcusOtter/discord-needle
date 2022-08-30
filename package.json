@@ -3,6 +3,7 @@
 	"version": "2.2.0",
 	"description": "Needle is a discord bot that helps you manage your discord threads.",
 	"main": "./dist/index.js",
+	"type": "module",
 	"scripts": {
 		"build": "rd /s /q dist & tsc --sourceMap",
 		"start": "npm run build && node --enable-source-maps ./dist/index.js",

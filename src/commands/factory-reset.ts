@@ -1,7 +1,7 @@
 import { PermissionFlagsBits } from "discord.js";
-import CommandCategory from "../models/enums/CommandCategory";
-import InteractionContext from "../models/InteractionContext";
-import NeedleCommand from "../models/NeedleCommand";
+import CommandCategory from "../models/enums/CommandCategory.js";
+import InteractionContext from "../models/InteractionContext.js";
+import NeedleCommand from "../models/NeedleCommand.js";
 
 export default class FactoryResetCommand extends NeedleCommand {
 	public readonly name = "factory-reset";

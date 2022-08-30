@@ -7,11 +7,11 @@ import {
 	RESTPostAPIApplicationCommandsJSONBody,
 	SlashCommandBuilder,
 } from "discord.js";
-import { getMinimumRequiredPermissions } from "../helpers/djsHelpers";
-import { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
-import type NeedleBot from "../NeedleBot";
-import CommandCategory from "./enums/CommandCategory";
-import type InteractionContext from "./InteractionContext";
+import { getMinimumRequiredPermissions } from "../helpers/djsHelpers.js";
+import { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHelpers.js";
+import type NeedleBot from "../NeedleBot.js";
+import CommandCategory from "./enums/CommandCategory.js";
+import type InteractionContext from "./InteractionContext.js";
 
 export default abstract class NeedleCommand {
 	public readonly id: string;

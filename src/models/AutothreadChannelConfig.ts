@@ -1,8 +1,8 @@
-import { Nullish } from "../helpers/typeHelpers";
-import DeleteBehavior from "./enums/DeleteBehavior";
-import ReplyMessageOption from "./enums/ReplyMessageOption";
-import TitleType from "./enums/TitleType";
-import ToggleOption from "./enums/ToggleOption";
+import { Nullish } from "../helpers/typeHelpers.js";
+import DeleteBehavior from "./enums/DeleteBehavior.js";
+import ReplyMessageOption from "./enums/ReplyMessageOption.js";
+import TitleType from "./enums/TitleType.js";
+import ToggleOption from "./enums/ToggleOption.js";
 
 export default class AutothreadChannelConfig {
 	public readonly channelId: string;

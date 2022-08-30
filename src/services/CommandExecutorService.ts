@@ -1,5 +1,5 @@
-import type InteractionContext from "../models/InteractionContext";
-import type NeedleCommand from "../models/NeedleCommand";
+import type InteractionContext from "../models/InteractionContext.js";
+import type NeedleCommand from "../models/NeedleCommand.js";
 
 export default class CommandExecutorService {
 	public async execute(command: NeedleCommand, context: InteractionContext): Promise<void> {

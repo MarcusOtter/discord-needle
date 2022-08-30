@@ -5,7 +5,7 @@ import {
 	TextInputBuilder,
 	TextInputStyle,
 } from "discord.js";
-import NeedleModal from "../models/NeedleModal";
+import NeedleModal from "../models/NeedleModal.js";
 
 export default class CustomTitleFormatModal extends NeedleModal {
 	public readonly customId = "custom-title-format";

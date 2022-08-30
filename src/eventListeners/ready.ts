@@ -1,10 +1,10 @@
 import { Client, ClientEvents } from "discord.js";
-import ListenerRunType from "../models/enums/ListenerRunType";
-import MessageVariables from "../models/MessageVariables";
-import NeedleEventListener from "../models/NeedleEventListener";
-import NeedleBot from "../NeedleBot";
-import ObjectFactory from "../ObjectFactory";
-import ThreadCreationService from "../services/ThreadCreationService";
+import ListenerRunType from "../models/enums/ListenerRunType.js";
+import MessageVariables from "../models/MessageVariables.js";
+import NeedleEventListener from "../models/NeedleEventListener.js";
+import NeedleBot from "../NeedleBot.js";
+import ObjectFactory from "../ObjectFactory.js";
+import ThreadCreationService from "../services/ThreadCreationService.js";
 
 export default class ReadyEventListener extends NeedleEventListener {
 	public readonly name = "ready";

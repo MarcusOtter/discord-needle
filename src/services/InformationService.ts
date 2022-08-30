@@ -1,5 +1,5 @@
-import { formatNumber } from "../helpers/stringHelpers";
-import type NeedleBot from "../NeedleBot";
+import { formatNumber } from "../helpers/stringHelpers.js";
+import type NeedleBot from "../NeedleBot.js";
 import os from "os";
 
 export default class InformationService {

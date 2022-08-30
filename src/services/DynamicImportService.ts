@@ -1,6 +1,7 @@
 import { promises, existsSync } from "fs";
-import * as path from "path";
-import { Concretize, ImportedClass, Newable } from "../helpers/typeHelpers";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { Concretize, ImportedClass, Newable } from "../helpers/typeHelpers.js";
 
 export default class DynamicImportService<T extends Newable> {
 	private readonly directoryPath: string;
@@ -8,7 +9,8 @@ export default class DynamicImportService<T extends Newable> {
 	private cache: ImportedClass<T>[] = [];
 
 	constructor(directoryPath: string) {
-		this.directoryPath = path.resolve(__dirname, "../", directoryPath);
+		const dirname = path.dirname(fileURLToPath(import.meta.url));
+		this.directoryPath = path.join(dirname, "../" + directoryPath);
 	}
 
 	public async load(skipCache = false): Promise<ImportedClass<T>[]> {
@@ -38,7 +40,7 @@ export default class DynamicImportService<T extends Newable> {
 			jsFileNames.map(async fileName => {
 				return {
 					fileName: fileName.split(".")[0],
-					Class: (await import(`${directoryPath}/${fileName}`)).default,
+					Class: (await import(`file://${directoryPath}/${fileName}`)).default,
 				} as ImportedClass<T>;
 			})
 		);

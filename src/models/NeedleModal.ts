@@ -1,7 +1,7 @@
 import { ButtonInteraction, ChatInputCommandInteraction, ModalBuilder, ModalSubmitInteraction } from "discord.js";
-import NeedleBot from "../NeedleBot";
-import InteractionContext, { GuildInteraction } from "./InteractionContext";
-import { ModalTextInput } from "./ModalTextInput";
+import NeedleBot from "../NeedleBot.js";
+import InteractionContext, { GuildInteraction } from "./InteractionContext.js";
+import { ModalTextInput } from "./ModalTextInput.js";
 
 export default abstract class NeedleModal {
 	public abstract readonly customId: string;

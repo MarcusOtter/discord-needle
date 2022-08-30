@@ -1,13 +1,13 @@
 import type { Client } from "discord.js";
-import type NeedleCommand from "./models/NeedleCommand";
-import ListenerRunType from "./models/enums/ListenerRunType";
-import type NeedleButton from "./models/NeedleButton";
-import type DynamicImportService from "./services/DynamicImportService";
-import type NeedleEventListener from "./models/NeedleEventListener";
-import ConfigService from "./services/ConfigService";
-import CommandImportService from "./services/CommandImportService";
-import NeedleModal from "./models/NeedleModal";
-import CooldownService from "./services/CooldownService";
+import type NeedleCommand from "./models/NeedleCommand.js";
+import ListenerRunType from "./models/enums/ListenerRunType.js";
+import type NeedleButton from "./models/NeedleButton.js";
+import type DynamicImportService from "./services/DynamicImportService.js";
+import type NeedleEventListener from "./models/NeedleEventListener.js";
+import ConfigService from "./services/ConfigService.js";
+import CommandImportService from "./services/CommandImportService.js";
+import NeedleModal from "./models/NeedleModal.js";
+import CooldownService from "./services/CooldownService.js";
 
 export default class NeedleBot {
 	public readonly client: Client;

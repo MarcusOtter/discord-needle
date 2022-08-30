@@ -1,9 +1,9 @@
 import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
-import { SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
-import CommandCategory from "../models/enums/CommandCategory";
-import Setting from "../models/enums/Setting";
-import InteractionContext from "../models/InteractionContext";
-import NeedleCommand from "../models/NeedleCommand";
+import { SlashCommandBuilderWithOptions } from "../helpers/typeHelpers.js";
+import CommandCategory from "../models/enums/CommandCategory.js";
+import Setting from "../models/enums/Setting.js";
+import InteractionContext from "../models/InteractionContext.js";
+import NeedleCommand from "../models/NeedleCommand.js";
 
 export default class SettingCommand extends NeedleCommand {
 	public readonly name = "setting";

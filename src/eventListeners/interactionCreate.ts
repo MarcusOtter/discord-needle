@@ -1,10 +1,10 @@
-import ListenerRunType from "../models/enums/ListenerRunType";
-import NeedleEventListener from "../models/NeedleEventListener";
+import ListenerRunType from "../models/enums/ListenerRunType.js";
+import NeedleEventListener from "../models/NeedleEventListener.js";
 import type { ClientEvents } from "discord.js";
-import InteractionContext from "../models/InteractionContext";
-import NeedleBot from "../NeedleBot";
-import CommandExecutorService from "../services/CommandExecutorService";
-import ObjectFactory from "../ObjectFactory";
+import InteractionContext from "../models/InteractionContext.js";
+import NeedleBot from "../NeedleBot.js";
+import CommandExecutorService from "../services/CommandExecutorService.js";
+import ObjectFactory from "../ObjectFactory.js";
 
 export default class InteractionCreateEventListener extends NeedleEventListener {
 	public readonly name = "interactionCreate";

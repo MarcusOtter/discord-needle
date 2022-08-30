@@ -1,4 +1,4 @@
-// IMPORTANT: Remember to change config.json when you are changing anything here
+// IMPORTANT: Remember to change defaultConfig in NeedleConfig.ts when you are changing anything here
 enum Setting {
 	ErrorUnknown = 0,
 	ErrorOnlyInThread,

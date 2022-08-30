@@ -1,15 +1,16 @@
 import * as path from "path";
+import { fileURLToPath } from "url";
 import * as fs from "fs";
-import NeedleConfig from "../models/NeedleConfig";
-import DO_NOT_TOUCH_defaultConfig from "../config.json";
-import Setting from "../models/enums/Setting";
+import NeedleConfig, { defaultConfig as DO_NOT_TOUCH_defaultConfig } from "../models/NeedleConfig.js";
+import Setting from "../models/enums/Setting.js";
 
 export default class ConfigService {
 	private readonly directoryPath: string;
 	private readonly cache = new Map<string, NeedleConfig>();
 
 	constructor(directoryPath: string) {
-		this.directoryPath = path.resolve(__dirname, "../../", process.env.CONFIGS_PATH || directoryPath);
+		const dirname = path.dirname(fileURLToPath(import.meta.url));
+		this.directoryPath = path.join(dirname, "../../", process.env.CONFIGS_PATH || directoryPath);
 	}
 
 	public get(guildId: string): NeedleConfig {

@@ -5,8 +5,8 @@ import {
 	TextInputBuilder,
 	TextInputStyle,
 } from "discord.js";
-import InteractionContext from "../models/InteractionContext";
-import NeedleModal from "../models/NeedleModal";
+import InteractionContext from "../models/InteractionContext.js";
+import NeedleModal from "../models/NeedleModal.js";
 
 export default class ConfirmFactoryResetModal extends NeedleModal {
 	public readonly customId = "confirm-factory-reset";

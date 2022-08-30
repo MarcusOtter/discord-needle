@@ -1,7 +1,7 @@
 import { ClientEvents } from "discord.js";
-import { removeUserReactionsOnMessage } from "../helpers/djsHelpers";
-import ListenerRunType from "../models/enums/ListenerRunType";
-import NeedleEventListener from "../models/NeedleEventListener";
+import { removeUserReactionsOnMessage } from "../helpers/djsHelpers.js";
+import ListenerRunType from "../models/enums/ListenerRunType.js";
+import NeedleEventListener from "../models/NeedleEventListener.js";
 
 export default class ThreadUpdateEventListener extends NeedleEventListener {
 	public readonly name = "threadUpdate";

@@ -1,9 +1,9 @@
 import { ButtonBuilder, ButtonStyle } from "discord.js";
-import type InteractionContext from "../models/InteractionContext";
-import NeedleButton from "../models/NeedleButton";
-import type NeedleBot from "../NeedleBot";
-import ObjectFactory from "../ObjectFactory";
-import type CommandExecutorService from "../services/CommandExecutorService";
+import type InteractionContext from "../models/InteractionContext.js";
+import NeedleButton from "../models/NeedleButton.js";
+import type NeedleBot from "../NeedleBot.js";
+import ObjectFactory from "../ObjectFactory.js";
+import type CommandExecutorService from "../services/CommandExecutorService.js";
 
 export default class HelpButton extends NeedleButton {
 	public readonly customId = "help";

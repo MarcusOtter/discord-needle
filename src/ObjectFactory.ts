@@ -1,15 +1,15 @@
 import { ActivityType, Client, GatewayIntentBits } from "discord.js";
-import type NeedleButton from "./models/NeedleButton";
-import type NeedleEventListener from "./models/NeedleEventListener";
-import NeedleModal from "./models/NeedleModal";
-import NeedleBot from "./NeedleBot";
-import CommandExecutorService from "./services/CommandExecutorService";
-import CommandImportService from "./services/CommandImportService";
-import ConfigService from "./services/ConfigService";
-import CooldownService from "./services/CooldownService";
-import DynamicImportService from "./services/DynamicImportService";
-import InformationService from "./services/InformationService";
-import ThreadCreationService from "./services/ThreadCreationService";
+import type NeedleButton from "./models/NeedleButton.js";
+import type NeedleEventListener from "./models/NeedleEventListener.js";
+import NeedleModal from "./models/NeedleModal.js";
+import NeedleBot from "./NeedleBot.js";
+import CommandExecutorService from "./services/CommandExecutorService.js";
+import CommandImportService from "./services/CommandImportService.js";
+import ConfigService from "./services/ConfigService.js";
+import CooldownService from "./services/CooldownService.js";
+import DynamicImportService from "./services/DynamicImportService.js";
+import InformationService from "./services/InformationService.js";
+import ThreadCreationService from "./services/ThreadCreationService.js";
 
 // This class acts as a composition root.
 // We new up all the dependencies and pass them along through constructor injection when possible.

@@ -9,11 +9,11 @@ import {
 	MessageComponentInteraction,
 	ModalSubmitInteraction,
 } from "discord.js";
-import { Overwrite } from "../helpers/typeHelpers";
-import type NeedleBot from "../NeedleBot";
-import MessageVariables from "./MessageVariables";
-import NeedleConfig from "./NeedleConfig";
-import { ModalOpenableInteraction } from "./NeedleModal";
+import { Overwrite } from "../helpers/typeHelpers.js";
+import type NeedleBot from "../NeedleBot.js";
+import MessageVariables from "./MessageVariables.js";
+import NeedleConfig from "./NeedleConfig.js";
+import { ModalOpenableInteraction } from "./NeedleModal.js";
 
 export default class InteractionContext {
 	public readonly bot: NeedleBot;

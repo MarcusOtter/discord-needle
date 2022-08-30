@@ -1,6 +1,6 @@
 import type { ButtonBuilder } from "discord.js";
-import type NeedleBot from "../NeedleBot";
-import type InteractionContext from "./InteractionContext";
+import type NeedleBot from "../NeedleBot.js";
+import type InteractionContext from "./InteractionContext.js";
 
 export default abstract class NeedleButton {
 	public abstract readonly customId: string;

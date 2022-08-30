@@ -9,14 +9,14 @@ import {
 	TextChannel,
 	ThreadAutoArchiveDuration,
 } from "discord.js";
-import { getRequiredPermissions } from "../helpers/djsHelpers";
-import { wait } from "../helpers/promiseHelpers";
-import { clampWithElipse, extractRegex, plural } from "../helpers/stringHelpers";
-import AutothreadChannelConfig from "../models/AutothreadChannelConfig";
-import ReplyMessageOption from "../models/enums/ReplyMessageOption";
-import ToggleOption from "../models/enums/ToggleOption";
-import MessageVariables from "../models/MessageVariables";
-import type NeedleBot from "../NeedleBot";
+import { getRequiredPermissions } from "../helpers/djsHelpers.js";
+import { wait } from "../helpers/promiseHelpers.js";
+import { clampWithElipse, extractRegex, plural } from "../helpers/stringHelpers.js";
+import AutothreadChannelConfig from "../models/AutothreadChannelConfig.js";
+import ReplyMessageOption from "../models/enums/ReplyMessageOption.js";
+import ToggleOption from "../models/enums/ToggleOption.js";
+import MessageVariables from "../models/MessageVariables.js";
+import type NeedleBot from "../NeedleBot.js";
 
 export default class InformationService {
 	private readonly bot: NeedleBot;

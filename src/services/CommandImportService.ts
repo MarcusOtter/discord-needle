@@ -1,7 +1,7 @@
 import { APIApplicationCommand, REST, Routes } from "discord.js";
-import { ImportedClass } from "../helpers/typeHelpers";
-import NeedleCommand from "../models/NeedleCommand";
-import DynamicImportService from "./DynamicImportService";
+import { ImportedClass } from "../helpers/typeHelpers.js";
+import NeedleCommand from "../models/NeedleCommand.js";
+import DynamicImportService from "./DynamicImportService.js";
 
 export default class CommandImportService extends DynamicImportService<typeof NeedleCommand> {
 	private idCache: { id: string; name: string }[] = [];

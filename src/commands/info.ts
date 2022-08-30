@@ -1,10 +1,10 @@
-import NeedleCommand from "../models/NeedleCommand";
-import type InteractionContext from "../models/InteractionContext";
-import type NeedleBot from "../NeedleBot";
-import type InformationService from "../services/InformationService";
-import ObjectFactory from "../ObjectFactory";
-import { codeBlock } from "../helpers/stringHelpers";
-import CommandCategory from "../models/enums/CommandCategory";
+import NeedleCommand from "../models/NeedleCommand.js";
+import type InteractionContext from "../models/InteractionContext.js";
+import type NeedleBot from "../NeedleBot.js";
+import type InformationService from "../services/InformationService.js";
+import ObjectFactory from "../ObjectFactory.js";
+import { codeBlock } from "../helpers/stringHelpers.js";
+import CommandCategory from "../models/enums/CommandCategory.js";
 import { EmbedBuilder } from "discord.js";
 
 export default class InfoCommand extends NeedleCommand {

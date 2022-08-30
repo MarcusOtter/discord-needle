@@ -1,8 +1,8 @@
 import { EmbedBuilder, GuildMember, GuildTextBasedChannel, SlashCommandBuilder } from "discord.js";
-import { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHelpers";
-import CommandCategory from "../models/enums/CommandCategory";
-import InteractionContext from "../models/InteractionContext";
-import NeedleCommand from "../models/NeedleCommand";
+import { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHelpers.js";
+import CommandCategory from "../models/enums/CommandCategory.js";
+import InteractionContext from "../models/InteractionContext.js";
+import NeedleCommand from "../models/NeedleCommand.js";
 
 export default class HelpCommand extends NeedleCommand {
 	public readonly name = "help";

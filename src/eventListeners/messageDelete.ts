@@ -1,7 +1,7 @@
 import { ClientEvents, PermissionFlagsBits } from "discord.js";
-import DeleteBehavior from "../models/enums/DeleteBehavior";
-import ListenerRunType from "../models/enums/ListenerRunType";
-import NeedleEventListener from "../models/NeedleEventListener";
+import DeleteBehavior from "../models/enums/DeleteBehavior.js";
+import ListenerRunType from "../models/enums/ListenerRunType.js";
+import NeedleEventListener from "../models/NeedleEventListener.js";
 
 export default class MessageDeleteEventListener extends NeedleEventListener {
 	public readonly name = "messageDelete";
