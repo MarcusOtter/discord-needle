@@ -119,7 +119,7 @@ export default class InformationService {
 		config: AutothreadChannelConfig,
 		variables: MessageVariables
 	): Promise<string> {
-		const content = variables.removeFrom(message.content);
+		const content = this.getMessageContent(message, variables);
 		const result = extractRegex(config.customTitle);
 		const regexResult = result.regex && content.match(result.regex);
 		const rawTitle = result.inputWithRegexVariable
@@ -129,6 +129,22 @@ export default class InformationService {
 		const title = await variables.replace(rawTitle);
 		const output = clampWithElipse(title, config.titleMaxLength);
 		return output.length > 0 ? output : "New Thread";
+	}
+
+	private getMessageContent(message: Message, variables: MessageVariables) {
+		let embedContent = "";
+		for (const embed of message.embeds) {
+			let fieldContent = "";
+			for (const field of embed.fields) {
+				fieldContent += `${field.name}\n${field.value}\n\n`;
+			}
+
+			embedContent += `${embed.title ?? ""}\n\n${embed.description ?? ""}\n\n${fieldContent}${
+				embed.footer?.text ?? ""
+			}\n\n`;
+		}
+
+		return variables.removeFrom(message.content + "\n\n" + embedContent);
 	}
 
 	private async getButtonRow(

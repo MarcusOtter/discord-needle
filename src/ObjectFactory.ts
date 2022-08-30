@@ -13,7 +13,7 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { ActivityType, Client, GatewayIntentBits } from "discord.js";
+import { Client, GatewayIntentBits } from "discord.js";
 import type NeedleButton from "./models/NeedleButton.js";
 import type NeedleEventListener from "./models/NeedleEventListener.js";
 import type NeedleModal from "./models/NeedleModal.js";
