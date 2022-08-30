@@ -13,40 +13,26 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {
-	ActionRowBuilder,
-	type ModalActionRowComponentBuilder,
-	ModalBuilder,
-	TextInputBuilder,
-	TextInputStyle,
-} from "discord.js";
+import { ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import { makeRow } from "../helpers/djsHelpers.js";
 import NeedleModal from "../models/NeedleModal.js";
 
 export default class CustomReplyButtonsModal extends NeedleModal {
 	public customId = "custom-reply-buttons";
 	public get builder(): ModalBuilder {
-		const closeText = this.getTextInput("Close");
-		const closeStyle = this.getStyleInput("Close", "Green");
-		const titleText = this.getTextInput("Title");
-		const titleStyle = this.getStyleInput("Title", "Blurple");
+		const closeText = makeRow(this.getTextInput("Close"));
+		const closeStyle = makeRow(this.getStyleInput("Close", "Green"));
+		const titleText = makeRow(this.getTextInput("Title"));
+		const titleStyle = makeRow(this.getStyleInput("Title", "Blurple"));
 
 		return new ModalBuilder()
 			.setCustomId(this.customId)
 			.setTitle("Set custom buttons")
-			.setComponents(
-				this.makeRow(closeText),
-				this.makeRow(closeStyle),
-				this.makeRow(titleText),
-				this.makeRow(titleStyle)
-			);
+			.setComponents(closeText, closeStyle, titleText, titleStyle);
 	}
 
 	public async submit(): Promise<void> {
 		// Not used, we only use openAndAwaitSubmit on this modal
-	}
-
-	private makeRow(input: TextInputBuilder): ActionRowBuilder<ModalActionRowComponentBuilder> {
-		return new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(input);
 	}
 
 	private getTextInput(name: string): TextInputBuilder {

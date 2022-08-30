@@ -13,7 +13,15 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { type AnyThreadChannel, type GuildMember, type Message, PermissionFlagsBits, type User } from "discord.js";
+import type {
+	AnyThreadChannel,
+	GuildMember,
+	Message,
+	User,
+	TextInputBuilder,
+	ModalActionRowComponentBuilder,
+} from "discord.js";
+import { PermissionFlagsBits, ActionRowBuilder } from "discord.js";
 import type { Nullish } from "./typeHelpers.js";
 
 export async function removeUserReactionsOnMessage(message: Message, userId: string) {
@@ -40,6 +48,10 @@ export async function isAllowedToChangeThreadTitle(
 	if (isThreadAuthor) return true;
 
 	return false;
+}
+
+export function makeRow(input: TextInputBuilder): ActionRowBuilder<ModalActionRowComponentBuilder> {
+	return new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(input);
 }
 
 export async function getThreadAuthor(thread: AnyThreadChannel): Promise<User | undefined> {

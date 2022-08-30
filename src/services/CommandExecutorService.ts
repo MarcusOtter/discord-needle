@@ -28,7 +28,7 @@ export default class CommandExecutorService {
 
 	private async handleError(context: InteractionContext, e: unknown) {
 		console.error(e);
-		if (!context.interaction.isRepliable()) return;
+		if (context.interaction.replied || !context.interaction.isRepliable()) return;
 
 		const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
 			this.getBugReportButton(),

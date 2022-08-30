@@ -13,13 +13,8 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {
-	ActionRowBuilder,
-	type ModalActionRowComponentBuilder,
-	ModalBuilder,
-	TextInputBuilder,
-	TextInputStyle,
-} from "discord.js";
+import { ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import { makeRow } from "../helpers/djsHelpers.js";
 import NeedleModal from "../models/NeedleModal.js";
 
 export default class CustomTitleFormatModal extends NeedleModal {
@@ -29,7 +24,7 @@ export default class CustomTitleFormatModal extends NeedleModal {
 			.setCustomId("title")
 			.setLabel("Title format (RegEx supported)")
 			.setRequired(true)
-			.setPlaceholder("/^[\\S\\s]/g")
+			.setPlaceholder("Help $USER_NAME - /^[\\S\\s]/g")
 			.setStyle(TextInputStyle.Short);
 		const maxTitleLength = new TextInputBuilder()
 			.setCustomId("maxTitleLength")
@@ -37,12 +32,17 @@ export default class CustomTitleFormatModal extends NeedleModal {
 			.setRequired(true)
 			.setPlaceholder("50")
 			.setStyle(TextInputStyle.Short);
-		const row1 = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(titleInput);
-		const row2 = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(maxTitleLength);
+		const regexJoinText = new TextInputBuilder()
+			.setCustomId("regexJoinText")
+			.setLabel("RegEx join (advanced)")
+			.setRequired(false)
+			.setPlaceholder("(empty string)")
+			.setStyle(TextInputStyle.Short);
+
 		return new ModalBuilder()
 			.setCustomId(this.customId)
 			.setTitle("Set a custom title format")
-			.addComponents(row1, row2);
+			.addComponents(makeRow(titleInput), makeRow(maxTitleLength), makeRow(regexJoinText));
 	}
 
 	public async submit(): Promise<void> {
