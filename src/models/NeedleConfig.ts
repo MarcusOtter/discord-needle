@@ -33,8 +33,8 @@ export const defaultConfig: NeedleConfig = {
 		ErrorInsufficientBotPerms: "The bot does not have permission to perform this action.",
 		ErrorMaxThreadRenames: "You can only rename a thread twice every 10 minutes. Please try again later.",
 
-		SuccessThreadCreated: "Thread automatically created by $USER_NAME in $CHANNEL_MENTION",
-		SuccessThreadArchived: "Thread was archived by $USER_NAME. Anyone can send a message to unarchive it.",
+		SuccessThreadCreated: "Thread automatically created by $USER_NICKNAME in $CHANNEL_MENTION",
+		SuccessThreadArchived: "Thread was archived by $USER_NICKNAME. Anyone can send a message to unarchive it.",
 
 		EmojiUnanswered: "🆕",
 		EmojiArchived: "✅",
