@@ -13,16 +13,18 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import "dotenv/config";
-import license from "./helpers/license.js";
-import ObjectFactory from "./ObjectFactory.js";
+import type { ButtonBuilder } from "discord.js";
+import type NeedleBot from "../NeedleBot.js";
+import type InteractionContext from "./InteractionContext.js";
 
-console.log(license);
-const bot = ObjectFactory.createNeedleBot();
-await bot.loadDynamicImports();
-await bot.connect();
+export default abstract class NeedleButton {
+	public abstract readonly customId: string;
+	protected readonly bot: NeedleBot;
 
-process.on("SIGINT", async () => {
-	await bot.disconnect();
-	process.exit(0);
-});
+	constructor(bot: NeedleBot) {
+		this.bot = bot;
+	}
+
+	public abstract getBuilder(): ButtonBuilder;
+	public abstract press(context: InteractionContext): Promise<void>;
+}

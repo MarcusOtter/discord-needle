@@ -13,16 +13,18 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import "dotenv/config";
-import license from "./helpers/license.js";
-import ObjectFactory from "./ObjectFactory.js";
+import type { ClientEvents } from "discord.js";
+import type NeedleBot from "../NeedleBot.js";
+import type ListenerRunType from "./enums/ListenerRunType.js";
 
-console.log(license);
-const bot = ObjectFactory.createNeedleBot();
-await bot.loadDynamicImports();
-await bot.connect();
+export default abstract class NeedleEventListener {
+	public abstract readonly name: keyof ClientEvents;
+	public abstract readonly runType: ListenerRunType;
+	protected readonly bot: NeedleBot;
 
-process.on("SIGINT", async () => {
-	await bot.disconnect();
-	process.exit(0);
-});
+	constructor(bot: NeedleBot) {
+		this.bot = bot;
+	}
+
+	public abstract handle(args: ClientEvents[keyof ClientEvents]): Promise<void>;
+}

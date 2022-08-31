@@ -13,16 +13,12 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import "dotenv/config";
-import license from "./helpers/license.js";
-import ObjectFactory from "./ObjectFactory.js";
+enum ListenerRunType {
+	/** Run this listener every time an the event is emitted. */
+	EveryTime = "on",
 
-console.log(license);
-const bot = ObjectFactory.createNeedleBot();
-await bot.loadDynamicImports();
-await bot.connect();
+	/** Only run this listener the first time the event is emitted. */
+	OnlyOnce = "once",
+}
 
-process.on("SIGINT", async () => {
-	await bot.disconnect();
-	process.exit(0);
-});
+export default ListenerRunType;

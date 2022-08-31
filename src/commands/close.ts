@@ -13,95 +13,71 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { ChannelType, GuildMember, PermissionsBitField, SlashCommandBuilder, type ThreadChannel } from "discord.js";
-import { shouldArchiveImmediately } from "../helpers/configHelpers";
-import { interactionReply, getMessage, getThreadAuthor } from "../helpers/messageHelpers";
-import { setEmojiForNewThread } from "../helpers/threadHelpers";
-import type { ExecuteResult, NeedleCommand, NeedleInteraction } from "../types/needleCommand";
+import { type GuildMember, type GuildTextBasedChannel, ThreadAutoArchiveDuration } from "discord.js";
+import { isAllowedToArchiveThread, removeUserReactionsOnMessage } from "../helpers/djsHelpers.js";
+import CommandCategory from "../models/enums/CommandCategory.js";
+import type InteractionContext from "../models/InteractionContext.js";
+import NeedleCommand from "../models/NeedleCommand.js";
 
-export const command: NeedleCommand = {
-	name: "close",
-	shortHelpDescription: "Closes a thread",
-	longHelpDescription:
-		"The close command either archives the thread immediately or sets the auto-archive duration to 1 hour, depending on the configuration.\n\nAnyone can unarchive the thread by simply sending a message in it.",
+export default class CloseCommand extends NeedleCommand {
+	public readonly name = "close";
+	public readonly description = "Close a thread";
+	public readonly category = CommandCategory.ThreadOnly;
 
-	async getSlashCommandBuilder() {
-		return new SlashCommandBuilder().setName("close").setDescription("Closes a thread.").toJSON();
-	},
+	public async hasPermissionToExecuteHere(member: GuildMember, channel: GuildTextBasedChannel): Promise<boolean> {
+		if (!channel.isThread()) return false;
 
-	async execute(interaction: NeedleInteraction): ExecuteResult {
-		const member = interaction.member;
-		if (!(member instanceof GuildMember)) {
-			return interactionReply(interaction, getMessage("ERR_UNKNOWN", interaction.id));
+		const hasBasePermissions = await super.hasPermissionToExecuteHere(member, channel);
+		if (!hasBasePermissions) return false;
+
+		return isAllowedToArchiveThread(channel, member);
+	}
+
+	public async execute(context: InteractionContext): Promise<void> {
+		const { settings, replyInSecret, replyInPublic, replyWithErrors } = context;
+		if (!context.isInThread()) {
+			return replyWithErrors();
 		}
 
-		const channel = interaction.channel;
-		if (channel?.type !== ChannelType.GuildPublicThread) {
-			return interactionReply(interaction, getMessage("ERR_ONLY_IN_THREAD", interaction.id));
+		const { interaction, messageVariables } = context;
+		const { channel: thread, member } = context.interaction;
+		const userHasPermission = await isAllowedToArchiveThread(thread, member);
+		const botHasPermission = await isAllowedToArchiveThread(thread, thread.guild.members.me);
+
+		if (!userHasPermission) return replyInSecret(settings.ErrorInsufficientUserPerms);
+		if (!botHasPermission) return replyInSecret(settings.ErrorInsufficientBotPerms);
+
+		messageVariables.setThread(thread);
+		const config = this.bot.configs.get(thread.guildId);
+		const threadConfig = config.threadChannels.find(c => c.channelId === thread.parentId);
+		const shouldArchiveImmediately = threadConfig?.archiveImmediately ?? true;
+		const archiveMessage = await messageVariables.replace(settings.SuccessThreadArchived);
+
+		if (!shouldArchiveImmediately && thread.autoArchiveDuration === ThreadAutoArchiveDuration.OneHour) {
+			return replyInSecret(settings.ErrorNoEffect);
 		}
 
-		// Invoking slash commands seem to unarchive the threads for now so ironically, this has no effect
-		// Leaving this in if Discord decides to change their API around this
-		if (channel.archived) {
-			return interactionReply(interaction, getMessage("ERR_NO_EFFECT", interaction.id));
+		if (interaction.isButton()) {
+			// https://github.com/MarcusOtter/discord-needle/pull/90
+			await interaction.update({ content: interaction.message.content });
+			await thread.send({ content: archiveMessage });
+		} else {
+			await replyInPublic(archiveMessage);
 		}
 
-		const hasManageThreadsPermissions = member
-			.permissionsIn(channel)
-			.has(PermissionsBitField.Flags.ManageThreads, true);
-		if (hasManageThreadsPermissions) {
-			await archiveThread(channel);
-			return;
-		}
+		if (shouldArchiveImmediately) {
+			await thread.setArchived(true);
+		} else {
+			await thread.setAutoArchiveDuration(ThreadAutoArchiveDuration.OneHour);
 
-		const threadAuthor = await getThreadAuthor(channel);
-		if (!threadAuthor) {
-			return interactionReply(interaction, getMessage("ERR_AMBIGUOUS_THREAD_AUTHOR", interaction.id));
-		}
+			if (threadConfig?.statusReactions) {
+				const starterMessage = await thread.fetchStarterMessage();
+				if (!starterMessage) return;
 
-		if (threadAuthor !== interaction.user) {
-			return interactionReply(interaction, getMessage("ERR_ONLY_THREAD_OWNER", interaction.id));
-		}
-
-		await archiveThread(channel);
-
-		async function archiveThread(thread: ThreadChannel): ExecuteResult {
-			if (shouldArchiveImmediately(thread)) {
-				if (interaction.isButton()) {
-					await interaction.update({ content: interaction.message.content });
-					const message = getMessage("SUCCESS_THREAD_ARCHIVE_IMMEDIATE", interaction.id);
-					if (message) {
-						await thread.send(message);
-					}
-				} else if (interaction.isCommand()) {
-					await interactionReply(
-						interaction,
-						getMessage("SUCCESS_THREAD_ARCHIVE_IMMEDIATE", interaction.id),
-						false
-					);
-				}
-
-				await setEmojiForNewThread(thread, false);
-				await thread.setArchived(true);
-				return;
-			}
-
-			if (thread.autoArchiveDuration === 60) {
-				return interactionReply(interaction, getMessage("ERR_NO_EFFECT", interaction.id));
-			}
-
-			await setEmojiForNewThread(thread, false);
-			await thread.setAutoArchiveDuration(60);
-
-			if (interaction.isButton()) {
-				await interaction.update({ content: interaction.message.content });
-				const message = getMessage("SUCCESS_THREAD_ARCHIVE_SLOW", interaction.id);
-				if (message) {
-					await thread.send(message);
-				}
-			} else if (interaction.isCommand()) {
-				await interactionReply(interaction, getMessage("SUCCESS_THREAD_ARCHIVE_SLOW", interaction.id), false);
+				const botMember = await thread.guild.members.fetchMe();
+				await removeUserReactionsOnMessage(starterMessage, botMember.id);
+				await starterMessage?.react(config.settings.EmojiArchived);
 			}
 		}
-	},
-};
+	}
+}

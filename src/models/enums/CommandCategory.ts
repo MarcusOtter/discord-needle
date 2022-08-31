@@ -13,16 +13,11 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import "dotenv/config";
-import license from "./helpers/license.js";
-import ObjectFactory from "./ObjectFactory.js";
+// Note: The order of these enum values will be reflected in the /help command
+enum CommandCategory {
+	ThreadOnly = "Threads",
+	Info = "Information",
+	Configuration = "Configuration",
+}
 
-console.log(license);
-const bot = ObjectFactory.createNeedleBot();
-await bot.loadDynamicImports();
-await bot.connect();
-
-process.on("SIGINT", async () => {
-	await bot.disconnect();
-	process.exit(0);
-});
+export default CommandCategory;

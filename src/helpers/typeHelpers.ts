@@ -13,16 +13,19 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import "dotenv/config";
-import license from "./helpers/license.js";
-import ObjectFactory from "./ObjectFactory.js";
+import type { SlashCommandBuilder } from "discord.js";
 
-console.log(license);
-const bot = ObjectFactory.createNeedleBot();
-await bot.loadDynamicImports();
-await bot.connect();
+export type Nullish<T> = T | null | undefined;
+export type Overwrite<T, U> = Omit<T, keyof U> & U;
 
-process.on("SIGINT", async () => {
-	await bot.disconnect();
-	process.exit(0);
-});
+export type SlashCommandBuilderWithOptions = Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
+
+export type Newable = abstract new (...args: never[]) => unknown;
+export type Concretize<T extends Newable> = new (...args: ConstructorParameters<T>) => InstanceType<T>;
+
+export type SameLengthTuple<TTuple, TType> = { [I in keyof TTuple]: TType };
+
+export type ImportedClass<T extends Newable> = {
+	fileName: string;
+	Class: Concretize<T>;
+};

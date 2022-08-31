@@ -13,21 +13,4 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type {
-	ChatInputCommandInteraction,
-	CommandInteraction,
-	InteractionResponse,
-	MessageComponentInteraction,
-	RESTPostAPIApplicationCommandsJSONBody,
-} from "discord.js";
-
-export type NeedleInteraction = ChatInputCommandInteraction | MessageComponentInteraction;
-export type ExecuteResult = Promise<InteractionResponse | undefined | void>;
-
-export interface NeedleCommand {
-	name: string;
-	shortHelpDescription: string;
-	longHelpDescription?: string;
-	getSlashCommandBuilder(): Promise<RESTPostAPIApplicationCommandsJSONBody>;
-	execute(interaction: NeedleInteraction): ExecuteResult;
-}
+export type ModalTextInput = { customId: string; value: string };

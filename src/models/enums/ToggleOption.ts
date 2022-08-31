@@ -13,16 +13,9 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import "dotenv/config";
-import license from "./helpers/license.js";
-import ObjectFactory from "./ObjectFactory.js";
+enum ToggleOption {
+	Off = 0,
+	On = 1,
+}
 
-console.log(license);
-const bot = ObjectFactory.createNeedleBot();
-await bot.loadDynamicImports();
-await bot.connect();
-
-process.on("SIGINT", async () => {
-	await bot.disconnect();
-	process.exit(0);
-});
+export default ToggleOption;

@@ -1,3 +1,4 @@
+// @ts-check
 /*
 This file is part of Needle.
 
@@ -17,45 +18,25 @@ If not, see <https://www.gnu.org/licenses/>.
 // You need to `tsc` before running this script.
 
 require("dotenv").config();
-
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord.js");
+const CommandImportService = require("../dist/services/CommandImportService").default;
 
-const { getOrLoadAllCommands } = require("../dist/handlers/commandHandler");
-const { getApiToken, getGuildId, getClientId } = require("../dist/helpers/configHelpers");
-
-const API_TOKEN = getApiToken();
-const CLIENT_ID = getClientId();
-const GUILD_ID = getGuildId();
-
-const isGlobal = process.argv.some(x => x === "--global");
+const { DISCORD_API_TOKEN, CLIENT_ID } = process.env;
 const isUndeploy = process.argv.some(x => x === "--undeploy");
 
-if (!API_TOKEN || !CLIENT_ID) {
+if (!DISCORD_API_TOKEN || !CLIENT_ID) {
 	console.log("Aborting command deployment");
 	console.log("DISCORD_API_TOKEN or CLIENT_ID missing from the .env file.\n");
 	process.exit(1);
 }
 
-if (isUndeploy && !GUILD_ID) {
-	console.log("Aborting undeployment of guild commands");
-	console.log("GUILD_ID is missing from the .env file, assuming no guild commands need to be undeployed.\n");
-	process.exit(1);
-}
-
-if (!isGlobal && !GUILD_ID) {
-	console.log("Aborting guild command deployment");
-	console.log("GUILD_ID is missing from the .env file.");
-	console.log('Hint: If you just want to start the bot without developing new commands, type "npm start" instead\n');
-	process.exit(1);
-}
-
-const route = isGlobal ? Routes.applicationCommands(CLIENT_ID) : Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID);
-
-const rest = new REST({ version: "9" }).setToken(API_TOKEN);
+const route = Routes.applicationCommands(CLIENT_ID);
+const rest = new REST({ version: "10" }).setToken(DISCORD_API_TOKEN);
 (async () => {
 	const builders = await getSlashCommandBuilders();
 
+	// TODO: Improve output of this command
 	try {
 		console.log(`Started deploying ${builders.length} application commands.`);
 		await rest.put(route, { body: builders });
@@ -71,11 +52,13 @@ async function getSlashCommandBuilders() {
 		return [];
 	}
 
-	const allNeedleCommands = await getOrLoadAllCommands();
+	const commandImporter = new CommandImportService("./commands");
+	const importedCommands = await commandImporter.load(true);
+
 	const allSlashCommandBuilders = [];
-	for (const command of allNeedleCommands) {
-		const builder = await command.getSlashCommandBuilder();
-		allSlashCommandBuilders.push(builder);
+	for (const { Class } of importedCommands) {
+		const command = new Class("", null);
+		allSlashCommandBuilders.push(command.builderJson);
 	}
 
 	return allSlashCommandBuilders;

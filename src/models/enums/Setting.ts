@@ -13,16 +13,21 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import "dotenv/config";
-import license from "./helpers/license.js";
-import ObjectFactory from "./ObjectFactory.js";
+// IMPORTANT: Remember to change defaultConfig in NeedleConfig.ts when you are changing anything here
+enum Setting {
+	ErrorUnknown = 0,
+	ErrorOnlyInThread,
+	ErrorNoEffect,
+	ErrorInsufficientUserPerms,
+	ErrorInsufficientBotPerms,
+	ErrorMaxThreadRenames,
 
-console.log(license);
-const bot = ObjectFactory.createNeedleBot();
-await bot.loadDynamicImports();
-await bot.connect();
+	SuccessThreadCreated,
+	SuccessThreadArchived,
 
-process.on("SIGINT", async () => {
-	await bot.disconnect();
-	process.exit(0);
-});
+	EmojiUnanswered,
+	EmojiArchived,
+	EmojiLocked,
+}
+
+export default Setting;
