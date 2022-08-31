@@ -95,7 +95,7 @@ export default class AutothreadChannelConfig {
 			case TitleType.FirstFiftyChars:
 				return "/^[\\S\\s]*/g";
 			case TitleType.NicknameDate:
-				return "$USER_NAME ($DATE_UTC)";
+				return "$USER_NICKNAME ($DATE_UTC)";
 			case TitleType.Custom:
 				return "";
 			default:

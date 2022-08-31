@@ -24,7 +24,7 @@ export default class CustomTitleFormatModal extends NeedleModal {
 			.setCustomId("title")
 			.setLabel("Title format (RegEx supported)")
 			.setRequired(true)
-			.setPlaceholder("Help $USER_NAME - /^[\\S\\s]/g")
+			.setPlaceholder("Help $USER_NICKNAME - /^[\\S\\s]/g")
 			.setStyle(TextInputStyle.Short);
 		const maxTitleLength = new TextInputBuilder()
 			.setCustomId("maxTitleLength")
