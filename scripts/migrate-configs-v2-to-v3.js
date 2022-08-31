@@ -41,58 +41,62 @@ if (!existsSync(inputDir)) {
 const fileNames = readdirSync(inputDir).filter(x => x.endsWith(".json"));
 const toWrite = [];
 for (const fileName of fileNames) {
-	const fileContents = readFileSync(`${inputDir}/${fileName}`, "utf8");
-	const oldGuildConfig = JSON.parse(fileContents);
-	if (!oldGuildConfig) continue;
+	try {
+		const fileContents = readFileSync(`${inputDir}/${fileName}`, "utf8");
+		const oldGuildConfig = JSON.parse(fileContents);
+		if (!oldGuildConfig) continue;
 
-	const newGuildConfig = {
-		settings: {
-			ErrorUnknown: replace(oldGuildConfig.messages?.ERR_UNKNOWN),
-			ErrorOnlyInThread: replace(oldGuildConfig.messages?.ERR_ONLY_IN_THREAD),
-			ErrorNoEffect: replace(oldGuildConfig.messages?.ERR_NO_EFFECT),
-			ErrorInsufficientUserPerms: replace(oldGuildConfig.messages?.ERR_INSUFFICIENT_PERMS),
-			ErrorInsufficientBotPerms: undefined,
-			ErrorMaxThreadRenames: undefined,
+		const newGuildConfig = {
+			settings: {
+				ErrorUnknown: replace(oldGuildConfig.messages?.ERR_UNKNOWN),
+				ErrorOnlyInThread: replace(oldGuildConfig.messages?.ERR_ONLY_IN_THREAD),
+				ErrorNoEffect: replace(oldGuildConfig.messages?.ERR_NO_EFFECT),
+				ErrorInsufficientUserPerms: replace(oldGuildConfig.messages?.ERR_INSUFFICIENT_PERMS),
+				ErrorInsufficientBotPerms: undefined,
+				ErrorMaxThreadRenames: undefined,
 
-			SuccessThreadCreated: replace(oldGuildConfig.messages?.SUCCESS_THREAD_CREATE),
-			SuccessThreadArchived:
-				replace(oldGuildConfig.messages?.SUCCESS_THREAD_ARCHIVE_IMMEDIATE) ??
-				replace(oldGuildConfig.messages?.SUCCESS_THREAD_ARCHIVE_SLOW),
+				SuccessThreadCreated: replace(oldGuildConfig.messages?.SUCCESS_THREAD_CREATE),
+				SuccessThreadArchived:
+					replace(oldGuildConfig.messages?.SUCCESS_THREAD_ARCHIVE_IMMEDIATE) ??
+					replace(oldGuildConfig.messages?.SUCCESS_THREAD_ARCHIVE_SLOW),
 
-			EmojiUnanswered: undefined,
-			EmojiArchived: undefined,
-			EmojiLocked: undefined,
-		},
-	};
-
-	const newThreadChannels = [];
-	for (const oldAutoThreadConfig of oldGuildConfig.threadChannels) {
-		const hasCustomText = oldAutoThreadConfig?.messageContent?.length > 0;
-
-		const newAutoThreadConfig = {
-			channelId: oldAutoThreadConfig?.channelId,
-			deleteBehavior: 3, // Nothing
-			archiveImmediately: oldAutoThreadConfig?.archiveImmediately ? 1 : 0,
-			replyType: hasCustomText ? 1 : 0,
-			customReply: replace(oldAutoThreadConfig?.messageContent) ?? "",
-			includeBots: oldAutoThreadConfig?.includeBots ? 1 : 0,
-			slowmode: oldAutoThreadConfig?.slowmode ?? 0,
-			statusReactions: 0,
-			titleType: 1,
-			titleMaxLength: 50,
-			regexJoinText: "",
-			customTitle: "$USER_NICKNAME ($DATE_UTC)",
-			closeButtonText: "Archive thread",
-			closeButtonStyle: "green",
-			titleButtonText: "Edit title",
-			titleButtonStyle: "blurple",
+				EmojiUnanswered: undefined,
+				EmojiArchived: undefined,
+				EmojiLocked: undefined,
+			},
 		};
 
-		newThreadChannels.push(newAutoThreadConfig);
-	}
+		const newThreadChannels = [];
+		for (const oldAutoThreadConfig of oldGuildConfig.threadChannels) {
+			const hasCustomText = oldAutoThreadConfig?.messageContent?.length > 0;
 
-	newGuildConfig.threadChannels = newThreadChannels;
-	toWrite.push({ path: `${outputDir}/${fileName}`, content: JSON.stringify(newGuildConfig) });
+			const newAutoThreadConfig = {
+				channelId: oldAutoThreadConfig?.channelId,
+				deleteBehavior: 3, // Nothing
+				archiveImmediately: oldAutoThreadConfig?.archiveImmediately ? 1 : 0,
+				replyType: hasCustomText ? 1 : 0,
+				customReply: replace(oldAutoThreadConfig?.messageContent) ?? "",
+				includeBots: oldAutoThreadConfig?.includeBots ? 1 : 0,
+				slowmode: oldAutoThreadConfig?.slowmode ?? 0,
+				statusReactions: 0,
+				titleType: 1,
+				titleMaxLength: 50,
+				regexJoinText: "",
+				customTitle: "$USER_NICKNAME ($DATE_UTC)",
+				closeButtonText: "Archive thread",
+				closeButtonStyle: "green",
+				titleButtonText: "Edit title",
+				titleButtonStyle: "blurple",
+			};
+
+			newThreadChannels.push(newAutoThreadConfig);
+		}
+
+		newGuildConfig.threadChannels = newThreadChannels;
+		toWrite.push({ path: `${outputDir}/${fileName}`, content: JSON.stringify(newGuildConfig) });
+	} catch {
+		console.log("Error in " + fileName);
+	}
 }
 
 if (existsSync(outputDir)) {
