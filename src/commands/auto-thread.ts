@@ -218,12 +218,6 @@ export default class AutoThreadCommand extends NeedleCommand {
 			newTitleButtonStyle
 		);
 
-		// TODO: Remove
-		console.dir("NEW:");
-		console.dir(newAutoThreadConfig);
-		console.dir("OLD:");
-		console.dir(oldAutoThreadConfig);
-
 		if (JSON.stringify(oldAutoThreadConfig) === JSON.stringify(newAutoThreadConfig)) {
 			return replyInSecret(settings.ErrorNoEffect);
 		}

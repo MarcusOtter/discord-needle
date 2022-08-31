@@ -19,6 +19,7 @@ import * as fs from "fs";
 import type NeedleConfig from "../models/NeedleConfig.js";
 import { defaultConfig as DO_NOT_TOUCH_defaultConfig } from "../models/NeedleConfig.js";
 import type Setting from "../models/enums/Setting.js";
+import NeedleBot from "../NeedleBot.js";
 
 export default class ConfigService {
 	private readonly directoryPath: string;
@@ -70,6 +71,24 @@ export default class ConfigService {
 
 		console.log(`Deleted data for guild ${guildId}`);
 		return true;
+	}
+
+	public async deleteFromUnknownServers(bot: NeedleBot): Promise<void> {
+		await bot.client.guilds.fetch();
+		if (!bot.client.guilds.cache.size) {
+			console.warn("No guilds available; skipping config deletion.");
+			return;
+		}
+
+		if (!fs.existsSync(this.directoryPath)) return;
+
+		const configFiles = fs.readdirSync(this.directoryPath);
+		configFiles.forEach(file => {
+			const guildId = file.split(".")[0];
+			if (!bot.client.guilds.cache.has(guildId)) {
+				this.delete(guildId);
+			}
+		});
 	}
 
 	public getDefault(): NeedleConfig {

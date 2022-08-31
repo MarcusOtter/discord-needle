@@ -33,7 +33,7 @@ export default class ReadyEventListener extends NeedleEventListener {
 	}
 
 	public async handle([client]: ClientEvents["ready"]): Promise<void> {
-		// TODO: Delete unknown configs from servers
+		await this.bot.configs.deleteFromUnknownServers(this.bot);
 
 		if (process.argv.includes("--skip-catch-up")) {
 			console.log("Ready!");
