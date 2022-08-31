@@ -14,7 +14,7 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 import type { ClientEvents } from "discord.js";
-import { removeUserReactionsOnMessage } from "../helpers/djsHelpers.js";
+import { removeUserReactionsOnMessage, tryReact } from "../helpers/djsHelpers.js";
 import ListenerRunType from "../models/enums/ListenerRunType.js";
 import NeedleEventListener from "../models/NeedleEventListener.js";
 
@@ -38,13 +38,13 @@ export default class ThreadUpdateEventListener extends NeedleEventListener {
 		if (!startMessage) return;
 		if (threadWasLocked) {
 			await removeUserReactionsOnMessage(startMessage, botMember.id);
-			await startMessage.react(guildConfig.settings.EmojiLocked);
+			await tryReact(startMessage, guildConfig.settings.EmojiLocked);
 			return;
 		}
 
 		if (threadWasArchived) {
 			await removeUserReactionsOnMessage(startMessage, botMember.id);
-			await startMessage.react(guildConfig.settings.EmojiArchived);
+			await tryReact(startMessage, guildConfig.settings.EmojiArchived);
 		}
 
 		// Also applies for unlocked
