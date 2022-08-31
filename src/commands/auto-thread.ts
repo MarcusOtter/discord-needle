@@ -61,12 +61,13 @@ export default class AutoThreadCommand extends NeedleCommand {
 
 		const botMember = await guild?.members.fetchMe();
 		const botPermissions = botMember?.permissionsIn(targetChannel);
-		const botHasPermissions = botPermissions?.has(
-			PermissionFlagsBits.ViewChannel | PermissionFlagsBits.CreatePublicThreads
-		);
 
-		if (!botHasPermissions) {
-			return replyInSecret(settings.ErrorInsufficientBotPerms);
+		if (!botPermissions?.has(PermissionFlagsBits.ViewChannel)) {
+			return replyInSecret("Needle does not have permission to see this channel");
+		}
+
+		if (!botPermissions.has(PermissionFlagsBits.CreatePublicThreads)) {
+			return replyInSecret("Needle does not have permission to create threads in this channel");
 		}
 
 		if ((options.getInteger("slowmode") ?? 0) > 0 && !botPermissions?.has(PermissionFlagsBits.ManageThreads)) {

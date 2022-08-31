@@ -24,7 +24,7 @@ import {
 	TextChannel,
 	ThreadAutoArchiveDuration,
 } from "discord.js";
-import { getRequiredPermissions } from "../helpers/djsHelpers.js";
+import { getRequiredPermissions, tryReact } from "../helpers/djsHelpers.js";
 import { wait } from "../helpers/promiseHelpers.js";
 import { clampWithElipse, extractRegex, plural } from "../helpers/stringHelpers.js";
 import type AutothreadChannelConfig from "../models/AutothreadChannelConfig.js";
@@ -94,7 +94,7 @@ export default class InformationService {
 		messageVariables.setThread(thread);
 
 		if (channelConfig.statusReactions === ToggleOption.On) {
-			await message.react(guildConfig.settings.EmojiUnanswered);
+			await tryReact(message, guildConfig.settings.EmojiUnanswered);
 		}
 
 		if (replyMessageContent.trim().length > 0) {
@@ -128,7 +128,7 @@ export default class InformationService {
 
 		const title = await variables.replace(rawTitle);
 		const output = clampWithElipse(title, config.titleMaxLength);
-		return output.length > 0 ? output : "New Thread";
+		return output.trim().length > 0 ? output : "New Thread";
 	}
 
 	private getMessageContent(message: Message, variables: MessageVariables) {

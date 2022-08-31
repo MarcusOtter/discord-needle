@@ -22,6 +22,7 @@ import type {
 	MessageComponentInteraction,
 	ModalSubmitInteraction,
 } from "discord.js";
+import { clampWithElipse } from "../helpers/stringHelpers.js";
 import type { Overwrite } from "../helpers/typeHelpers.js";
 import type NeedleBot from "../NeedleBot.js";
 import MessageVariables from "./MessageVariables.js";
@@ -107,7 +108,8 @@ export default class InteractionContext {
 			return;
 		}
 
-		await this.interaction.reply({ content: content, ephemeral: ephemeral });
+		if (this.interaction.replied) return;
+		await this.interaction.reply({ content: clampWithElipse(content, 2000), ephemeral: ephemeral });
 	}
 }
 

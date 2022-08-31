@@ -54,6 +54,18 @@ export function makeRow(input: TextInputBuilder): ActionRowBuilder<ModalActionRo
 	return new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(input);
 }
 
+export async function tryReact(message: Nullish<Message>, emoji: string): Promise<boolean> {
+	if (!message) return false;
+
+	try {
+		await message.react(emoji);
+		return true;
+	} catch (e) {
+		console.error(e);
+		return false;
+	}
+}
+
 export async function getThreadAuthor(thread: AnyThreadChannel): Promise<User | undefined> {
 	const starterMessage = await thread
 		.fetchStarterMessage()

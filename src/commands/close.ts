@@ -14,7 +14,7 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { type GuildMember, type GuildTextBasedChannel, ThreadAutoArchiveDuration } from "discord.js";
-import { isAllowedToArchiveThread, removeUserReactionsOnMessage } from "../helpers/djsHelpers.js";
+import { isAllowedToArchiveThread, removeUserReactionsOnMessage, tryReact } from "../helpers/djsHelpers.js";
 import CommandCategory from "../models/enums/CommandCategory.js";
 import type InteractionContext from "../models/InteractionContext.js";
 import NeedleCommand from "../models/NeedleCommand.js";
@@ -76,7 +76,7 @@ export default class CloseCommand extends NeedleCommand {
 
 				const botMember = await thread.guild.members.fetchMe();
 				await removeUserReactionsOnMessage(starterMessage, botMember.id);
-				await starterMessage?.react(config.settings.EmojiArchived);
+				await tryReact(starterMessage, config.settings.EmojiArchived);
 			}
 		}
 	}

@@ -14,6 +14,7 @@ If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+import { clampWithElipse } from "../helpers/stringHelpers.js";
 import type InteractionContext from "../models/InteractionContext.js";
 import type NeedleCommand from "../models/NeedleCommand.js";
 
@@ -36,7 +37,7 @@ export default class CommandExecutorService {
 		);
 
 		await context.interaction.reply({
-			content: context.settings.ErrorUnknown,
+			content: clampWithElipse(context.settings.ErrorUnknown, 2000),
 			ephemeral: true,
 			components: [buttonRow],
 		});
