@@ -104,6 +104,8 @@ if (existsSync(outputDir)) {
 	await new Promise(resolve => setTimeout(resolve, 10000));
 	rmSync(outputDir, { recursive: true });
 	mkdirSync(outputDir);
+} else {
+	mkdirSync(outputDir);
 }
 
 for (const { path, content } of toWrite) {
