@@ -107,7 +107,11 @@ if (existsSync(outputDir)) {
 }
 
 for (const { path, content } of toWrite) {
-	writeFileSync(path, content);
+	try {
+		writeFileSync(path, content, { flag: "w+" });
+	} catch {
+		console.error("Error writing " + path);
+	}
 }
 
 /**
