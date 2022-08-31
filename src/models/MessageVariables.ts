@@ -40,9 +40,15 @@ export default class MessageVariables {
 	public async replace(input: string): Promise<string> {
 		if (input.length === 0) return "";
 
-		const threadAuthor = this.thread && (await getThreadAuthor(this.thread));
+		const threadUser = this.thread && (await getThreadAuthor(this.thread));
+		const threadMember = this.thread && threadUser && (await this.thread.members.fetch(threadUser.id));
+
 		const user = this.user instanceof GuildMember ? this.user.user : this.user;
-		const userName = this.user instanceof GuildMember ? this.user.displayName : user?.username;
+		const userName = user?.username ?? "";
+		const userDisplayName = this.user instanceof GuildMember ? this.user.displayName : userName;
+
+		const threadUserName = threadUser?.username ?? "";
+		const threadDisplayName = threadMember?.guildMember?.displayName ?? threadUserName;
 
 		return input
 			.replaceAll(MessageVariable.ChannelMention, this.channel ? `<#${this.channel.id}>` : "")
@@ -50,13 +56,15 @@ export default class MessageVariables {
 			.replaceAll(MessageVariable.DateUtc, new Date().toISOString().slice(0, 10)) // Localize in the future
 			.replaceAll(MessageVariable.ThreadMention, this.thread ? `<#${this.thread.id}>` : "")
 			.replaceAll(MessageVariable.ThreadName, this.thread ? this.thread.name : "")
-			.replaceAll(MessageVariable.ThreadAuthorMention, threadAuthor ? `<@${threadAuthor.id}>` : "")
-			.replaceAll(MessageVariable.ThreadAuthorName, threadAuthor ? threadAuthor.username : "")
-			.replaceAll(MessageVariable.ThreadAuthorTag, threadAuthor ? threadAuthor.tag : "")
+			.replaceAll(MessageVariable.ThreadAuthorMention, threadUser ? `<@${threadUser.id}>` : "")
+			.replaceAll(MessageVariable.ThreadAuthorNickname, threadDisplayName)
+			.replaceAll(MessageVariable.ThreadAuthorName, threadUser ? threadUser.username : "")
+			.replaceAll(MessageVariable.ThreadAuthorTag, threadUser ? threadUser.tag : "")
 			.replaceAll(MessageVariable.TimeAgo, `<t:${Math.round(Date.now() / 1000)}:R>`)
-			.replaceAll(MessageVariable.UserTag, user?.tag ?? "")
 			.replaceAll(MessageVariable.UserMention, this.user ? `<@${this.user.id}>` : "")
-			.replaceAll(MessageVariable.UserName, userName ?? "");
+			.replaceAll(MessageVariable.UserNickname, userDisplayName)
+			.replaceAll(MessageVariable.UserName, userName ?? "")
+			.replaceAll(MessageVariable.UserTag, user?.tag ?? "");
 	}
 
 	public removeFrom(input: string): string {
@@ -67,12 +75,14 @@ export default class MessageVariables {
 			.replaceAll(MessageVariable.ThreadMention, "")
 			.replaceAll(MessageVariable.ThreadName, "")
 			.replaceAll(MessageVariable.ThreadAuthorMention, "")
+			.replaceAll(MessageVariable.ThreadAuthorNickname, "")
 			.replaceAll(MessageVariable.ThreadAuthorName, "")
 			.replaceAll(MessageVariable.ThreadAuthorTag, "")
 			.replaceAll(MessageVariable.TimeAgo, "")
-			.replaceAll(MessageVariable.UserTag, "")
 			.replaceAll(MessageVariable.UserMention, "")
-			.replaceAll(MessageVariable.UserName, "");
+			.replaceAll(MessageVariable.UserNickname, "")
+			.replaceAll(MessageVariable.UserName, "")
+			.replaceAll(MessageVariable.UserTag, "");
 	}
 }
 
@@ -83,10 +93,12 @@ enum MessageVariable {
 	ThreadMention = "$THREAD_MENTION",
 	ThreadName = "$THREAD_NAME",
 	ThreadAuthorMention = "$THREAD_AUTHOR_MENTION",
+	ThreadAuthorNickname = "$THREAD_AUTHOR_NICKNAME",
 	ThreadAuthorName = "$THREAD_AUTHOR_NAME",
 	ThreadAuthorTag = "$THREAD_AUTHOR_TAG",
 	TimeAgo = "$TIME_AGO",
 	UserMention = "$USER_MENTION",
+	UserNickname = "$USER_NICKNAME",
 	UserName = "$USER_NAME",
 	UserTag = "$USER_TAG",
 }

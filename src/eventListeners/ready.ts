@@ -42,8 +42,9 @@ export default class ReadyEventListener extends NeedleEventListener {
 
 		try {
 			await this.createMissingThreads(client);
-		} catch {
+		} catch (e) {
 			console.error("Failed creating missing threads");
+			console.error(e);
 		}
 
 		console.log("Ready!");
