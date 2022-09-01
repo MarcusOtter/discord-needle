@@ -17,10 +17,10 @@ If not, see <https://www.gnu.org/licenses/>.
 /* eslint-disable @typescript-eslint/no-var-requires */
 // You need to `tsc` before running this script.
 
-require("dotenv").config();
-const { REST } = require("@discordjs/rest");
-const { Routes } = require("discord.js");
-const CommandImportService = require("../dist/services/CommandImportService").default;
+import "dotenv/config";
+import { REST } from "@discordjs/rest";
+import { Routes } from "discord.js";
+import CommandImportService from "../dist/services/CommandImportService.js";
 
 const { DISCORD_API_TOKEN, CLIENT_ID } = process.env;
 const isUndeploy = process.argv.some(x => x === "--undeploy");
