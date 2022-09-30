@@ -282,7 +282,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 			.addIntegerOption(option =>
 				option
 					.setName("title-format")
-					.setDescription("How should the thread title look? 🆕🔥")
+					.setDescription("How should the thread title look? 🔥")
 					.addChoices(
 						{ name: "First 50 characters of message (ᴅᴇꜰᴀᴜʟᴛ)", value: TitleType.FirstFiftyChars },
 						{ name: "Nickname (yyyy-MM-dd) 🔥", value: TitleType.NicknameDate },
@@ -302,7 +302,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 			.addIntegerOption(option =>
 				option
 					.setName("reply-buttons")
-					.setDescription("What should the buttons of the reply look like? 🆕")
+					.setDescription("What should the buttons of the reply look like?")
 					.addChoices(
 						{
 							name: "Green archive button, Blurple edit button (ᴅᴇꜰᴀᴜʟᴛ)",
@@ -323,7 +323,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 			.addIntegerOption(option =>
 				option
 					.setName("delete-behavior")
-					.setDescription("What should happen to the thread if the start message is deleted? 🆕")
+					.setDescription("What should happen to the thread if the start message is deleted?")
 					.addChoices(
 						{
 							name: "Delete if thread is empty, otherwise archive (ᴅᴇꜰᴀᴜʟᴛ)",
@@ -346,7 +346,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 			.addIntegerOption(option =>
 				option
 					.setName("status-reactions")
-					.setDescription("Should thread statuses be shown with emoji reactions? 🆕")
+					.setDescription("Should thread statuses be shown with emoji reactions?")
 					.addChoices(
 						{ name: "Reactions OFF (ᴅᴇꜰᴀᴜʟᴛ)", value: ToggleOption.Off },
 						{ name: "Reactions ON", value: ToggleOption.On }
