@@ -358,6 +358,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 					.setDescription("How long should the slowmode be in created threads?")
 					.addChoices(
 						{ name: "Off (ᴅᴇꜰᴀᴜʟᴛ)", value: 0 },
+						{ name: "1 second", value: 1 },
 						{ name: "5 seconds", value: 5 },
 						{ name: "30 seconds", value: 30 },
 						{ name: "1 minute", value: 60 },
