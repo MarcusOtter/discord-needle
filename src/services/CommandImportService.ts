@@ -35,12 +35,14 @@ export default class CommandImportService extends DynamicImportService<typeof Ne
 	}
 
 	private async fetchGlobalApplicationCommands(): Promise<{ id: string; name: string }[]> {
-		if (!process.env.DISCORD_API_TOKEN || !process.env.CLIENT_ID) {
-			throw new Error("Missing API key or Client ID");
+		if (!process.env.DISCORD_API_TOKEN) {
+			throw new Error("Missing API key");
 		}
 
+		const CLIENT_ID = Buffer.from(process.env.DISCORD_API_TOKEN.split(".")[0], "base64").toString();
+
 		const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_API_TOKEN);
-		const result = (await rest.get(Routes.applicationCommands(process.env.CLIENT_ID))) as APIApplicationCommand[];
+		const result = (await rest.get(Routes.applicationCommands(CLIENT_ID))) as APIApplicationCommand[];
 
 		return result.map(cmd => {
 			return { id: cmd.id, name: cmd.name };

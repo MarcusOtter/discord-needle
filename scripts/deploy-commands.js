@@ -22,14 +22,16 @@ import { REST } from "@discordjs/rest";
 import { Routes } from "discord.js";
 import CommandImportService from "../dist/services/CommandImportService.js";
 
-const { DISCORD_API_TOKEN, CLIENT_ID } = process.env;
+const { DISCORD_API_TOKEN } = process.env;
 const isUndeploy = process.argv.some(x => x === "--undeploy");
 
-if (!DISCORD_API_TOKEN || !CLIENT_ID) {
+if (!DISCORD_API_TOKEN) {
 	console.log("Aborting command deployment");
-	console.log("DISCORD_API_TOKEN or CLIENT_ID missing from the .env file.\n");
+	console.log("DISCORD_API_TOKEN missing from the .env file.\n");
 	process.exit(1);
 }
+
+const CLIENT_ID = Buffer.from(DISCORD_API_TOKEN.split(".")[0], "base64").toString();
 
 const route = Routes.applicationCommands(CLIENT_ID);
 const rest = new REST({ version: "10" }).setToken(DISCORD_API_TOKEN);
