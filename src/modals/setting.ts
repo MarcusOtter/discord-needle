@@ -29,7 +29,7 @@ export default class SettingModal extends NeedleModal {
 			.setCustomId("setting")
 			.setLabel("value")
 			.setRequired(true)
-			.setStyle(TextInputStyle.Short);
+			.setStyle(TextInputStyle.Paragraph);
 		const row = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(messageInput);
 		return new ModalBuilder().setCustomId(this.customId).setTitle("Change setting value").addComponents(row);
 	}
