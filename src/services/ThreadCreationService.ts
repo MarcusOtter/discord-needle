@@ -87,7 +87,7 @@ export default class InformationService {
 		const name = await this.getThreadName(message, channelConfig, messageVariables);
 		const thread = await message.startThread({
 			name,
-			rateLimitPerUser: channelConfig.slowmode,
+			rateLimitPerUser: channelConfig.slowmode === 0 ? undefined : channelConfig.slowmode,
 			autoArchiveDuration: message.channel.defaultAutoArchiveDuration ?? ThreadAutoArchiveDuration.OneDay,
 		});
 
