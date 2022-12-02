@@ -24,7 +24,7 @@
 	"homepage": "https://github.com/MarcusOtter/discord-needle",
 	"dependencies": {
 		"@discordjs/rest": "^1.1.0",
-		"discord.js": "^14.6.0",
+		"discord.js": "^14.7.1",
 		"dotenv": "^16.0.3",
 		"safe-regex": "^2.1.1"
 	},
