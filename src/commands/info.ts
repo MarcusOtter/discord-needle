@@ -50,7 +50,7 @@ export default class InfoCommand extends NeedleCommand {
 		const cpuPercent = this.infoService.getCpuUsagePercent();
 		const ramPercent = this.infoService.getRamUsagePercent();
 		const freeRamMb = this.infoService.getFreeRamInMb();
-		const version = process.env.npm_package_version ?? "Unknown";
+		const version = process.env.npm_package_version;
 
 		let fields = [
 			{ name: "Servers", value: codeBlock(serverCount), inline: true },
@@ -58,8 +58,11 @@ export default class InfoCommand extends NeedleCommand {
 			{ name: "Largest server", value: codeBlock(largestServer), inline: true },
 			{ name: "Ping", value: codeBlock(ping), inline: true },
 			{ name: "Uptime", value: codeBlock(uptime), inline: true },
-			{ name: "Version", value: codeBlock(version), inline: true },
 		];
+
+		if (version) {
+			fields.push({ name: "Version", value: codeBlock(version), inline: true });
+		}
 
 		if (isOwner) {
 			fields = fields.concat([
