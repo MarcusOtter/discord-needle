@@ -22,7 +22,14 @@ const bot = ObjectFactory.createNeedleBot();
 await bot.loadDynamicImports();
 await bot.connect();
 
-process.on("SIGINT", async () => {
+process.on("SIGINT", handleShutdown);
+
+process.on("message", async msg => {
+	if (msg !== "shutdown") return;
+	await handleShutdown();
+});
+
+async function handleShutdown() {
 	await bot.disconnect();
 	process.exit(0);
-});
+}
