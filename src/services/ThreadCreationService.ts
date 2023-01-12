@@ -144,7 +144,7 @@ export default class InformationService {
 			}\n\n`;
 		}
 
-		return variables.removeFrom(message.content + "\n\n" + embedContent);
+		return variables.removeFrom(message.cleanContent + "\n\n" + embedContent);
 	}
 
 	private async getButtonRow(
