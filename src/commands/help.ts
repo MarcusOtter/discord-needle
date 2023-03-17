@@ -47,7 +47,7 @@ export default class HelpCommand extends NeedleCommand {
 		const commandsEmbed = await this.getCommandsEmbed(member, channel, showAll);
 
 		await context.interaction.reply({
-        		content: `Need more help with Needle? Join us in the [support server](${SUPPORT_SERVER_URL})!`,
+			content: `Need more help with Needle? Join us in the [support server](${SUPPORT_SERVER_URL})!`,
 			embeds: [commandsEmbed],
 			ephemeral: true,
 		});
