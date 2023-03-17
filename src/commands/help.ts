@@ -18,13 +18,13 @@ import type { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHel
 import CommandCategory from "../models/enums/CommandCategory.js";
 import type InteractionContext from "../models/InteractionContext.js";
 import NeedleCommand from "../models/NeedleCommand.js";
+const EMBED_COLOR = "#2f3136";
+const SUPPORT_SERVER_URL = "https://discord.gg/8BmnndXHp6";
 
 export default class HelpCommand extends NeedleCommand {
 	public readonly name = "help";
 	public readonly description = "See Needle's commands";
 	public readonly category = CommandCategory.Info;
-	static readonly EMBED_COLOR = "#2f3136";
-	static readonly SUPPORT_SERVER_URL = "https://discord.gg/8BmnndXHp6";
 
 	public addOptions(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions {
 		return builder.addStringOption(option =>
