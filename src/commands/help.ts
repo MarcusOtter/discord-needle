@@ -23,8 +23,8 @@ export default class HelpCommand extends NeedleCommand {
 	public readonly name = "help";
 	public readonly description = "See Needle's commands";
 	public readonly category = CommandCategory.Info;
-	const EMBED_COLOR = "#2f3136";
-	const SUPPORT_SERVER_URL = "https://discord.gg/8BmnndXHp6";
+	static readonly EMBED_COLOR = "#2f3136";
+	static readonly SUPPORT_SERVER_URL = "https://discord.gg/8BmnndXHp6";
 
 	public addOptions(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions {
 		return builder.addStringOption(option =>
