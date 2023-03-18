@@ -18,15 +18,14 @@ import type { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHel
 import CommandCategory from "../models/enums/CommandCategory.js";
 import type InteractionContext from "../models/InteractionContext.js";
 import NeedleCommand from "../models/NeedleCommand.js";
-const EMBED_COLOR = "#2f3136";
-const SUPPORT_SERVER_URL = "https://discord.gg/8BmnndXHp6";
 
 export default class HelpCommand extends NeedleCommand {
 	public readonly name = "help";
 	public readonly description = "See Needle's commands";
 	public readonly category = CommandCategory.Info;
-	static readonly EMBED_COLOR = "#2f3136";
-	static readonly SUPPORT_SERVER_URL = "https://discord.gg/8BmnndXHp6";
+
+	private readonly EMBED_COLOR = "#2f3136";
+	private readonly SUPPORT_SERVER_URL = "https://discord.gg/8BmnndXHp6";
 
 	public addOptions(builder: SlashCommandBuilder): SlashCommandBuilderWithOptions {
 		return builder.addStringOption(option =>
@@ -49,7 +48,7 @@ export default class HelpCommand extends NeedleCommand {
 		const commandsEmbed = await this.getCommandsEmbed(member, channel, showAll);
 
 		await context.interaction.reply({
-			content: `Need more help with Needle? Join us in the [support server](${SUPPORT_SERVER_URL})!`,
+			content: `Need more help with Needle? Join us in the [support server](${this.SUPPORT_SERVER_URL})!`,
 			embeds: [commandsEmbed],
 			ephemeral: true,
 		});
@@ -79,11 +78,11 @@ export default class HelpCommand extends NeedleCommand {
 
 		if (fields.length === 0) {
 			return new EmbedBuilder()
-				.setColor(EMBED_COLOR)
+				.setColor(this.EMBED_COLOR)
 				.setDescription("You do not have permission to use any Needle commands here.");
 		}
 
-		const builder = new EmbedBuilder().setColor(EMBED_COLOR).setFields(fields);
+		const builder = new EmbedBuilder().setColor(this.EMBED_COLOR).setFields(fields);
 		if (!seeingAllCommands) {
 			builder.setFooter({
 				text: 'Only showing commands available to you in this channel.\nUse "/help filter: all" to see all commands 👈',
