@@ -33,11 +33,26 @@ import ToggleOption from "../models/enums/ToggleOption.js";
 import type MessageVariables from "../models/MessageVariables.js";
 import type NeedleBot from "../NeedleBot.js";
 
-export default class InformationService {
+export default class ThreadCreationService {
 	private readonly bot: NeedleBot;
+	private readonly logIntervalMs = 60 * 1000; // 1 minute
 
-	constructor(bot: NeedleBot) {
+	private threadsCreatedCount = 0;
+	private lastLogTime = Date.now();
+
+	constructor(bot: NeedleBot, logAmountOfCreatedThreads: boolean) {
 		this.bot = bot;
+
+		if (logAmountOfCreatedThreads) {
+			this.scheduleLoggging();
+		}
+	}
+
+	private scheduleLoggging() {
+		setTimeout(() => {
+			this.logThreadsCreated();
+			this.scheduleLoggging();
+		}, this.logIntervalMs);
 	}
 
 	public async shouldHaveThread(message: Message): Promise<boolean> {
@@ -84,11 +99,13 @@ export default class InformationService {
 		}
 
 		const name = await this.getThreadName(message, channelConfig, messageVariables);
+		if (message.hasThread) return;
 		const thread = await message.startThread({
 			name,
 			rateLimitPerUser: channelConfig.slowmode === 0 ? undefined : channelConfig.slowmode,
 			autoArchiveDuration: message.channel.defaultAutoArchiveDuration ?? ThreadAutoArchiveDuration.OneDay,
 		});
+		this.threadsCreatedCount++;
 
 		messageVariables.setThread(thread);
 
@@ -112,6 +129,19 @@ export default class InformationService {
 		}
 
 		// Maybe we should check here if a system message was generated for the thread
+	}
+
+	private logThreadsCreated(): void {
+		const currentTime = Date.now();
+		const elapsedTime = (currentTime - this.lastLogTime) / 1000 / 60; // Convert to minutes
+		console.log(
+			`[${new Date().toISOString().substring(11, 19)}] Created ${
+				this.threadsCreatedCount
+			} threads in the last ${elapsedTime.toFixed(2)} minute(s).`
+		);
+
+		this.threadsCreatedCount = 0;
+		this.lastLogTime = currentTime;
 	}
 
 	private async getThreadName(

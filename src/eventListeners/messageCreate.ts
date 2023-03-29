@@ -30,7 +30,7 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 
 	constructor(bot: NeedleBot) {
 		super(bot);
-		this.threadCreator = ObjectFactory.createThreadCreationService();
+		this.threadCreator = ObjectFactory.createThreadCreationService(true);
 	}
 
 	public async handle([message]: ClientEvents["messageCreate"]): Promise<void> {

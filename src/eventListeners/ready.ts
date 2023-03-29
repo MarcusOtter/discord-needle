@@ -29,7 +29,7 @@ export default class ReadyEventListener extends NeedleEventListener {
 
 	constructor(bot: NeedleBot) {
 		super(bot);
-		this.threadCreator = ObjectFactory.createThreadCreationService();
+		this.threadCreator = ObjectFactory.createThreadCreationService(false);
 	}
 
 	public async handle([client]: ClientEvents["ready"]): Promise<void> {

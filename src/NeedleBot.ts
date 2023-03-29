@@ -129,9 +129,20 @@ export default class NeedleBot {
 				});
 			}
 		}
+
+		this.client.on("debug", msg => console.log(`[${this.getCurrentTime()}] DEBUG: ${msg}`));
+		this.client.on("shardError", (error, shardId) =>
+			console.log(`[${this.getCurrentTime()}] SHARD ERROR (id ${shardId}): ${error}`)
+		);
+		this.client.on("warn", msg => console.log(`[${this.getCurrentTime()}] WARN: ${msg}`));
 	}
 
-	private handleError(reason: unknown): void {
-		console.error(reason);
-	}
+	private getCurrentTime = (): string => {
+		const now = new Date();
+		return now.toISOString().substring(11, 19);
+	};
+
+	private handleError = (reason: unknown): void => {
+		console.error(`[${this.getCurrentTime()}] ERROR:`, reason);
+	};
 }

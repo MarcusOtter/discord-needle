@@ -64,8 +64,8 @@ export default class ObjectFactory {
 		return new CommandExecutorService();
 	}
 
-	public static createThreadCreationService(): ThreadCreationService {
-		return new ThreadCreationService(this.bot);
+	public static createThreadCreationService(logAmountOfCreatedThreads: boolean): ThreadCreationService {
+		return new ThreadCreationService(this.bot, logAmountOfCreatedThreads);
 	}
 
 	private static createDiscordClient(): Client {
