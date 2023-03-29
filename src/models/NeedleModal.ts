@@ -53,7 +53,10 @@ export default abstract class NeedleModal {
 		await interaction.showModal(builder);
 		return interaction.awaitModalSubmit({
 			time: 1000 * 60 * 15, // 15 min
-			filter: x => x.customId === this.customId && x.user.id === interaction.user.id,
+			filter: x =>
+				x.customId === this.customId &&
+				x.user.id === interaction.user.id &&
+				x.channelId === interaction.channelId,
 		});
 	}
 }
