@@ -40,8 +40,14 @@ export default class MessageVariables {
 	public async replace(input: string): Promise<string> {
 		if (input.length === 0) return "";
 
-		const threadUser = this.thread && (await getThreadAuthor(this.thread));
-		const threadMember = this.thread && threadUser && (await this.thread.members.fetch(threadUser.id));
+		let threadUser = undefined;
+		let threadMember = undefined;
+		try {
+			threadUser = this.thread && (await getThreadAuthor(this.thread));
+			threadMember = this.thread && threadUser && (await this.thread.members.fetch(threadUser.id));
+		} catch {
+			/* we don't care, undefined is handled below */
+		}
 
 		const user = this.user instanceof GuildMember ? this.user.user : this.user;
 		const userName = user?.username ?? "";
