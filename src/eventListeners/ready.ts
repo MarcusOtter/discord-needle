@@ -57,27 +57,33 @@ export default class ReadyEventListener extends NeedleEventListener {
 			if (!guild) continue;
 
 			for (const autoThreadChannel of config.threadChannels) {
-				const channel = await guild.channels.fetch(autoThreadChannel.channelId);
-				if (!channel || !channel.isTextBased()) continue;
+				try {
+					const channel = await guild.channels.fetch(autoThreadChannel.channelId);
+					if (!channel || !channel.isTextBased()) continue;
 
-				const lastMessage = (await channel.messages.fetch({ limit: 1 })).first();
-				if (!lastMessage) continue;
+					const lastMessage = (await channel.messages.fetch({ limit: 1 })).first();
+					if (!lastMessage) continue;
 
-				const shouldHaveThread = await this.threadCreator.shouldHaveThread(lastMessage);
-				if (!shouldHaveThread) continue;
+					const shouldHaveThread = await this.threadCreator.shouldHaveThread(lastMessage);
+					if (!shouldHaveThread) continue;
 
-				const latestTenMessages = await channel.messages.fetch({ limit: 10 });
-				await Promise.all(
-					latestTenMessages.map(async m => {
-						// In the future if we have prerequisites we need to check those here
-						const createThread = await this.threadCreator.shouldHaveThread(m);
-						if (!createThread) return Promise.resolve();
+					const latestTenMessages = await channel.messages.fetch({ limit: 10 });
+					await Promise.all(
+						latestTenMessages.map(async m => {
+							// In the future if we have prerequisites we need to check those here
+							const createThread = await this.threadCreator.shouldHaveThread(m);
+							if (!createThread) return Promise.resolve();
 
-						const { author, member } = m;
-						const messageVariables = new MessageVariables().setChannel(channel).setUser(member ?? author);
-						return this.threadCreator.createThreadOnMessage(m, messageVariables);
-					})
-				);
+							const { author, member } = m;
+							const messageVariables = new MessageVariables()
+								.setChannel(channel)
+								.setUser(member ?? author);
+							return this.threadCreator.createThreadOnMessage(m, messageVariables);
+						})
+					);
+				} catch {
+					continue;
+				}
 			}
 		}
 	}
