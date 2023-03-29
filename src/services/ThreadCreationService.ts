@@ -74,9 +74,8 @@ export default class InformationService {
 		const rawReplyMessageContent = useDefaultMessage
 			? guildConfig.settings.SuccessThreadCreated
 			: channelConfig.customReply;
-		const replyMessageContent = await messageVariables.replace(rawReplyMessageContent);
 		const botPermissions = botMember.permissionsIn(message.channel.id);
-		const requiredPermissions = getRequiredPermissions(channelConfig.slowmode, replyMessageContent);
+		const requiredPermissions = getRequiredPermissions(channelConfig.slowmode, rawReplyMessageContent);
 		if (!botPermissions.has(requiredPermissions)) {
 			const missing = botPermissions.missing(requiredPermissions);
 			const errorMessage = `Missing ${plural("permission", missing.length)}:`;
@@ -97,6 +96,7 @@ export default class InformationService {
 			await tryReact(message, guildConfig.settings.EmojiUnanswered);
 		}
 
+		const replyMessageContent = await messageVariables.replace(rawReplyMessageContent);
 		if (replyMessageContent.trim().length > 0) {
 			const buttonRow = await this.getButtonRow(channelConfig, messageVariables);
 			const msg = await thread.send({
