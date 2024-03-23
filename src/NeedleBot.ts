@@ -43,7 +43,7 @@ export default class NeedleBot {
 		buttonsService: DynamicImportService<typeof NeedleButton>,
 		modalsService: DynamicImportService<typeof NeedleModal>,
 		configService: ConfigService,
-		cooldownService: CooldownService
+		cooldownService: CooldownService,
 	) {
 		this.client = discordClient;
 
@@ -112,19 +112,19 @@ export default class NeedleBot {
 			const listener = new Class(this);
 
 			if (listener.runType === ListenerRunType.EveryTime) {
-				this.client.on(listener.name, (...args) => {
+				this.client.on(listener.name, async (...args) => {
 					try {
-						listener.handle(args).catch(this.handleError);
+						await listener.handle(args).catch(this.handleError);
 					} catch (e) {
-						console.error(e);
+						this.handleError(e);
 					}
 				});
 			} else if (listener.runType === ListenerRunType.OnlyOnce) {
-				this.client.once(listener.name, (...args) => {
+				this.client.once(listener.name, async (...args) => {
 					try {
-						listener.handle(args).catch(this.handleError);
+						await listener.handle(args).catch(this.handleError);
 					} catch (e) {
-						console.error(e);
+						this.handleError(e);
 					}
 				});
 			}
@@ -132,7 +132,7 @@ export default class NeedleBot {
 
 		this.client.on("debug", msg => console.log(`[${this.getCurrentTime()}] DEBUG: ${msg}`));
 		this.client.on("shardError", (error, shardId) =>
-			console.log(`[${this.getCurrentTime()}] SHARD ERROR (id ${shardId}): ${error}`)
+			console.log(`[${this.getCurrentTime()}] SHARD ERROR (id ${shardId}): ${error}`),
 		);
 		this.client.on("warn", msg => console.log(`[${this.getCurrentTime()}] WARN: ${msg}`));
 	}

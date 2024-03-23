@@ -74,11 +74,10 @@ export default class ThreadCreationService {
 		return true;
 	}
 
-	public async createThreadOnMessage(
-		message: Message,
+	public async createOrUpdateThreadOnMessage(
+		message: Message<true>,
 		messageVariables: MessageVariables,
 	): Promise<AnyThreadChannel | undefined> {
-		if (!message.inGuild()) return;
 		if (!(message.channel instanceof TextChannel) && !(message.channel instanceof NewsChannel)) return;
 
 		const guildConfig = this.bot.configs.get(message.guildId);
@@ -100,7 +99,14 @@ export default class ThreadCreationService {
 		}
 
 		const name = await this.getThreadName(message, channelConfig, messageVariables);
-		if (message.hasThread) return;
+		if (message.hasThread) {
+			await message.fetch();
+			if (!message.thread || message.thread.name === name) return;
+
+			await message.thread.edit({ name });
+			return;
+		}
+
 		const thread = await message.startThread({
 			name,
 			rateLimitPerUser: channelConfig.slowmode === 0 ? undefined : channelConfig.slowmode,
@@ -145,7 +151,7 @@ export default class ThreadCreationService {
 		this.lastLogTime = currentTime;
 	}
 
-	private async getThreadName(
+	public async getThreadName(
 		message: Message,
 		config: AutothreadChannelConfig,
 		variables: MessageVariables,
