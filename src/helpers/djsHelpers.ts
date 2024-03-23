@@ -25,6 +25,7 @@ import { PermissionFlagsBits, ActionRowBuilder } from "discord.js";
 import type { Nullish } from "./typeHelpers.js";
 
 export async function removeUserReactionsOnMessage(message: Message, userId: string) {
+	await message.fetch();
 	const userReactions = message.reactions.cache.filter(r => r.users.cache.has(userId));
 	for (const reaction of userReactions.values()) {
 		await reaction.users.remove(userId);
