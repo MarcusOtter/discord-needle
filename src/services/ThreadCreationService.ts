@@ -23,6 +23,7 @@ import {
 	PermissionFlagsBits,
 	TextChannel,
 	ThreadAutoArchiveDuration,
+	cleanContent,
 } from "discord.js";
 import { getRequiredPermissions, tryReact } from "../helpers/djsHelpers.js";
 import { wait } from "../helpers/promiseHelpers.js";
@@ -75,7 +76,7 @@ export default class ThreadCreationService {
 
 	public async createThreadOnMessage(
 		message: Message,
-		messageVariables: MessageVariables
+		messageVariables: MessageVariables,
 	): Promise<AnyThreadChannel | undefined> {
 		if (!message.inGuild()) return;
 		if (!(message.channel instanceof TextChannel) && !(message.channel instanceof NewsChannel)) return;
@@ -137,7 +138,7 @@ export default class ThreadCreationService {
 		console.log(
 			`[${new Date().toISOString().substring(11, 19)}] Created ${
 				this.threadsCreatedCount
-			} threads in the last ${elapsedTime.toFixed(2)} minute(s).`
+			} threads in the last ${elapsedTime.toFixed(2)} minute(s).`,
 		);
 
 		this.threadsCreatedCount = 0;
@@ -147,7 +148,7 @@ export default class ThreadCreationService {
 	private async getThreadName(
 		message: Message,
 		config: AutothreadChannelConfig,
-		variables: MessageVariables
+		variables: MessageVariables,
 	): Promise<string> {
 		const content = this.getMessageContent(message, variables);
 		const result = extractRegex(config.customTitle);
@@ -162,24 +163,25 @@ export default class ThreadCreationService {
 	}
 
 	private getMessageContent(message: Message, variables: MessageVariables) {
-		let embedContent = "";
+		let embedCleanContent = "";
 		for (const embed of message.embeds) {
 			let fieldContent = "";
 			for (const field of embed.fields) {
 				fieldContent += `${field.name}\n${field.value}\n\n`;
 			}
 
-			embedContent += `${embed.title ?? ""}\n\n${embed.description ?? ""}\n\n${fieldContent}${
-				embed.footer?.text ?? ""
-			}\n\n`;
+			embedCleanContent += cleanContent(
+				`${embed.title ?? ""}\n\n${embed.description ?? ""}\n\n${fieldContent}${embed.footer?.text ?? ""}\n\n`,
+				message.channel,
+			);
 		}
 
-		return variables.removeFrom(message.cleanContent + "\n\n" + embedContent);
+		return variables.removeFrom(message.cleanContent + "\n\n" + embedCleanContent);
 	}
 
 	private async getButtonRow(
 		config: AutothreadChannelConfig,
-		messageVariables: MessageVariables
+		messageVariables: MessageVariables,
 	): Promise<ActionRowBuilder<ButtonBuilder>> {
 		const closeButtonText = clampWithElipse(await messageVariables.replace(config.closeButtonText), 80);
 		const titleButtonText = clampWithElipse(await messageVariables.replace(config.titleButtonText), 80);
