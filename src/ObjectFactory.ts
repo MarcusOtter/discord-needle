@@ -13,7 +13,7 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Client, GatewayIntentBits } from "discord.js";
+import { Client, GatewayIntentBits, GuildMember, Options, User } from "discord.js";
 import type NeedleButton from "./models/NeedleButton.js";
 import type NeedleEventListener from "./models/NeedleEventListener.js";
 import type NeedleModal from "./models/NeedleModal.js";
@@ -69,17 +69,60 @@ export default class ObjectFactory {
 	}
 
 	private static createDiscordClient(): Client {
-		const sweepSettings = {
-			interval: 14400, // 4h
-			lifetime: 3600, // 1h
+		const tenMinutes = 600;
+		const tenMinuteSweep = {
+			interval: tenMinutes,
+			lifetime: tenMinutes,
+		};
+		const fivePerGuildCollection = {
+			maxSize: 5,
 		};
 
 		return new Client({
 			intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
 			shards: "auto",
+			makeCache: Options.cacheWithLimits({
+				...Options.DefaultMakeCacheSettings,
+				AutoModerationRuleManager: 0,
+				BaseGuildEmojiManager: 0,
+				DMMessageManager: 0,
+				GuildBanManager: 0,
+				GuildEmojiManager: 0,
+				GuildForumThreadManager: 0,
+				GuildInviteManager: 0,
+				GuildMemberManager: {
+					maxSize: 5,
+					keepOverLimit: member => member.id === member.client.user.id,
+				},
+				GuildMessageManager: fivePerGuildCollection,
+				GuildScheduledEventManager: 0,
+				GuildStickerManager: 0,
+				GuildTextThreadManager: fivePerGuildCollection,
+				MessageManager: fivePerGuildCollection,
+				PresenceManager: 0,
+				ThreadManager: fivePerGuildCollection,
+				ReactionManager: fivePerGuildCollection,
+				ReactionUserManager: fivePerGuildCollection,
+				StageInstanceManager: 0,
+				ThreadMemberManager: fivePerGuildCollection,
+				UserManager: {
+					maxSize: 5,
+					keepOverLimit: user => user.id === user.client.user.id,
+				},
+				VoiceStateManager: 0,
+			}),
 			sweepers: {
-				messages: sweepSettings,
-				threads: sweepSettings,
+				...Options.DefaultSweeperSettings,
+				messages: tenMinuteSweep,
+				threads: tenMinuteSweep,
+				users: {
+					interval: tenMinutes,
+					filter: () => (user: User) => user.id !== user.client.user.id,
+				},
+				guildMembers: {
+					interval: tenMinutes,
+					filter: () => (member: GuildMember) => member.id !== member.client.user.id,
+				},
 			},
 		});
 	}
