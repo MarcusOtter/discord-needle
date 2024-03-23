@@ -78,8 +78,8 @@ export default class ReadyEventListener extends NeedleEventListener {
 							const messageVariables = new MessageVariables()
 								.setChannel(channel)
 								.setUser(member ?? author);
-							return this.threadCreator.createThreadOnMessage(m, messageVariables);
-						})
+							return this.threadCreator.createOrUpdateThreadOnMessage(m, messageVariables);
+						}),
 					);
 				} catch {
 					continue;

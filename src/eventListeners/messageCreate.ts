@@ -41,7 +41,7 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 		const botMember = await message.guild.members.fetchMe();
 		const guildConfig = this.bot.configs.get(message.guildId);
 		const channelConfig = guildConfig.threadChannels?.find(
-			c => c.channelId === message.channelId || c.channelId === message.channel.parentId
+			c => c.channelId === message.channelId || c.channelId === message.channel.parentId,
 		);
 
 		if (!channelConfig) return;
@@ -61,6 +61,6 @@ export default class MessageCreateEventListener extends NeedleEventListener {
 		const { author, member, channel } = message;
 		const messageVariables = new MessageVariables().setChannel(channel).setUser(member ?? author);
 
-		await this.threadCreator.createThreadOnMessage(message, messageVariables);
+		await this.threadCreator.createOrUpdateThreadOnMessage(message, messageVariables);
 	}
 }
