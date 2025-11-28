@@ -106,18 +106,15 @@ export default class AutoThreadCommand extends NeedleCommand {
 
 		let newCustomTitle;
 		let newMaxTitleLength;
-		let newRegexJoinText;
 		if (openTitleModal) {
 			const oldTitle = oldAutoThreadConfig?.customTitle ?? "/^[\\S\\s]/g";
 			const oldMaxLength = oldAutoThreadConfig?.titleMaxLength ?? 50;
-			const oldJoinText = oldAutoThreadConfig?.regexJoinText ?? "";
 			let newMaxLengthString;
-			[newCustomTitle, newMaxLengthString, newRegexJoinText] = await this.getTextInputsFromModal(
+			[newCustomTitle, newMaxLengthString] = await this.getTextInputsFromModal(
 				"custom-title-format",
 				[
 					{ customId: "title", value: oldTitle },
 					{ customId: "maxTitleLength", value: oldMaxLength.toString() },
-					{ customId: "regexJoinText", value: oldJoinText },
 				],
 				context
 			);
@@ -211,7 +208,6 @@ export default class AutoThreadCommand extends NeedleCommand {
 			newReplyMessage,
 			options.getInteger("title-format"),
 			newMaxTitleLength,
-			newRegexJoinText,
 			newCustomTitle,
 			newCloseButtonText,
 			newCloseButtonStyle,

@@ -32,17 +32,11 @@ export default class CustomTitleFormatModal extends NeedleModal {
 			.setRequired(true)
 			.setPlaceholder("50")
 			.setStyle(TextInputStyle.Short);
-		const regexJoinText = new TextInputBuilder()
-			.setCustomId("regexJoinText")
-			.setLabel("RegEx join (advanced)")
-			.setRequired(false)
-			.setPlaceholder("(empty string)")
-			.setStyle(TextInputStyle.Short);
 
 		return new ModalBuilder()
 			.setCustomId(this.customId)
 			.setTitle("Set a custom title format")
-			.addComponents(makeRow(titleInput), makeRow(maxTitleLength), makeRow(regexJoinText));
+			.addComponents(makeRow(titleInput), makeRow(maxTitleLength));
 	}
 
 	public async submit(): Promise<void> {

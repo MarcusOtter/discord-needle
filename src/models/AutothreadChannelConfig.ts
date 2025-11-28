@@ -30,7 +30,6 @@ export default class AutothreadChannelConfig {
 	public readonly statusReactions: ToggleOption;
 	public readonly titleType: TitleType;
 	public readonly titleMaxLength: number;
-	public readonly regexJoinText: string;
 	public readonly customTitle: string;
 	public readonly closeButtonText: string;
 	public readonly closeButtonStyle: string;
@@ -49,7 +48,6 @@ export default class AutothreadChannelConfig {
 		customReply: Nullish<string>,
 		titleType: Nullish<TitleType>,
 		titleMaxLength: Nullish<number>,
-		regexJoinText: Nullish<string>,
 		customTitle: Nullish<string>,
 		closeButtonText: Nullish<string>,
 		closeButtonStyle: Nullish<string>,
@@ -73,7 +71,6 @@ export default class AutothreadChannelConfig {
 
 		this.titleType = titleType ?? oldConfig?.titleType ?? TitleType.FirstFiftyChars;
 		this.titleMaxLength = titleMaxLength ?? oldConfig?.titleMaxLength ?? 50;
-		this.regexJoinText = regexJoinText ?? oldConfig?.regexJoinText ?? "";
 		this.customTitle = this.getCustomTitle(oldConfig, customTitle);
 	}
 

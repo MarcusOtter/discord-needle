@@ -160,7 +160,7 @@ export default class ThreadCreationService {
 		const result = extractRegex(config.customTitle);
 		const regexResult = result.regex && content.match(result.regex);
 		const rawTitle = result.inputWithRegexVariable
-			.replace("$REGEXRESULT", regexResult?.join(config.regexJoinText) ?? "")
+			.replace("$REGEXRESULT", regexResult?.join("") ?? "")
 			.replaceAll("\n", " ");
 
 		const title = await variables.replace(rawTitle);
