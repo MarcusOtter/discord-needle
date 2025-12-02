@@ -20,16 +20,20 @@ import NeedleEventListener from "../models/NeedleEventListener.js";
 import type NeedleBot from "../NeedleBot.js";
 import ObjectFactory from "../ObjectFactory.js";
 import type ThreadCreationService from "../services/ThreadCreationService.js";
+import LastOnlineTracker from "../services/LastOnlineTracker.js";
 
 export default class ReadyEventListener extends NeedleEventListener {
 	public readonly name = "ready";
 	public readonly runType = ListenerRunType.OnlyOnce;
 
 	private readonly threadCreator: ThreadCreationService;
+	private readonly lastOnlineTracker: LastOnlineTracker;
+	private readonly maxCatchUpWindowMs = 48 * 60 * 60 * 1000; // 48 hours
 
 	constructor(bot: NeedleBot) {
 		super(bot);
 		this.threadCreator = ObjectFactory.createThreadCreationService(false);
+		this.lastOnlineTracker = new LastOnlineTracker();
 	}
 
 	public async handle([client]: ClientEvents["ready"]): Promise<void> {
@@ -37,11 +41,16 @@ export default class ReadyEventListener extends NeedleEventListener {
 
 		if (process.argv.includes("--skip-catch-up")) {
 			console.log("Ready!");
+			this.lastOnlineTracker.start();
 			return;
 		}
 
+		const lastOnline = this.lastOnlineTracker.getLastOnline();
+		this.lastOnlineTracker.start();
+		const catchUpAfter = this.getCatchUpAfterTimestamp(lastOnline);
+
 		try {
-			await this.createMissingThreads(client);
+			await this.createMissingThreads(client, catchUpAfter);
 		} catch (e) {
 			console.error("Failed creating missing threads");
 			console.error(e);
@@ -50,7 +59,14 @@ export default class ReadyEventListener extends NeedleEventListener {
 		console.log("Ready!");
 	}
 
-	private async createMissingThreads(client: Client) {
+	private getCatchUpAfterTimestamp(lastOnline: number | undefined): number {
+		const fallbackStart = Date.now() - this.maxCatchUpWindowMs;
+		if (!lastOnline) return fallbackStart;
+
+		return Math.max(lastOnline, fallbackStart);
+	}
+
+	private async createMissingThreads(client: Client, catchUpAfter: number) {
 		const configs = this.bot.configs.getAll(true);
 		for (const [guildId, config] of configs) {
 			const guild = client.guilds.cache.get(guildId);
@@ -64,12 +80,19 @@ export default class ReadyEventListener extends NeedleEventListener {
 					const lastMessage = (await channel.messages.fetch({ limit: 1 })).first();
 					if (!lastMessage) continue;
 
+					if (lastMessage.createdTimestamp < catchUpAfter) continue;
+
 					const shouldHaveThread = await this.threadCreator.shouldHaveThread(lastMessage);
 					if (!shouldHaveThread) continue;
 
 					const latestTenMessages = await channel.messages.fetch({ limit: 10 });
+					const recentMessages = [...latestTenMessages.values()].filter(
+						message => message.createdTimestamp >= catchUpAfter,
+					);
+					if (recentMessages.length === 0) continue;
+
 					await Promise.all(
-						latestTenMessages.map(async m => {
+						recentMessages.map(async m => {
 							// In the future if we have prerequisites we need to check those here
 							const createThread = await this.threadCreator.shouldHaveThread(m);
 							if (!createThread) return Promise.resolve();
