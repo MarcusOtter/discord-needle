@@ -80,6 +80,7 @@ for (const fileName of fileNames) {
 			statusReactions: 0,
 			titleType: 1,
 			titleMaxLength: 50,
+			regexJoinText: "",
 			customTitle: "$USER_NICKNAME ($DATE_UTC)",
 			closeButtonText: "Archive thread",
 			closeButtonStyle: "green",
