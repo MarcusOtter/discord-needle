@@ -53,7 +53,7 @@ export default abstract class NeedleCommand {
 
 	public async hasPermissionToExecuteHere(
 		member: Nullish<GuildMember>,
-		channel: Nullish<GuildTextBasedChannel>
+		channel: Nullish<GuildTextBasedChannel>,
 	): Promise<boolean> {
 		if (!member || !channel) return this.category === CommandCategory.Info;
 		if (member.permissionsIn(channel).has(PermissionFlagsBits.Administrator)) return true;

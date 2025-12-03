@@ -13,7 +13,13 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { EmbedBuilder, type GuildMember, type GuildTextBasedChannel, type SlashCommandBuilder } from "discord.js";
+import {
+	EmbedBuilder,
+	MessageFlags,
+	type GuildMember,
+	type GuildTextBasedChannel,
+	type SlashCommandBuilder,
+} from "discord.js";
 import type { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHelpers.js";
 import CommandCategory from "../models/enums/CommandCategory.js";
 import type InteractionContext from "../models/InteractionContext.js";
@@ -34,8 +40,8 @@ export default class HelpCommand extends NeedleCommand {
 				.setDescription("Which commands do you want to see?")
 				.addChoices(
 					{ name: "Available to you in current channel (ᴅᴇꜰᴀᴜʟᴛ)", value: "default" },
-					{ name: "All Needle commands", value: "all" }
-				)
+					{ name: "All Needle commands", value: "all" },
+				),
 		);
 	}
 
@@ -50,14 +56,14 @@ export default class HelpCommand extends NeedleCommand {
 		await context.interaction.reply({
 			content: `Need more help with Needle? Join us in the [support server](${this.SUPPORT_SERVER_URL})!`,
 			embeds: [commandsEmbed],
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		});
 	}
 
 	private async getCommandsEmbed(
 		member: Nullish<GuildMember>,
 		channel: Nullish<GuildTextBasedChannel>,
-		showAll: boolean
+		showAll: boolean,
 	): Promise<EmbedBuilder> {
 		const commands = await this.bot.getAllCommands();
 
@@ -96,7 +102,7 @@ export default class HelpCommand extends NeedleCommand {
 		commands: NeedleCommand[],
 		member: Nullish<GuildMember>,
 		channel: Nullish<GuildTextBasedChannel>,
-		showAll: boolean
+		showAll: boolean,
 	): Promise<string[]> {
 		const output = [];
 		for (const command of commands) {

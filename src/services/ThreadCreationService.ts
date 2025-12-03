@@ -128,7 +128,7 @@ export default class ThreadCreationService {
 				components: buttonRow.components.length > 0 ? [buttonRow] : undefined,
 			});
 
-			if (botMember.permissionsIn(thread.id).has(PermissionFlagsBits.ManageMessages)) {
+			if (botMember.permissionsIn(thread.id).has(PermissionFlagsBits.PinMessages)) {
 				await msg.pin();
 				await wait(100); // Let's wait a few ms here to ensure the latest message is actually the pin message
 				await thread.lastMessage?.delete();

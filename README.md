@@ -40,11 +40,11 @@ Needle requires an environment with Node.js version `16.9.0` or higher, along wi
 
 Needle requires the following permissions to function, along with the `applications.commands` and `bot` scopes.
 
--   [x] View channels
--   [x] Send messages
--   [x] Send messages in threads
--   [x] Create public threads
--   [x] Read message history
+- [x] View channels
+- [x] Send messages
+- [x] Send messages in threads
+- [x] Create public threads
+- [x] Read message history
 
 You can use this link to invite your self-hosted version of Needle, replacing `<APP ID>` with your bot's application ID:
 

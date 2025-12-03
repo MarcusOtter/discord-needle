@@ -13,14 +13,15 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type {
-	AnyThreadChannel,
-	ButtonInteraction,
-	ChatInputCommandInteraction,
-	GuildMember,
-	GuildTextBasedChannel,
-	MessageComponentInteraction,
-	ModalSubmitInteraction,
+import {
+	MessageFlags,
+	type AnyThreadChannel,
+	type ButtonInteraction,
+	type ChatInputCommandInteraction,
+	type GuildMember,
+	type GuildTextBasedChannel,
+	type MessageComponentInteraction,
+	type ModalSubmitInteraction,
 } from "discord.js";
 import { clampWithElipse } from "../helpers/stringHelpers.js";
 import type { Overwrite } from "../helpers/typeHelpers.js";
@@ -109,7 +110,10 @@ export default class InteractionContext {
 		}
 
 		if (this.interaction.replied) return;
-		await this.interaction.reply({ content: clampWithElipse(content, 2000), ephemeral: ephemeral });
+		await this.interaction.reply({
+			content: clampWithElipse(content, 2000),
+			flags: ephemeral ? MessageFlags.Ephemeral : undefined,
+		});
 	}
 }
 
@@ -122,7 +126,4 @@ type AnyThreadInteraction = Overwrite<NeedleInteraction, { channel: AnyThreadCha
 type ContextWithInteraction<TInteraction> = Overwrite<InteractionContext, { interaction: TInteraction }>;
 
 // Little type hack with Omit to remove private members from djs types
-export type NeedleInteraction = Omit<
-	ChatInputCommandInteraction | MessageComponentInteraction | ModalSubmitInteraction,
-	""
->;
+type NeedleInteraction = Omit<ChatInputCommandInteraction | MessageComponentInteraction | ModalSubmitInteraction, "">;

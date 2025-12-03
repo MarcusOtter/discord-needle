@@ -37,7 +37,7 @@ export default class SettingCommand extends NeedleCommand {
 				.setName("setting-name")
 				.setDescription("The name of the setting")
 				.setRequired(true)
-				.setChoices(...choices)
+				.setChoices(...choices),
 		);
 	}
 
@@ -54,7 +54,7 @@ export default class SettingCommand extends NeedleCommand {
 		const submitInteraction = await modal.openAndAwaitSubmit(
 			context.interaction,
 			[{ customId: "setting", value: oldValue }],
-			settingName
+			settingName,
 		);
 
 		context.setInteractionToReplyTo(submitInteraction);

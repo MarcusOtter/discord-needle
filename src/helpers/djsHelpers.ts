@@ -34,7 +34,7 @@ export async function removeUserReactionsOnMessage(message: Message, userId: str
 
 export async function isAllowedToChangeThreadTitle(
 	thread: AnyThreadChannel,
-	member: Nullish<GuildMember>
+	member: Nullish<GuildMember>,
 ): Promise<boolean> {
 	if (!member) return false;
 

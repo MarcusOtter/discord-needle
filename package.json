@@ -5,12 +5,16 @@
 	"main": "./dist/index.js",
 	"type": "module",
 	"scripts": {
-		"build": "rd /s /q dist & tsc --sourceMap",
+		"build": "rimraf dist & tsc --sourceMap",
 		"start": "npm run build && node --enable-source-maps ./dist/index.js",
 		"undeploy": "npm run build && node ./scripts/deploy-commands.js  --undeploy",
 		"deploy": "npm run undeploy && node ./scripts/deploy-commands.js",
-		"lint": "eslint . && prettier --check .",
-		"lint:fix": "eslint --fix . && prettier --write ."
+		"tsc": "tsc --noEmit",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
+		"prettier": "prettier --check .",
+		"prettier:fix": "prettier --write .",
+		"knip": "knip"
 	},
 	"repository": {
 		"type": "git",
@@ -23,19 +27,25 @@
 	},
 	"homepage": "https://github.com/MarcusOtter/discord-needle",
 	"dependencies": {
-		"@discordjs/rest": "^2.3.0",
-		"discord.js": "^14.14.1",
-		"dotenv": "^16.4.5",
+		"@discordjs/rest": "^2.6.0",
+		"discord.js": "^14.25.1",
+		"dotenv": "^17.2.3",
 		"safe-regex": "^2.1.1"
 	},
 	"devDependencies": {
+		"@eslint/eslintrc": "^3.3.3",
+		"@eslint/js": "^9.39.1",
+		"@types/node": "^24.10.1",
 		"@types/safe-regex": "^1.1.6",
-		"@typescript-eslint/eslint-plugin": "^5.62.0",
-		"@typescript-eslint/parser": "^5.62.0",
-		"eslint": "^8.57.0",
-		"eslint-config-prettier": "^9.1.0",
-		"prettier": "^3.2.5",
-		"typescript": "^5.4.3"
+		"@typescript-eslint/eslint-plugin": "^8.48.1",
+		"@typescript-eslint/parser": "^8.48.1",
+		"eslint": "^9.39.1",
+		"eslint-config-prettier": "^10.1.8",
+		"globals": "^16.5.0",
+		"knip": "^5.71.0",
+		"prettier": "^3.7.3",
+		"rimraf": "^6.1.2",
+		"typescript": "^5.9.3"
 	},
 	"engines": {
 		"node": ">=16.9.x",

@@ -57,7 +57,7 @@ export default class DynamicImportService<T extends Newable> {
 					fileName: fileName.split(".")[0],
 					Class: (await import(`file://${directoryPath}/${fileName}`)).default,
 				} as ImportedClass<T>;
-			})
+			}),
 		);
 	}
 }

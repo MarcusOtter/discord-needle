@@ -1,0 +1,14 @@
+{
+	"$schema": "https://unpkg.com/knip@5/schema.json",
+	"entry": [
+		"src/index.ts",
+		"scripts/*.js",
+		"src/buttons/*.ts",
+		"src/commands/*.ts",
+		"src/eventListeners/*.ts",
+		"src/modals/*.ts"
+	],
+	"project": ["src/**"],
+	"ignore": ["src/models/enums/Setting.ts"],
+	"ignoreDependencies": ["eslint-config-prettier"]
+}

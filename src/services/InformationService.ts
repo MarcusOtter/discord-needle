@@ -13,7 +13,7 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { formatNumber } from "../helpers/stringHelpers.js";
+import { formatNumber, msToReadableDuration } from "../helpers/stringHelpers.js";
 import type NeedleBot from "../NeedleBot.js";
 import os from "os";
 
@@ -62,13 +62,6 @@ export default class InformationService {
 	// Generate a string like 1d 8h 23m 12s or 8h 23m 0s
 	public getUptimeString(): string {
 		const uptimeMs = this.bot.client.uptime;
-		if (!uptimeMs) return "Not online";
-
-		const days = Math.floor(uptimeMs / 1000 / 60 / 60 / 24);
-		const hours = Math.floor((uptimeMs / 1000 / 60 / 60) % 24);
-		const minutes = Math.floor((uptimeMs / 1000 / 60) % 60);
-		const seconds = Math.floor((uptimeMs / 1000) % 60);
-
-		return `${days ? `${days}d ` : ""}${hours ? `${hours}h ` : ""}${minutes ? `${minutes}m ` : ""}${seconds}s`;
+		return uptimeMs ? msToReadableDuration(uptimeMs) : "Not online";
 	}
 }

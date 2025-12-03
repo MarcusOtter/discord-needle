@@ -54,7 +54,7 @@ export default class AutothreadChannelConfig {
 		closeButtonText: Nullish<string>,
 		closeButtonStyle: Nullish<string>,
 		titleButtonText: Nullish<string>,
-		titleButtonStyle: Nullish<string>
+		titleButtonStyle: Nullish<string>,
 	) {
 		this.channelId = channelId;
 		this.deleteBehavior = deleteBehavior ?? oldConfig?.deleteBehavior ?? DeleteBehavior.DeleteIfEmptyElseArchive;
@@ -80,7 +80,7 @@ export default class AutothreadChannelConfig {
 	private getCustomReply(oldConfig: Nullish<AutothreadChannelConfig>, incomingCustomReply: Nullish<string>): string {
 		const switchingAwayFromCustom =
 			oldConfig?.replyType === ReplyMessageOption.Custom && this.replyType !== ReplyMessageOption.Custom;
-		return switchingAwayFromCustom ? "" : incomingCustomReply ?? oldConfig?.customReply ?? "";
+		return switchingAwayFromCustom ? "" : (incomingCustomReply ?? oldConfig?.customReply ?? "");
 	}
 
 	private getCustomTitle(oldConfig: Nullish<AutothreadChannelConfig>, incomingCustomTitle: Nullish<string>): string {

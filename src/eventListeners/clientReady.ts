@@ -21,9 +21,10 @@ import type NeedleBot from "../NeedleBot.js";
 import ObjectFactory from "../ObjectFactory.js";
 import type ThreadCreationService from "../services/ThreadCreationService.js";
 import LastOnlineTracker from "../services/LastOnlineTracker.js";
+import { msToReadableDuration } from "../helpers/stringHelpers.js";
 
 export default class ReadyEventListener extends NeedleEventListener {
-	public readonly name = "ready";
+	public readonly name = "clientReady";
 	public readonly runType = ListenerRunType.OnlyOnce;
 
 	private readonly threadCreator: ThreadCreationService;
@@ -36,7 +37,7 @@ export default class ReadyEventListener extends NeedleEventListener {
 		this.lastOnlineTracker = new LastOnlineTracker();
 	}
 
-	public async handle([client]: ClientEvents["ready"]): Promise<void> {
+	public async handle([client]: ClientEvents["clientReady"]): Promise<void> {
 		await this.bot.configs.deleteFromUnknownServers(this.bot);
 
 		if (process.argv.includes("--skip-catch-up")) {
@@ -54,6 +55,16 @@ export default class ReadyEventListener extends NeedleEventListener {
 		} catch (e) {
 			console.error("Failed creating missing threads");
 			console.error(e);
+		}
+
+		if (lastOnline) {
+			const lastOnlineDate = new Date(lastOnline);
+			const now = new Date();
+			const msSinceOnline = now.getTime() - lastOnlineDate.getTime();
+
+			console.log(`Last online:\t${lastOnlineDate.toISOString()}`);
+			console.log(`Now:\t\t${now.toISOString()}`);
+			console.log(`Time offline:\t${msToReadableDuration(msSinceOnline)}`);
 		}
 
 		console.log("Ready!");

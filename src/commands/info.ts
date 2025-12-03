@@ -20,7 +20,7 @@ import type InformationService from "../services/InformationService.js";
 import ObjectFactory from "../ObjectFactory.js";
 import { codeBlock } from "../helpers/stringHelpers.js";
 import CommandCategory from "../models/enums/CommandCategory.js";
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, MessageFlags } from "discord.js";
 
 export default class InfoCommand extends NeedleCommand {
 	public readonly name = "info";
@@ -38,7 +38,7 @@ export default class InfoCommand extends NeedleCommand {
 		await this.bot.client.application?.fetch();
 		const isOwner = interaction.user.id === this.bot.client.application?.owner?.id;
 		const infoEmbed = await this.getInformationEmbed(isOwner);
-		await interaction.reply({ embeds: [infoEmbed], ephemeral: true });
+		await interaction.reply({ embeds: [infoEmbed], flags: MessageFlags.Ephemeral });
 	}
 
 	private async getInformationEmbed(isOwner = false): Promise<EmbedBuilder> {
@@ -75,7 +75,7 @@ export default class InfoCommand extends NeedleCommand {
 		return new EmbedBuilder()
 			.setColor("#2f3136")
 			.setDescription(
-				"Needle is a bot that creates [threads](https://discord.com/blog/connect-the-conversation-with-threads-on-discord) in certain channels automatically. You can interact with Needle through [slash commands](https://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ) and buttons. If you want help with using this bot, feel free to join the [support server](https://discord.gg/8BmnndXHp6).\n\n🧑‍💼 **` STATS `**"
+				"Needle is a bot that creates [threads](https://discord.com/blog/connect-the-conversation-with-threads-on-discord) in certain channels automatically. You can interact with Needle through [slash commands](https://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ) and buttons. If you want help with using this bot, feel free to join the [support server](https://discord.gg/8BmnndXHp6).\n\n🧑‍💼 **` STATS `**",
 			)
 			.setFields(fields);
 	}

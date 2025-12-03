@@ -21,10 +21,6 @@ export function plural(word: string, count: number): string {
 	return count === 1 ? output : `${output}s`;
 }
 
-export function hasUrl(input: string): boolean {
-	return (input.match(/\b(https?):\/\/[^\s]+\.[^\s]+/gim)?.length ?? 0) > 0;
-}
-
 export function clampWithElipse(input: string, maxLength: number): string {
 	return input.length > maxLength ? input.substring(0, maxLength - 3) + "..." : input;
 }
@@ -36,6 +32,19 @@ export function removeInvalidThreadNameChars(input: Nullish<string>): string {
 
 export function formatNumber(input: number, locale: Locale = Locale.EnglishUS): string {
 	return input.toLocaleString(locale);
+}
+
+export function msToReadableDuration(durationMs: number | undefined) {
+	if (!durationMs) {
+		return "0s";
+	}
+
+	const days = Math.floor(durationMs / 1000 / 60 / 60 / 24);
+	const hours = Math.floor((durationMs / 1000 / 60 / 60) % 24);
+	const minutes = Math.floor((durationMs / 1000 / 60) % 60);
+	const seconds = Math.floor((durationMs / 1000) % 60);
+
+	return `${days ? `${days}d ` : ""}${hours ? `${hours}h ` : ""}${minutes ? `${minutes}m ` : ""}${seconds}s`;
 }
 
 export function codeBlock(input: string | number): string {
