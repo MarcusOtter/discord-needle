@@ -136,7 +136,7 @@ The `MessageVariables` class provides template variable replacement:
 
 The bot uses aggressive caching limits (see `ObjectFactory.createDiscordClient()`):
 
-- Most managers limited to <5 cached items per guild
+- Most managers limited to 1 cached item per guild
 - 10-minute sweep intervals to clear old cache entries
 - Essential for bots in many servers to prevent memory issues
 
