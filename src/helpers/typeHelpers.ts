@@ -13,12 +13,12 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { SlashCommandBuilder } from "discord.js";
+import type { SlashCommandOptionsOnlyBuilder } from "discord.js";
 
 export type Nullish<T> = T | null | undefined;
 export type Overwrite<T, U> = Omit<T, keyof U> & U;
 
-export type SlashCommandBuilderWithOptions = Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
+export type SlashCommandBuilderWithOptions = SlashCommandOptionsOnlyBuilder;
 
 export type Newable = abstract new (...args: never[]) => unknown;
 export type Concretize<T extends Newable> = new (...args: ConstructorParameters<T>) => InstanceType<T>;
