@@ -31,3 +31,6 @@ jobs:
 
             - name: Type checks
               run: npm run tsc
+
+            - name: Knip
+              run: npm run knip

@@ -21,10 +21,6 @@ export function plural(word: string, count: number): string {
 	return count === 1 ? output : `${output}s`;
 }
 
-export function hasUrl(input: string): boolean {
-	return (input.match(/\b(https?):\/\/[^\s]+\.[^\s]+/gim)?.length ?? 0) > 0;
-}
-
 export function clampWithElipse(input: string, maxLength: number): string {
 	return input.length > maxLength ? input.substring(0, maxLength - 3) + "..." : input;
 }

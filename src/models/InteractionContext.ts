@@ -126,7 +126,4 @@ type AnyThreadInteraction = Overwrite<NeedleInteraction, { channel: AnyThreadCha
 type ContextWithInteraction<TInteraction> = Overwrite<InteractionContext, { interaction: TInteraction }>;
 
 // Little type hack with Omit to remove private members from djs types
-export type NeedleInteraction = Omit<
-	ChatInputCommandInteraction | MessageComponentInteraction | ModalSubmitInteraction,
-	""
->;
+type NeedleInteraction = Omit<ChatInputCommandInteraction | MessageComponentInteraction | ModalSubmitInteraction, "">;
