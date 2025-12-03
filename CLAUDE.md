@@ -17,8 +17,11 @@ Needle is a Discord bot that automatically creates threads in configured channel
 
 ### Code Quality
 
--   `npm run lint` - Run ESLint and Prettier checks
--   `npm run lint:fix` - Auto-fix ESLint and Prettier issues
+-   `npm run lint` - Run ESLint checks
+-   `npm run lint:fix` - Auto-fix ESLint issues
+-   `npm run prettier` - Run Prettier checks
+-   `npm run prettier:fix` - Auto-fix Prettier issues
+-   `npm run tsc` - Run TypeScript type checks
 
 ### Environment Setup
 

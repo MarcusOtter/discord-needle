@@ -14,7 +14,6 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-/* eslint-disable @typescript-eslint/no-var-requires */
 // You need to `tsc` before running this script.
 
 import "dotenv/config";

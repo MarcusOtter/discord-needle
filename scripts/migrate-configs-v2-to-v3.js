@@ -14,7 +14,6 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-/* eslint-disable @typescript-eslint/no-var-requires */
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 
 const inputArg = process.argv.find(s => s.startsWith("--input"));
