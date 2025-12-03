@@ -38,6 +38,19 @@ export function formatNumber(input: number, locale: Locale = Locale.EnglishUS): 
 	return input.toLocaleString(locale);
 }
 
+export function msToReadableDuration(durationMs: number | undefined) {
+	if (!durationMs) {
+		return "0s";
+	}
+
+	const days = Math.floor(durationMs / 1000 / 60 / 60 / 24);
+	const hours = Math.floor((durationMs / 1000 / 60 / 60) % 24);
+	const minutes = Math.floor((durationMs / 1000 / 60) % 60);
+	const seconds = Math.floor((durationMs / 1000) % 60);
+
+	return `${days ? `${days}d ` : ""}${hours ? `${hours}h ` : ""}${minutes ? `${minutes}m ` : ""}${seconds}s`;
+}
+
 export function codeBlock(input: string | number): string {
 	if (typeof input === "number") {
 		input = formatNumber(input);
