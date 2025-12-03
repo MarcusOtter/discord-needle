@@ -5,7 +5,7 @@
 	"main": "./dist/index.js",
 	"type": "module",
 	"scripts": {
-		"build": "rd /s /q dist & tsc --sourceMap",
+		"build": "rm -rf dist & tsc --sourceMap",
 		"start": "npm run build && node --enable-source-maps ./dist/index.js",
 		"undeploy": "npm run build && node ./scripts/deploy-commands.js  --undeploy",
 		"deploy": "npm run undeploy && node ./scripts/deploy-commands.js",

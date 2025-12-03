@@ -13,7 +13,13 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { EmbedBuilder, type GuildMember, type GuildTextBasedChannel, type SlashCommandBuilder } from "discord.js";
+import {
+	EmbedBuilder,
+	MessageFlags,
+	type GuildMember,
+	type GuildTextBasedChannel,
+	type SlashCommandBuilder,
+} from "discord.js";
 import type { Nullish, SlashCommandBuilderWithOptions } from "../helpers/typeHelpers.js";
 import CommandCategory from "../models/enums/CommandCategory.js";
 import type InteractionContext from "../models/InteractionContext.js";
@@ -50,7 +56,7 @@ export default class HelpCommand extends NeedleCommand {
 		await context.interaction.reply({
 			content: `Need more help with Needle? Join us in the [support server](${this.SUPPORT_SERVER_URL})!`,
 			embeds: [commandsEmbed],
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		});
 	}
 

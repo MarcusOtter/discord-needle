@@ -13,7 +13,7 @@ You should have received a copy of the GNU Affero General Public License along w
 If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } from "discord.js";
 import { clampWithElipse } from "../helpers/stringHelpers.js";
 import type InteractionContext from "../models/InteractionContext.js";
 import type NeedleCommand from "../models/NeedleCommand.js";
@@ -38,7 +38,7 @@ export default class CommandExecutorService {
 
 		await context.interaction.reply({
 			content: clampWithElipse(context.settings.ErrorUnknown, 2000),
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 			components: [buttonRow],
 		});
 	}

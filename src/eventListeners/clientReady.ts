@@ -24,7 +24,7 @@ import LastOnlineTracker from "../services/LastOnlineTracker.js";
 import { msToReadableDuration } from "../helpers/stringHelpers.js";
 
 export default class ReadyEventListener extends NeedleEventListener {
-	public readonly name = "ready";
+	public readonly name = "clientReady";
 	public readonly runType = ListenerRunType.OnlyOnce;
 
 	private readonly threadCreator: ThreadCreationService;
@@ -37,7 +37,7 @@ export default class ReadyEventListener extends NeedleEventListener {
 		this.lastOnlineTracker = new LastOnlineTracker();
 	}
 
-	public async handle([client]: ClientEvents["ready"]): Promise<void> {
+	public async handle([client]: ClientEvents["clientReady"]): Promise<void> {
 		await this.bot.configs.deleteFromUnknownServers(this.bot);
 
 		if (process.argv.includes("--skip-catch-up")) {

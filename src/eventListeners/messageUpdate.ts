@@ -14,7 +14,7 @@ export default class MessageUpdateEventListener extends NeedleEventListener {
 
 	constructor(bot: NeedleBot) {
 		super(bot);
-		this.threadCreator = ObjectFactory.createThreadCreationService(true);
+		this.threadCreator = ObjectFactory.createThreadCreationService(false);
 	}
 
 	public async handle([oldMessage, newMessage]: ClientEvents["messageUpdate"]): Promise<void> {
