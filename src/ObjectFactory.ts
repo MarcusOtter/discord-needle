@@ -74,8 +74,8 @@ export default class ObjectFactory {
 			interval: tenMinutes,
 			lifetime: tenMinutes,
 		};
-		const fivePerGuildCollection = {
-			maxSize: 5,
+		const onePerGuildCollection = {
+			maxSize: 1,
 		};
 
 		return new Client({
@@ -91,22 +91,22 @@ export default class ObjectFactory {
 				GuildForumThreadManager: 0,
 				GuildInviteManager: 0,
 				GuildMemberManager: {
-					maxSize: 5,
+					maxSize: 1,
 					keepOverLimit: member => member.id === member.client.user.id,
 				},
-				GuildMessageManager: fivePerGuildCollection,
+				GuildMessageManager: onePerGuildCollection,
 				GuildScheduledEventManager: 0,
 				GuildStickerManager: 0,
-				GuildTextThreadManager: fivePerGuildCollection,
-				MessageManager: fivePerGuildCollection,
+				GuildTextThreadManager: onePerGuildCollection,
+				MessageManager: onePerGuildCollection,
 				PresenceManager: 0,
-				ThreadManager: fivePerGuildCollection,
-				ReactionManager: fivePerGuildCollection,
-				ReactionUserManager: fivePerGuildCollection,
+				ThreadManager: onePerGuildCollection,
+				ReactionManager: onePerGuildCollection,
+				ReactionUserManager: onePerGuildCollection,
 				StageInstanceManager: 0,
-				ThreadMemberManager: fivePerGuildCollection,
+				ThreadMemberManager: onePerGuildCollection,
 				UserManager: {
-					maxSize: 5,
+					maxSize: 1,
 					keepOverLimit: user => user.id === user.client.user.id,
 				},
 				VoiceStateManager: 0,
