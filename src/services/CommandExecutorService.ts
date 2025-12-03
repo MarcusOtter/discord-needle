@@ -33,7 +33,7 @@ export default class CommandExecutorService {
 
 		const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
 			this.getBugReportButton(),
-			this.getSupportServerButton()
+			this.getSupportServerButton(),
 		);
 
 		await context.interaction.reply({

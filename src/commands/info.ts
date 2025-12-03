@@ -75,7 +75,7 @@ export default class InfoCommand extends NeedleCommand {
 		return new EmbedBuilder()
 			.setColor("#2f3136")
 			.setDescription(
-				"Needle is a bot that creates [threads](https://discord.com/blog/connect-the-conversation-with-threads-on-discord) in certain channels automatically. You can interact with Needle through [slash commands](https://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ) and buttons. If you want help with using this bot, feel free to join the [support server](https://discord.gg/8BmnndXHp6).\n\n🧑‍💼 **` STATS `**"
+				"Needle is a bot that creates [threads](https://discord.com/blog/connect-the-conversation-with-threads-on-discord) in certain channels automatically. You can interact with Needle through [slash commands](https://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ) and buttons. If you want help with using this bot, feel free to join the [support server](https://discord.gg/8BmnndXHp6).\n\n🧑‍💼 **` STATS `**",
 			)
 			.setFields(fields);
 	}

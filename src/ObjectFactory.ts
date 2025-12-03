@@ -50,7 +50,7 @@ export default class ObjectFactory {
 			this.createButtonsService(),
 			this.createModalsService(),
 			this.createConfigService(),
-			this.createCooldownService()
+			this.createCooldownService(),
 		);
 
 		return this.bot;

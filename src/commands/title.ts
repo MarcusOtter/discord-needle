@@ -32,7 +32,7 @@ export default class TitleCommand extends NeedleCommand {
 				.setDescription("The new title of the thread")
 				.setMinLength(1)
 				.setMaxLength(100)
-				.setRequired(true)
+				.setRequired(true),
 		);
 	}
 

@@ -42,7 +42,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 
 	public async hasPermissionToExecuteHere(
 		member: Nullish<GuildMember>,
-		channel: Nullish<GuildTextBasedChannel>
+		channel: Nullish<GuildTextBasedChannel>,
 	): Promise<boolean> {
 		if (channel?.isThread()) return false;
 		if (channel?.isVoiceBased()) return false;
@@ -119,7 +119,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 					{ customId: "maxTitleLength", value: oldMaxLength.toString() },
 					{ customId: "regexJoinText", value: oldJoinText },
 				],
-				context
+				context,
 			);
 
 			newMaxTitleLength = Number.parseInt(newMaxLengthString);
@@ -152,11 +152,11 @@ export default class AutoThreadCommand extends NeedleCommand {
 			const wasUsingDefaultReply = oldReplyType === ReplyMessageOption.Default;
 			const oldValue = wasUsingDefaultReply
 				? settings.SuccessThreadCreated
-				: oldAutoThreadConfig?.customReply ?? "";
+				: (oldAutoThreadConfig?.customReply ?? "");
 			[newReplyMessage] = await this.getTextInputsFromModal(
 				"custom-reply-message",
 				[{ customId: "message", value: oldValue }],
-				context
+				context,
 			);
 		}
 
@@ -184,7 +184,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 						{ customId: "titleText", value: oldTitleText },
 						{ customId: "titleStyle", value: oldTitleStyle },
 					],
-					context
+					context,
 				);
 
 			if (!this.isValidButtonStyle(newCloseButtonStyle) || !this.isValidButtonStyle(newTitleButtonStyle)) {
@@ -216,7 +216,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 			newCloseButtonText,
 			newCloseButtonStyle,
 			newTitleButtonText,
-			newTitleButtonStyle
+			newTitleButtonStyle,
 		);
 
 		if (JSON.stringify(oldAutoThreadConfig) === JSON.stringify(newAutoThreadConfig)) {
@@ -239,7 +239,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 	private async getTextInputsFromModal<T extends ModalTextInput[]>(
 		modalName: string,
 		inputs: T,
-		context: InteractionContext
+		context: InteractionContext,
 	): Promise<SameLengthTuple<T, string>> {
 		if (!context.isModalOpenable()) return inputs.map(() => "") as SameLengthTuple<T, string>;
 
@@ -268,7 +268,7 @@ export default class AutoThreadCommand extends NeedleCommand {
 				option
 					.setName("channel")
 					.setDescription("Which channel? Current channel by default.")
-					.addChannelTypes(ChannelType.GuildText, ChannelType.GuildNews)
+					.addChannelTypes(ChannelType.GuildText, ChannelType.GuildNews),
 			)
 			.addIntegerOption(option =>
 				option
@@ -276,8 +276,8 @@ export default class AutoThreadCommand extends NeedleCommand {
 					.setDescription("Should auto-threading be turned on or off?")
 					.addChoices(
 						{ name: "Auto-threading ON (ᴅᴇꜰᴀᴜʟᴛ)", value: ToggleOption.On },
-						{ name: "Auto-threading OFF", value: ToggleOption.Off }
-					)
+						{ name: "Auto-threading OFF", value: ToggleOption.Off },
+					),
 			)
 			.addIntegerOption(option =>
 				option
@@ -287,8 +287,8 @@ export default class AutoThreadCommand extends NeedleCommand {
 						{ name: "First 50 characters of message (ᴅᴇꜰᴀᴜʟᴛ)", value: TitleType.FirstFiftyChars },
 						{ name: "Nickname (yyyy-MM-dd) 🔥", value: TitleType.NicknameDate },
 						{ name: "First line of message", value: TitleType.FirstLineOfMessage },
-						{ name: "Custom 🔥", value: TitleType.Custom }
-					)
+						{ name: "Custom 🔥", value: TitleType.Custom },
+					),
 			)
 			.addIntegerOption(option =>
 				option.setName("reply-message").setDescription("How should Needle reply in the thread? 🔥").addChoices(
@@ -296,8 +296,8 @@ export default class AutoThreadCommand extends NeedleCommand {
 						name: 'Use "SuccessThreadCreate" setting (ᴅᴇꜰᴀᴜʟᴛ)',
 						value: ReplyMessageOption.Default,
 					},
-					{ name: "Custom message 🔥", value: ReplyMessageOption.Custom }
-				)
+					{ name: "Custom message 🔥", value: ReplyMessageOption.Custom },
+				),
 			)
 			.addIntegerOption(option =>
 				option
@@ -308,8 +308,8 @@ export default class AutoThreadCommand extends NeedleCommand {
 							name: "Green archive button, Blurple edit button (ᴅᴇꜰᴀᴜʟᴛ)",
 							value: ReplyButtonsOption.Default,
 						},
-						{ name: "Custom 🔥", value: ReplyButtonsOption.Custom }
-					)
+						{ name: "Custom 🔥", value: ReplyButtonsOption.Custom },
+					),
 			)
 			.addIntegerOption(option =>
 				option
@@ -317,8 +317,8 @@ export default class AutoThreadCommand extends NeedleCommand {
 					.setDescription("Should threads be created on bot messages?")
 					.addChoices(
 						{ name: "Exclude bots (ᴅᴇꜰᴀᴜʟᴛ)", value: ToggleOption.Off },
-						{ name: "Include bots", value: ToggleOption.On }
-					)
+						{ name: "Include bots", value: ToggleOption.On },
+					),
 			)
 			.addIntegerOption(option =>
 				option
@@ -331,8 +331,8 @@ export default class AutoThreadCommand extends NeedleCommand {
 						},
 						{ name: "Always archive", value: DeleteBehavior.Archive },
 						{ name: "Always delete ❗", value: DeleteBehavior.Delete },
-						{ name: "Do nothing", value: DeleteBehavior.Nothing }
-					)
+						{ name: "Do nothing", value: DeleteBehavior.Nothing },
+					),
 			)
 			.addIntegerOption(option =>
 				option
@@ -340,8 +340,8 @@ export default class AutoThreadCommand extends NeedleCommand {
 					.setDescription("What should happen when users close a thread?")
 					.addChoices(
 						{ name: "Archive immediately (ᴅᴇꜰᴀᴜʟᴛ)", value: ToggleOption.On },
-						{ name: "Hide after 1 hour of inactivity", value: ToggleOption.Off }
-					)
+						{ name: "Hide after 1 hour of inactivity", value: ToggleOption.Off },
+					),
 			)
 			.addIntegerOption(option =>
 				option
@@ -349,8 +349,8 @@ export default class AutoThreadCommand extends NeedleCommand {
 					.setDescription("Should thread statuses be shown with emoji reactions?")
 					.addChoices(
 						{ name: "Reactions OFF (ᴅᴇꜰᴀᴜʟᴛ)", value: ToggleOption.Off },
-						{ name: "Reactions ON", value: ToggleOption.On }
-					)
+						{ name: "Reactions ON", value: ToggleOption.On },
+					),
 			)
 			.addIntegerOption(option =>
 				option
@@ -365,8 +365,8 @@ export default class AutoThreadCommand extends NeedleCommand {
 						{ name: "5 minutes", value: 300 },
 						{ name: "15 minutes", value: 900 },
 						{ name: "1 hour", value: 3600 },
-						{ name: "6 hours", value: 21600 }
-					)
+						{ name: "6 hours", value: 21600 },
+					),
 			);
 	}
 }

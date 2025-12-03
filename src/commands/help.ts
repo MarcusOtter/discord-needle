@@ -34,8 +34,8 @@ export default class HelpCommand extends NeedleCommand {
 				.setDescription("Which commands do you want to see?")
 				.addChoices(
 					{ name: "Available to you in current channel (ᴅᴇꜰᴀᴜʟᴛ)", value: "default" },
-					{ name: "All Needle commands", value: "all" }
-				)
+					{ name: "All Needle commands", value: "all" },
+				),
 		);
 	}
 
@@ -57,7 +57,7 @@ export default class HelpCommand extends NeedleCommand {
 	private async getCommandsEmbed(
 		member: Nullish<GuildMember>,
 		channel: Nullish<GuildTextBasedChannel>,
-		showAll: boolean
+		showAll: boolean,
 	): Promise<EmbedBuilder> {
 		const commands = await this.bot.getAllCommands();
 
@@ -96,7 +96,7 @@ export default class HelpCommand extends NeedleCommand {
 		commands: NeedleCommand[],
 		member: Nullish<GuildMember>,
 		channel: Nullish<GuildTextBasedChannel>,
-		showAll: boolean
+		showAll: boolean,
 	): Promise<string[]> {
 		const output = [];
 		for (const command of commands) {
