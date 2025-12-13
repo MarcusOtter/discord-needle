@@ -182,7 +182,22 @@ export default class ThreadCreationService {
 			);
 		}
 
-		return variables.removeFrom(message.cleanContent + "\n\n" + embedCleanContent);
+		let content = message.cleanContent + "\n\n" + embedCleanContent;
+
+		content = content
+			.replace(/^#{1,3} /gm, "")
+			.replace(/^-# /gm, "")
+			.replace(/^ *[-*] (.*)/gm, "$1")
+			.replace(/(\*+)([^*\n]+)\1/gm, "$2")
+			.replace(/(_+)([^_\n]+)\1 /gm, "$2")
+			.replace(/\[(.+)\]\(.+\)/gm, "$1")
+			.replace(/~~(.+)~~/gm, "$1")
+			.replace(/\|\|.+\|\|/gm, "")
+			.replace(/(?:>|>>>) (.+)/gm, "$1")
+			.replace(/`([^`\n]+)`/gm, "$1")
+			.replace(/```\w*\n(.*)```/gms, "$1");
+
+		return variables.removeFrom(content);
 	}
 
 	private async getButtonRow(
