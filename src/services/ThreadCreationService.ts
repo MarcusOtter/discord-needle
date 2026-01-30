@@ -182,6 +182,11 @@ export default class ThreadCreationService {
 			);
 		}
 
+		const firstAttachment = message.attachments.first();
+		if (!message.cleanContent && !embedCleanContent && firstAttachment) {
+			return firstAttachment.name.split(".")[0];
+		}
+
 		return variables.removeFrom(message.cleanContent + "\n\n" + embedCleanContent);
 	}
 
