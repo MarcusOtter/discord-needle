@@ -26,7 +26,7 @@ The easiest way to start using Needle in your server is to use the hosted instan
 
 ## 🛠️ Self-hosting (advanced)
 
-The hosted instance of Needle is customizeable and should be enough for most users. However, if you have special requirements and want to modify the functionality of Needle, you will have to fork the repository and self-host your own instance. This requires programming knowledge and is only for advanced users - support for this will be limited.
+The hosted instance of Needle is customizable and should be enough for most users. However, if you have special requirements and want to modify the functionality of Needle, you will have to fork the repository and self-host your own instance. This requires programming knowledge and is only for advanced users - support for this will be limited.
 
 Needle requires an environment with Node.js version `16.9.0` or higher, along with persistent storage for per-server config files - shared hosts (like Replit and Heroku) will not work.
 
@@ -68,9 +68,7 @@ You'll still need to deploy Needle's slash commands - follow the regular self-ho
 
 ## 🤝 Contributing
 
-Contribution guidelines coming soon :tm:
-
-[Join the Discord](https://needle.gg/chat) if interested!
+Needle is in maintenance mode right now so if you open PRs it's unlikely that they will get reviewed or merged. This may change in the future. Let us know in the [Discord](https://needle.gg/chat) if you interested in contributing code to Needle before you start working on anything.
 
 If you want to support Needle in other ways, consider [sponsoring](https://needle.gg/sponsor) the development of Needle.
 
