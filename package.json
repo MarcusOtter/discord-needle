@@ -34,7 +34,7 @@
 	},
 	"devDependencies": {
 		"@eslint/eslintrc": "^3.3.4",
-		"@eslint/js": "^9.39.2",
+		"@eslint/js": "^10.0.1",
 		"@types/node": "^24.10.1",
 		"@types/safe-regex": "^1.1.6",
 		"@typescript-eslint/eslint-plugin": "^8.56.1",
