@@ -41,7 +41,7 @@
 		"@typescript-eslint/parser": "^8.48.1",
 		"eslint": "^9.39.2",
 		"eslint-config-prettier": "^10.1.8",
-		"globals": "^16.5.0",
+		"globals": "^17.4.0",
 		"knip": "^5.85.0",
 		"prettier": "^3.8.1",
 		"rimraf": "^6.1.3",
